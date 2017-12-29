@@ -59,10 +59,15 @@ public class Interpreter {
     private IPCB PCB;
     private BoxOffice boxOffice;
 
-    Interpreter(RAM memory, IProcessManager processManager) {
+    Interpreter(ProcesorInterface procesor, RAM memory, IProcessManager processManager, FileSystemInterface fileSystem, IPCB PCB, BoxOffice boxOffice) {
+        this.procesor = procesor;
         this.memory = memory;
         this.processManager = processManager;
+        this.fileSystem = fileSystem;
+        this.PCB = PCB;
+        this.boxOffice = boxOffice;
     }
+    
     public void set_A(){
         this.A = PCB.GetRegister(IPCB.Register.A);
     }
