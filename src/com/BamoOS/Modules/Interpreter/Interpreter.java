@@ -749,7 +749,9 @@ public class Interpreter {
         try {
             String filename = order[1];
             String fileContent = order[2];
+            fileSystem.openFile(filename);
             fileSystem.appendFile(filename, fileContent);
+            fileSystem.closeFile(filename);
         } catch (Exception e) {
             System.out.println(e);
         }
@@ -767,7 +769,9 @@ public class Interpreter {
     private void RF(String[] order) {
         try {
             String filename = order[1];
+            fileSystem.openFile(filename);
             String fileContent = fileSystem.readFile(filename);
+            fileSystem.closeFile(filename);
             System.out.println("File content:");
             System.out.println(fileContent);
         } catch (Exception e) {
