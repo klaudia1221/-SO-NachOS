@@ -107,7 +107,7 @@ public class Interpreter {
     private String DownloadOrder() {
         String order="";
         int address = PC;
-        while(memory.readMemory(address)!='\n') {
+        while(memory.readMemory(address)!=';') {
             order += memory.readMemory(address);
             address++;
         }
