@@ -8,5 +8,4 @@ public interface IConditionVariable {
     public void signalAll(); // j.w. dla wszystkich w kolejce
     public boolean getBusy(); // getter tajemniczej zmiennej boolowskiej
     public LinkedList<PCB> getWaiting(); // getter listy oczekujących procesów
-    public void printWaiting();
 }
