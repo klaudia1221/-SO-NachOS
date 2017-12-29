@@ -106,11 +106,13 @@ public class Interpreter {
     
     private String DownloadOrder() {
         String order="";
-        int address = PC;
+        int address = get_PC();
         while(memory.readMemory(address)!=';') {
             order += memory.readMemory(address);
             address++;
         }
+        address++;
+        set_PC();
         return order;
     }
     
