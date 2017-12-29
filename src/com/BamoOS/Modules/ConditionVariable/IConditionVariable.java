@@ -1,4 +1,4 @@
-package com.BamoOS.Modules;
+package com.BamoOS.Modules.ConditionVariable;
 
 import java.util.LinkedList;
 
