@@ -46,11 +46,11 @@ public class Interpreter {
      •EX - kończy program,
      **/
 
-    private int A;
-    private int B;
-    private int C;
-    private int PC;
-    private int PID;
+    private int A = 0;
+    private int B = 0;
+    private int C = 0;
+    private int PC = 0;
+    private int PID = 0;
 
     private ProcesorInterface procesor;
     private IProcessManager processManager;
@@ -59,23 +59,47 @@ public class Interpreter {
     private IPCB PCB;
     private BoxOffice boxOffice;
 
-    Interpreter() {
-        this.PID = 0;
-        this.A = 0;
-        this.B = 0;
-        this.C = 0;
-        this.PC = 0;
+    Interpreter(RAM memory, IProcessManager processManager) {
+        this.memory = memory;
+        this.processManager = processManager;
+    }
+    public void set_A(){
+        this.A = PCB.GetRegister(IPCB.Register.A);
     }
 
-    public void DownloadRegisters() {
-        PID = PCB.GetPID();
-        A = PCB.GetRegister(IPCB.Register.A);
-        B = PCB.GetRegister(IPCB.Register.B);
-        C = PCB.GetRegister(IPCB.Register.C);
-        PC = PCB.GetCounter();
+    public void set_B(){
+        this.B = PCB.GetRegister(IPCB.Register.B);
     }
 
-    public String DownloadOrder() {
+    public void set_C(){
+        this.C = PCB.GetRegister(IPCB.Register.C);
+    }
+    
+    public void set_PC(){
+        this.PC = PCB.GetCounter();
+    }
+    
+    public void set_PID(){
+        this.PID = PCB.GetPID();
+    }
+
+    public int get_A(){
+        return A;
+    }
+
+    public int get_B(){
+        return B;
+    }
+
+    public int get_C(){
+        return C;
+    }
+
+    public int get_PC(){
+        return PC;
+    }
+    
+    private String DownloadOrder() {
         String order="";
         int address = PC;
         while(memory.readMemory(address)!='\n') {
@@ -84,24 +108,32 @@ public class Interpreter {
         }
         return order;
     }
+    
+    private void DownloadRegisters(){
+        set_A();
+        set_B();
+        set_C();
+        set_PC();
+        set_PID();
+    }
 
     public void RegisterStatus() {
-        System.out.println("PID: " + PID);
-        System.out.println("Register A: " + A);
-        System.out.println("Register B: " + B);
-        System.out.println("Register C: " + C);
-        System.out.println("Register PC: " + PC);
+        System.out.println("PID: " + get_PID());
+        System.out.println("Register A: " + get_A());
+        System.out.println("Register B: " + get_B());
+        System.out.println("Register C: " + get_C());
+        System.out.println("Register PC: " + get_PC());
         System.out.println();
     }
 
-    public void SaveRegister() {
-        PCB.SetRegister(IPCB.Register.A, A);
-        PCB.SetRegister(IPCB.Register.B, B);
-        PCB.SetRegister(IPCB.Register.C, C);
-        PCB.SetCounter(PC);
+    private void SaveRegister() {
+        PCB.SetRegister(IPCB.Register.A, get_A());
+        PCB.SetRegister(IPCB.Register.B, get_B());
+        PCB.SetRegister(IPCB.Register.C, get_C());
+        PCB.SetCounter(get_PC());
     }
 
-    public void AD(String [] order){
+    private void AD(String [] order){
         String reg_1 = order[1];
         String reg_2 = order[2];
 
@@ -134,7 +166,7 @@ public class Interpreter {
         }
     }
 
-    public void AX(String[] order){
+    private void AX(String[] order){
         String reg = order[1];
         int len = order[2].length();
 
@@ -181,7 +213,7 @@ public class Interpreter {
         }
     }
 
-    public void SB(String[] order){
+    private void SB(String[] order){
         String reg_1 = order[1];
         String reg_2 = order[2];
 
@@ -210,7 +242,7 @@ public class Interpreter {
         }
     }
 
-    public void SX(String[] order){
+    private void SX(String[] order){
         String reg = order[1];
         int len = order[2].length();
 
@@ -257,7 +289,7 @@ public class Interpreter {
         }
     }
 
-    public void DC(String[] order){
+    private void DC(String[] order){
         String reg = order[1];
 
         if (reg == "A") {
@@ -271,7 +303,7 @@ public class Interpreter {
         }
     }
 
-    public void IC(String[] order){
+    private void IC(String[] order){
         String reg = order[1];
         if (reg == "A") {
             A += 1;
@@ -284,7 +316,7 @@ public class Interpreter {
         }
     }
 
-    public void MU(String[] order){
+    private void MU(String[] order){
         String reg_1 = order[1];
         String reg_2 = order[2];
 
@@ -315,7 +347,7 @@ public class Interpreter {
         }
     }
 
-    public void MX(String[] order) {
+    private void MX(String[] order) {
         String reg = order[1];
         int len = order[2].length();
 
@@ -362,7 +394,7 @@ public class Interpreter {
         }
     }
 
-    public void DV(String[] order) {
+    private void DV(String[] order) {
         String reg_1 = order[1];
         String reg_2 = order[2];
 
@@ -391,7 +423,7 @@ public class Interpreter {
         }
     }
 
-    public void DX(String[] order) {
+    private void DX(String[] order) {
         String reg = order[1];
         int len = order[2].length();
 
@@ -441,7 +473,7 @@ public class Interpreter {
         }
     }
 
-    public void MD(String[] order) {
+    private void MD(String[] order) {
         String reg_1 = order[1];
         String reg_2 = order[2];
         String reg_3 = order[3];
@@ -499,7 +531,7 @@ public class Interpreter {
         }
     }
 
-    public void XM(String[] order) {
+    private void XM(String[] order) {
         String reg_1 = order[1];
         String reg_3 = order[3];
 
@@ -589,7 +621,7 @@ public class Interpreter {
 
     }
 
-    public void MV(String[] order) {
+    private void MV(String[] order) {
         String reg_1 = order[1];
         String reg_2 = order[2];
 
@@ -623,7 +655,7 @@ public class Interpreter {
 
     }
 
-    public void MZ(String[] order) {
+    private void MZ(String[] order) {
         String raw_address = order[1];
         String register = order[2];
         String[] split_address = raw_address.split("");
@@ -645,7 +677,7 @@ public class Interpreter {
         }
     }
 
-    public void MO(String[] order) {
+    private void MO(String[] order) {
         String reg = order[1];
         int val = Integer.parseInt(order[2]);
 
@@ -660,7 +692,7 @@ public class Interpreter {
         }
     }
 
-    public void MY(String[] order) {
+    private void MY(String[] order) {
         String register = order[1];
         String raw_address = order[2];
         String[] split_address = raw_address.split("");
@@ -687,7 +719,7 @@ public class Interpreter {
         }
     }
 
-    public void CE(String[] order) {
+    private void CE(String[] order) {
         try {
             String filename = order[1];
             fileSystem.createEmptyFile(filename);
@@ -696,7 +728,7 @@ public class Interpreter {
         }
     }
 
-    public void CF(String[] order) {
+    private void CF(String[] order) {
         try {
             String filename = order[1];
             String fileContent = order[2];
@@ -706,7 +738,7 @@ public class Interpreter {
         }
     }
 
-    public void AF(String[] order) {
+    private void AF(String[] order) {
         try {
             String filename = order[1];
             String fileContent = order[2];
@@ -716,7 +748,7 @@ public class Interpreter {
         }
     }
 
-    public void DF(String[] order) {
+    private void DF(String[] order) {
         try {
             String filename = order[1];
             fileSystem.deleteFile(filename);
@@ -725,7 +757,7 @@ public class Interpreter {
         }
     }
 
-    public void RF(String[] order) {
+    private void RF(String[] order) {
         try {
             String filename = order[1];
             String fileContent = fileSystem.readFile(filename);
@@ -736,7 +768,7 @@ public class Interpreter {
         }
     }
 
-    public void RN(String[] order) {
+    private void RN(String[] order) {
         try {
             String oldName = order[1];
             String newName = order[2];
@@ -746,7 +778,7 @@ public class Interpreter {
         }
     }
 
-    public void NP(String[] order) {
+    private void NP(String[] order) {
         try {
             String ProcessName = order[1];
             processManager.NewProcess(ProcessName);
@@ -755,7 +787,7 @@ public class Interpreter {
         }
     }
 
-    public void NG(String[] order) {
+    private void NG(String[] order) {
         try {
             String ProcessName = order[1];
             processManager.NewProcessGroup(ProcessName);
@@ -764,7 +796,7 @@ public class Interpreter {
         }
     }
 
-    public void KP(String[] order) {
+    private void KP(String[] order) {
         try {
             int PID = Integer.parseInt(order[1]);
             processManager.KillProcess(PID);
@@ -773,7 +805,7 @@ public class Interpreter {
         }
     }
 
-    public void SS(String[] order) {
+    private void SS(String[] order) {
         try {
             int PID = Integer.parseInt(order[1]);
             String state = order[2];
@@ -789,7 +821,7 @@ public class Interpreter {
         }
     }
 
-    public void RP(String[] order) {
+    private void RP(String[] order) {
         try {
             int PID = Integer.parseInt(order[1]);
             procesor.RunProcess(PID);
@@ -798,7 +830,7 @@ public class Interpreter {
         }
     }
 
-    public void KG(String[] order) {
+    private void KG(String[] order) {
         try {
             int PGID = Integer.parseInt(order[1]);
             processManager.KillProcessGroup(PGID);
@@ -807,7 +839,7 @@ public class Interpreter {
         }
     }
 
-    public void RM(String[] order) {
+    private void RM(String[] order) {
         try {
             int PID = Integer.parseInt(order[1]);
             String message = boxOffice.receiveMessage(PID);
@@ -817,7 +849,7 @@ public class Interpreter {
         }
     }
 
-    public void SM(String[] order) {
+    private void SM(String[] order) {
         try {
             int PID = Integer.parseInt(order[1]);
             String message = order[2];
@@ -827,7 +859,7 @@ public class Interpreter {
         }
     }
 
-    public void LM(String[] order) {
+    private void LM(String[] order) {
         try {
             int PID = Integer.parseInt(order[1]);
             ArrayList<ArrayList<BoxOffice.Message>> message = boxOffice.printMessage(PID);
@@ -837,7 +869,7 @@ public class Interpreter {
         }
     }
 
-    public void JP(String[] order) {
+    private void JP(String[] order) {
         try {
             int counter = Integer.parseInt(order[1]);
             PC = counter;
@@ -846,7 +878,7 @@ public class Interpreter {
         }
     }
 
-    public void JZ(String[] order) {
+    private void JZ(String[] order) {
         try {
             String register = order[1];
             int counter = Integer.parseInt(order[1]);
