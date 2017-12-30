@@ -1,6 +1,7 @@
 package com.BamoOS.Modules.ConditionVariable;
 
 import java.util.LinkedList;
+import com.BamoOS.Modules.ProcessManager.PCB;
 
 public interface IConditionVariable {
     public void await(); // zmienia stan aktualnie aktywnego procesu na WAITING i wrzuca do kolejki
