@@ -10,7 +10,7 @@ import com.BamoOS.Modules.ProcessManager.ProcessManager;
 public class ConditionVariable implements IConditionVariable {
     private LinkedList<PCB> waiting; // kolejka FIFO (bufor)
     private boolean busy; // czy zasób jest zajęty (używany)
-    public ProcessManager processManager;
+    private ProcessManager processManager;
 
     /**
      * Inicjalizuje obiekt zmiennej warunkowej
@@ -20,7 +20,7 @@ public class ConditionVariable implements IConditionVariable {
      * @see ProcessManager
      */
     public ConditionVariable(ProcessManager processManager) {
-        this.waiting = new LinkedList<PCB>();
+        this.waiting = new LinkedList<>();
         this.busy = false;
         this.processManager = processManager;
     }
@@ -42,8 +42,7 @@ public class ConditionVariable implements IConditionVariable {
      */
     public void signal() {
         if(!this.waiting.isEmpty()) { // jezeli sa oczekujace procesy
-//            PCB pcb = this.waiting.getFirst(); // weź pierwszy z kolejki (bufora)
-            PCB pcb = new PCB(1, "", 2);
+            PCB pcb = this.waiting.getFirst(); // weź pierwszy z kolejki (bufora)
             pcb.SetState(PCB.State.READY); // zmien stan procesu na READY i wywolaj planiste
             this.waiting.removeFirst(); // usuń z początku kolejki oczekujących (ten ktorego stan zmienilismy)
         }
@@ -53,7 +52,7 @@ public class ConditionVariable implements IConditionVariable {
      * Wywołuje metodę `signal` dla wszystkich procesów w kolejce oczekująych
      */
     public void signalAll() {
-        for (PCB pcb: this.waiting) { // dla wszystkich procesow oczekujacych
+        for (int i=0; i < this.waiting.size(); i++) { // dla wszystkich procesow oczekujacych
             this.signal(); // wywolaj funkcje signal()
         }
     }
