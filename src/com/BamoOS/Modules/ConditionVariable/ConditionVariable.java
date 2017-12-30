@@ -13,11 +13,12 @@ public class ConditionVariable implements IConditionVariable {
     private ProcessManager processManager;
 
     /**
-     * Inicjalizuje obiekt zmiennej warunkowej
-     * i w nim pustą kolejkę procesów oczekujących oraz zmienną busy wskazującą czy zasób jest zajęty.
+     * Tworzy obiekt nowy zmiennej warunkowej.
+     * Inicjalizuje pustą kolejkę procesów oczekujących (PCB) oraz zmienną busy wskazującą czy zasób jest zajęty.
      *
      * @param processManager obiekt klasy ProcessManager. Potrzebna metoda SetState oraz zmienna ActivePCB.
      * @see ProcessManager
+     * @see PCB
      */
     public ConditionVariable(ProcessManager processManager) {
         this.waiting = new LinkedList<>();
@@ -32,6 +33,7 @@ public class ConditionVariable implements IConditionVariable {
     public void await() {
         processManager.ActivePCB.SetState(PCB.State.WAITING); // zmien stan procesu i wywołaj planiste
         this.waiting.addLast(this.processManager.ActivePCB); // dodaj do kolejki
+        this.busy = true;
     }
 
     /**
@@ -45,6 +47,9 @@ public class ConditionVariable implements IConditionVariable {
             PCB pcb = this.waiting.getFirst(); // weź pierwszy z kolejki (bufora)
             pcb.SetState(PCB.State.READY); // zmien stan procesu na READY i wywolaj planiste
             this.waiting.removeFirst(); // usuń z początku kolejki oczekujących (ten ktorego stan zmienilismy)
+            if(this.waiting.isEmpty()){
+                this.busy = false;
+            }
         }
     }
 
@@ -59,7 +64,7 @@ public class ConditionVariable implements IConditionVariable {
 
     /**
      * Getter zmiennej `busy` określającej zajętość zasobu.
-     * Zwraca `true`, gdy zajęty i `false` w przeciwnym wypadku.
+     * Zwraca `true`, gdy zajęty lub `false` w przeciwnym wypadku.
      */
     public boolean getBusy() {
         return this.busy;
