@@ -1,0 +1,7 @@
+NP 6
+NG 7
+RP 6
+KP 6
+KG 7
+SS 6 WAITING
+EX
