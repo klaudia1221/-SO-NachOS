@@ -1,0 +1,11 @@
+MO A 5
+MO B 1
+MV C B
+AD B C
+INC A
+JZ A 11
+AD C B
+INC A
+JZ A 11
+JP 4
+EX
