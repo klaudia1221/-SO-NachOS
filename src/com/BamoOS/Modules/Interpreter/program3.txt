@@ -5,3 +5,4 @@ SM 2 tekst2
 SM 1 tekst3
 RM 1
 LM 3
+EX
