@@ -1,0 +1,6 @@
+RM 3
+SM 3 tekst1
+RM 2
+SM 2 tekst2
+SM 1 tekst3
+RM 1
