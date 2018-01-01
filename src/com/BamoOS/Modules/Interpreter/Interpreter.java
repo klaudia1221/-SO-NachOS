@@ -914,14 +914,12 @@ public class Interpreter {
         }
     }
 
-    public void Exe() {
+    public void Exe(String [] order) {
         DownloadRegisters();
         RegisterStatus();
-
-        String raw_order = DownloadOrder();
+        PC++;
 
         try {
-            String[] order = raw_order.split(" ");
             String operation = order[0];
 
             if (operation == "AD") {
