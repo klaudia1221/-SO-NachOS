@@ -4,6 +4,7 @@ import com.BamoOS.Modules.ACL.Interfaces.IACLController;
 import com.BamoOS.Modules.ACL.Interfaces.ILoginService;
 import com.BamoOS.Modules.ACL.Interfaces.IUserController;
 import com.BamoOS.Modules.FileSystem.IFileSystem;
+import com.BamoOS.Modules.ProcessManager.IProcessManager;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -24,7 +25,7 @@ public class Shell {
     private IFileSystem fileSystem;
     private ILoginService loginService;
     private IUserController userController;
-    private IPCB PCB;
+//    private IPCB PCB; //Tutaj niewiadoma, bo Bartek powinien to w ProcessManagerze udostępniać.
     private IACLController ACLController;
     private Map<String, String> allCommands; //Mapa z wszystkimi komednami w shellu
 
@@ -32,7 +33,7 @@ public class Shell {
                  IFileSystem fileSystem, RAM memory,
                  ProcesorInterface procesor,
                  IACLController ACLController,
-                 IProcessManager processManager, IPCB PCB,
+                 IProcessManager processManager,
                  ILoginService loginService ) {
         this.userController = userController;
         this.fileSystem = fileSystem;
@@ -40,7 +41,7 @@ public class Shell {
         this.procesor = procesor;
         this.ACLController= ACLController;
         this.processManager = processManager;
-        this.PCB= PCB;
+//        this.PCB= PCB;
         this.loginService = loginService;
         allCommands = new HashMap<>();
     }
@@ -651,8 +652,9 @@ public class Shell {
      */
     private void pcbinfo(String[] command){
         if(command.length==1){
-            // wyswietlanie bloku kontrolengo
-            PCB.PrintInfo();
+//            // wyswietlanie bloku kontrolengo
+//            PCB.PrintInfo();
+            processManager.getActivePCB().printInfo();
         }else{
             System.out.println("Bledna komenda");
             readCommend();
