@@ -15,6 +15,8 @@ import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 import static com.BamoOS.Modules.ACL.OperationType.MODIFY;
@@ -214,7 +216,7 @@ public class Shell {
                 readCommend();
             }
         } catch (IOException e) {
-            e.printStackTrace();
+           System.out.println(e.getMessage());
             readCommend();
         }
     }
@@ -443,20 +445,34 @@ public class Shell {
      */
     private void cat(String[] command) {
         //cat > [nazwa_pliku]
-        // {zawartosc do dodania}
+        // {zawartosc do dodania} // zakonczenie wpisywania danych -> "^D"
         if (command.length == 3) {
             if (command[1].equals(">")) {
                 if (ACLController.hasUserPremissionToOperation(fileSystem.getFileBase(command[2]), loginService.getLoggedUser(), MODIFY)) {  //sprawdzenie uprawnien
                         try {
                             System.out.println("Podaj zawartosc do pliku : ");
+                            BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
                             StringBuilder out = new StringBuilder();
-                            String content = null;
-                            Scanner scanner = new Scanner(System.in);
-                            while (scanner.hasNextLine()) {
-                                content = new String(scanner.nextLine());
-                                out.append(content);
+                            Pattern pattern;
+                            Matcher matcher;
+                            String end ="(.)*\\^D";
+                            while (true) {
+                                String line = in.readLine();
+                                pattern=Pattern.compile(end);
+                                matcher=pattern.matcher(line);
+                                if(!matcher.lookingAt()){
+                                    out.append(line);
+                                }else{
+                                    //dodanie bez ^D
+                                    int size=line.length();
+                                    StringBuilder str = new StringBuilder(line);
+                                    str.deleteCharAt(size-2);
+                                    str.deleteCharAt(size-2);
+                                    out.append(str.toString());
+                                    break;
+                                }
                             }
-                            scanner.close();
+                            String content = new String(out.toString());
                             errorFileSystem(fileSystem.appendFile(command[2], content));
                         } catch (Exception e) {
                             System.out.println(e.getMessage());
@@ -672,7 +688,7 @@ public class Shell {
      */
     private void pcbinfo(String[] command){
         if(command.length==1){
-//            // wyswietlanie bloku kontrolengo
+//            // wyswietlanie bloku kontrolengo aktywnego procesu
 //            PCB.PrintInfo();
             processManager.getActivePCB().printInfo();
         }else{
