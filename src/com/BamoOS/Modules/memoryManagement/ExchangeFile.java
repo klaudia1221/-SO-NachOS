@@ -1,4 +1,4 @@
-package memoryManagement;
+package com.BamoOS.Modules.memoryManagement;
 
 
 import java.util.ArrayList;
