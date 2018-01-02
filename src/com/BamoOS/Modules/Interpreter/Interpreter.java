@@ -5,23 +5,23 @@ public class Interpreter {
 
     /**
      Rozkazy:
-     •
+     •AD reg1 reg2 - dodaje rejestr2 do rejestru1,
      •AX reg num – dodaje liczbę do rejestru, 
      reg [address] - dodaje zawartość adresu do rejestru,
      •SB reg1 reg2 - odejmuje od rejestru1 zawartość rejestru2, 
      •SX reg num – odejmuje liczbę od rejestru, 
-        reg [address] - odejmuje zawartość adresu od rejestru,
+     reg [address] - odejmuje zawartość adresu od rejestru,
      •DC reg - zwiększa zawartość rejestru o 1,
      •IC reg - zmniejsza zawartość rejestru o 1,
      •MU reg1 reg2 – mnoży rejestr 1 przez rejestr 2, 
      •MX reg num – mnoży rejestr przez liczbę, 
-        reg [address] - mnoży zawartość adresu razy zawartość rejestru,
+     reg [address] - mnoży zawartość adresu razy zawartość rejestru,
      •DV reg1 reg2 - dzieli zawartość rejestru1 przez zawartość rejestru2, 
      •DX reg num – dzieli rejestr od rejestru, 
-        reg [address] - dzieli zawartość rejestru przez liczbę z danej komórki,
+     reg [address] - dzieli zawartość rejestru przez liczbę z danej komórki,
      •MD reg1 reg2 reg3 - reszta z dzielenia rejestru1 przez rejestr2 zapisywana 2 rejestrze3,
      •XM reg1 num reg2  - reszta z dzielenia rejestru1 przez liczbę zapisywana w rejestrze2,
-        reg1 [address] reg2 - reszta z dzielenia rejestru1 przez zawartość danej komórki zapisywana w rejestrze2,
+     reg1 [address] reg2 - reszta z dzielenia rejestru1 przez zawartość danej komórki zapisywana w rejestrze2,
      •MV reg1 reg2 – kopiuje wartość rejestru 2 do rejestru 1,
       •MZ address reg - zapisuje do pamięci zawartość rejestru pod wskazanym adresem,
      •MO reg n – umieszcza w rejestrze wartość n, 
@@ -67,7 +67,7 @@ public class Interpreter {
         this.PCB = PCB;
         this.boxOffice = boxOffice;
     }
-    
+
     public void set_A(){
         this.A = PCB.GetRegister(IPCB.Register.A);
     }
@@ -79,11 +79,11 @@ public class Interpreter {
     public void set_C(){
         this.C = PCB.GetRegister(IPCB.Register.C);
     }
-    
+
     public void set_PC(){
         this.PC = PCB.GetCounter();
     }
-    
+
     public void set_PID(){
         this.PID = PCB.GetPID();
     }
@@ -103,19 +103,11 @@ public class Interpreter {
     public int get_PC(){
         return PC;
     }
-    
-    private String DownloadOrder() {
-        String order="";
-        int address = get_PC();
-        while(memory.readMemory(address)!=';') {
-            order += memory.readMemory(address);
-            address++;
-        }
-        address++;
-        set_PC();
-        return order;
+
+    public int get_PID(){
+        return PID;
     }
-    
+
     private void DownloadRegisters(){
         set_A();
         set_B();
@@ -914,14 +906,12 @@ public class Interpreter {
         }
     }
 
-    public void Exe() {
+    public Boolean Exe(String [] order) {
         DownloadRegisters();
         RegisterStatus();
-
-        String raw_order = DownloadOrder();
+        PC++;
 
         try {
-            String[] order = raw_order.split(" ");
             String operation = order[0];
 
             if (operation == "AD") {
@@ -991,9 +981,11 @@ public class Interpreter {
             } else if (operation == "JZ") {
                 JZ(order);
             } else if (operation == "EX") {
+                SaveRegister();
                 procesor.Scheduler();
             } else {
                 System.out.println("Undefined order.");
+                return false;
             }
         }catch (ArrayIndexOutOfBoundsException e) {
             System.out.println(e);
@@ -1001,7 +993,6 @@ public class Interpreter {
             SaveRegister();
             procesor.Scheduler();
         }
-        SaveRegister();
-        procesor.Scheduler();
+        return true;
     }
 }

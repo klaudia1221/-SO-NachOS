@@ -1,3 +1,10 @@
+import com.BamoOS.Modules.ACL.ACLController;
+import com.BamoOS.Modules.ACL.Interfaces.IACLController;
+import com.BamoOS.Modules.ACL.Interfaces.ILoginService;
+import com.BamoOS.Modules.ACL.Interfaces.IUserController;
+import com.BamoOS.Modules.ACL.LoginService;
+import com.BamoOS.Modules.ACL.UserController;
+
 public class Main {
 
 
@@ -9,13 +16,14 @@ public class Main {
            IProcessManager processManager = new IProcessManager();
            RAM memory = new RAM();
            IFileSystem fileSystem = new IFileSystem();
-           ILoginService loginService= new ILoginService();
-           IUserController userController= new IUserController();
+           IUserController userController= new UserController();
+           ILoginService loginService= new LoginService(userController);
+           IACLController ACLController = new ACLController(userController);
            IPCB PCB= new PCB();
-           IACLController ACLController = new IACLController();
 
 
-            Shell shell = new Shell( userController,  fileSystem,  memory,  procesor, ACLController,  processManager, PCB, loginService );
+
+            com.BambOS.com.BambOS.Modules.Shell shell = new com.BambOS.com.BambOS.Modules.Shell( userController,  fileSystem,  memory,  procesor, ACLController,  processManager, PCB, loginService );
             shell.start();
 
 

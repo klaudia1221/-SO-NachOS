@@ -1,0 +1,13 @@
+MO A 5
+IC A
+MO B 8
+DC B
+AD A B
+DV A 4
+DV B 0
+MO C 9
+SB B C
+MU C B
+MD A B A
+XM A 5 A
+EX
