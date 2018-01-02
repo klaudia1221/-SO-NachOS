@@ -1,3 +1,4 @@
+package com.BamoOS.Modules.Interpreter;
 import java.lang.String;
 import java.util.*;
 
