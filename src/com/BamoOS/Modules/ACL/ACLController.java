@@ -3,6 +3,7 @@ package com.BamoOS.Modules.ACL;
 
 import com.BamoOS.Modules.ACL.Interfaces.IACLController;
 import com.BamoOS.Modules.ACL.Interfaces.IUserController;
+import com.BamoOS.Modules.FileSystem.FileBase;
 
 import java.util.ArrayList;
 import java.util.HashMap;

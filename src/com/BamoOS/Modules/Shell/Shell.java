@@ -1,5 +1,9 @@
 package com.BambOS.com.BambOS.Modules;
 
+import com.BamoOS.Modules.ACL.Interfaces.IACLController;
+import com.BamoOS.Modules.ACL.Interfaces.ILoginService;
+import com.BamoOS.Modules.ACL.Interfaces.IUserController;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -23,7 +27,12 @@ public class Shell {
     private IACLController ACLController;
     private Map<String, String> allCommands; //Mapa z wszystkimi komednami w shellu
 
-    public Shell(IUserController userController,  IFileSystem fileSystem, RAM memory, ProcesorInterface procesor, IACLController ACLController, IProcessManager processManager, IPCB PCB, ILoginService loginService ) {
+    public Shell(IUserController userController,
+                 IFileSystem fileSystem, RAM memory,
+                 ProcesorInterface procesor,
+                 IACLController ACLController,
+                 IProcessManager processManager, IPCB PCB,
+                 ILoginService loginService ) {
         this.userController = userController;
         this.fileSystem = fileSystem;
         this.memory = memory;

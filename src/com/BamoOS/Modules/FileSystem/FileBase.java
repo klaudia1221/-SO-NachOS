@@ -1,4 +1,6 @@
-package com.BamoOS.Modules.ACL;
+package com.BamoOS.Modules.FileSystem;
+
+import com.BamoOS.Modules.ACL.User;
 
 public class FileBase {
     private static int COUNTER = 0;

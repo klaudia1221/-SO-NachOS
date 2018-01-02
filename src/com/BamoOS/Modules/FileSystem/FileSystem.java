@@ -1,11 +1,16 @@
 package com.BamoOS.Modules.FileSystem;
 
+import com.BamoOS.Modules.ACL.User;
+
 public class FileSystem {
     DiscDrive Drive = new DiscDrive();      //Dysk
-    private Catalog dir = new Catalog();    //Katalog domyslny, w ktorym zapisywane sa wszystkie wpisy - obiekty File
+    private Catalog dir;    //Katalog domyslny, w ktorym zapisywane sa wszystkie wpisy - obiekty File
 
     //Operacje na dysku
 
+    public FileSystem(Catalog catalog){
+        this.dir = catalog;
+    }
     public int openFile(String fileName) {
         if (!nameExists(fileName)) { return 2; }
         else {
@@ -30,7 +35,7 @@ public class FileSystem {
         else { dir.close_file(fileName); return 0; }
     }
 
-    public int createFile(String fileName){
+    public int createFile(String fileName, User user){
         if (nameExists(fileName)) { return 2; }
         else if (Drive.FREE_BLOCKS==0) { return 1; }
         else {
@@ -38,7 +43,7 @@ public class FileSystem {
             Drive.bitVec[index] = false;
             Drive.FREE_BLOCKS--;
             Drive.putByte((char) 32 , (index+1) *32 - 1);
-            dir.add(new File(fileName, index));
+            dir.add(new File(fileName, index, user));
             return 0;
         }
     }

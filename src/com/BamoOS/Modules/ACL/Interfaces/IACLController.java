@@ -1,6 +1,7 @@
 package com.BamoOS.Modules.ACL.Interfaces;
 
 import com.BamoOS.Modules.ACL.*;
+import com.BamoOS.Modules.FileSystem.FileBase;
 
 public interface IACLController {
     void addAceForUser(User user, Mask mask, FileBase file);

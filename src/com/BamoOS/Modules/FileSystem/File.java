@@ -1,6 +1,8 @@
 package com.BamoOS.Modules.FileSystem;
 
-public class File {
+import com.BamoOS.Modules.ACL.User;
+
+public class File extends FileBase{
 
     public String FILE_NAME;	//Nazwa pliku
     public int FILE_SIZE;		//Rozmiar pliku
@@ -28,7 +30,8 @@ public class File {
         this.LAST_BLOCK=33;
     }*/
 
-    public File(String name, int first){
+    public File(String name, int first, User user){
+        super(user);
         this.FILE_NAME=name;
         this.FILE_SIZE=0;
         this.FIRST_BLOCK=first;
