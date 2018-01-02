@@ -17,7 +17,7 @@ import static com.BambOS.com.BambOS.Modules.OperationType.READ;
 
 
 public class Shell {
-
+    private String testString;
     private ProcesorInterface procesor;
     private IProcessManager processManager;
     private RAM memory;
