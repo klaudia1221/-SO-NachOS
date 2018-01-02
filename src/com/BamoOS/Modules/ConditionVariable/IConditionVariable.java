@@ -1,5 +1,7 @@
 package com.BamoOS.Modules.ConditionVariable;
 
+import com.BamoOS.Modules.ProcessManager.PCB;
+
 import java.util.LinkedList;
 
 public interface IConditionVariable {

@@ -1,10 +1,13 @@
+package com.BamoOS.Modules.Interpreter;
+
 import com.BamoOS.Modules.ACL.Interfaces.ILoginService;
 import com.BamoOS.Modules.FileSystem.IFileSystem;
+import com.BamoOS.Modules.Interpreter.IInterpreter;
 
 import java.lang.String;
 import java.util.*;
 
-public class Interpreter {
+public class Interpreter implements IInterpreter{
 
     /**
      Rozkazy:
