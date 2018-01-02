@@ -708,15 +708,29 @@ public class Shell {
                     readCommend();
                 }
                 if(isAdmin(user)){
+                    FileBase fileBase = null;
                     try {
-                        ACLController.addAceForUser(user, whichMask(command[4]), fileSystem.getFileBase(command[1]));
+                        fileBase = fileSystem.getFileBase(command[1]);
+                    } catch (Exception e) {
+                        System.out.println(e.getMessage());
+                        readCommend();
+                    }
+                    try {
+                        ACLController.addAceForUser(user, whichMask(command[4]), fileBase);
                     } catch (Exception e) {
                         System.out.println( e.getMessage());
                         readCommend();
                     }
                 }else if(fileSystem.getFileBase(command[1]).getOwner().getName().equals(loginService.getLoggedUser().getName())){
+                    FileBase fileBase = null;
                     try {
-                        ACLController.addAceForUser(user, whichMask(command[4]), fileSystem.getFileBase(command[1]));
+                        fileBase = fileSystem.getFileBase(command[1]);
+                    } catch (Exception e) {
+                        System.out.println(e.getMessage());
+                        readCommend();
+                    }
+                    try {
+                        ACLController.addAceForUser(user, whichMask(command[4]),fileBase);
                     } catch (Exception e) {
                        System.out.println( e.getMessage());
                         readCommend();
@@ -732,10 +746,17 @@ public class Shell {
                     System.out.println( e.getMessage());
                     readCommend();
                 }
+                FileBase fileBase = null;
                 try {
-                    ACLController.addAceForGroup(group, whichMask(command[4]), fileSystem.getFileBase(command[1]));
+                    fileBase = fileSystem.getFileBase(command[1]);
                 } catch (Exception e) {
-                    System.out.println( e.getMessage());
+                    System.out.println(e.getMessage());
+                    readCommend();
+                }
+                try {
+                    ACLController.addAceForGroup(group, whichMask(command[4]), fileBase);
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
                     readCommend();
                 }
             }else {
