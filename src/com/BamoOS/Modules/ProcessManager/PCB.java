@@ -46,27 +46,27 @@ public class PCB {
 		this.ProcessState = State.NEW;
 	}
 	
-	public int GetPID() {
+	public int getPID() {
 		return this.PID;
 	}
 	
-	public int GetPGID() {
+	public int getPGID() {
 		return this.PGID;
 	}
 	
-	public String GetName() {
+	public String getName() {
 		return this.ProcessName;
 	}
 	
-	public State GetState() {
+	public State getState() {
 		return this.ProcessState;
 	}
 	
-	public void SetState(State state) {
+	public void setState(State state) {
 		this.ProcessState = state;
 	}
 	
-	public int GetRegister(Register register) {
+	public int getRegister(Register register) {
 		switch(register) {
 		case A:
 			return this.A;
@@ -78,7 +78,7 @@ public class PCB {
 		return A;
 	}
 	
-	public void SetRegister(Register register, int val) {
+	public void setRegister(Register register, int val) {
 		switch(register) {
 		case A:
 			this.A = val;
@@ -89,29 +89,29 @@ public class PCB {
 		}
 	}
 	
-	public int GetCounter() {
+	public int getCounter() {
 		return this.Counter;
 	}
 	
-	public void SetCounter(int counter) {
+	public void setCounter(int counter) {
 		this.Counter = counter;
 	}
 
 	
-	public int GetTimer() {
+	public int getTimer() {
 		return Timer;
 	}
 	
-	public void SetTimer(int timmer) {
+	public void setTimer(int timmer) {
 		this.Timer = timmer;
 	}
 	
-	public void PrintInfo() {
+	public void printInfo() {
 		System.out.println("PID"+'\t'+"PGID"+'\t'+"A"+'\t'+"B"+'\t'+"C"+'\t'+"Licznik"+'\t'+"Timer"+'\t'+"Stan"+'\t'+"Nazwa");
 		System.out.println("------------------------------------------------------------------------");
-		System.out.print(this.GetPID()+"\t"+this.GetPGID()+"\t");
-		System.out.print(this.GetRegister(Register.A)+"\t"+this.GetRegister(Register.B)+"\t"+this.GetRegister(Register.C)+"\t");
-		System.out.println(this.GetCounter()+"\t"+this.GetTimer()+"\t"+this.GetState()+"\t"+this.GetName());
+		System.out.print(this.getPID()+"\t"+this.getPGID()+"\t");
+		System.out.print(this.getRegister(Register.A)+"\t"+this.getRegister(Register.B)+"\t"+this.getRegister(Register.C)+"\t");
+		System.out.println(this.getCounter()+"\t"+this.getTimer()+"\t"+this.getState()+"\t"+this.getName());
 	}
 	//Gettery i Settery dla p�l wiadomo�ci, interpretera oraz cpu
 	

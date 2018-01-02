@@ -4,27 +4,40 @@ import com.BamoOS.Modules.ACL.Interfaces.ILoginService;
 import com.BamoOS.Modules.ACL.Interfaces.IUserController;
 import com.BamoOS.Modules.ACL.LoginService;
 import com.BamoOS.Modules.ACL.UserController;
+import com.BamoOS.Modules.ConditionVariable.ConditionVariable;
+import com.BamoOS.Modules.ConditionVariable.IConditionVariable;
 import com.BamoOS.Modules.FileSystem.Catalog;
 import com.BamoOS.Modules.FileSystem.FileSystem;
 import com.BamoOS.Modules.FileSystem.IFileSystem;
+import com.BamoOS.Modules.ProcessManager.IProcessManager;
+import com.BamoOS.Modules.ProcessManager.ProcessManager;
 import com.BamoOS.Modules.Shell.*;
 
 public class Main{
     private static ILoginService loginService;
     private static IUserController userController;
     private static IACLController aclController;
+
     private static IFileSystem fileSystem;
     private static Catalog catalog;
+
+    private static IConditionVariable conditionVariable;
+    private static IProcessManager processManager;
         public static void main(String[] args) {
+            processManager = new ProcessManager();
+
             userController = new UserController();
             loginService = new LoginService(userController);
             aclController = new ACLController(userController);
             CreateDefaultUsers();
+
             CreateCatalog();
             fileSystem = new FileSystem(catalog);;
 
+            conditionVariable = new ConditionVariable(processManager);
+
+
             ProcesorInterface procesor = new ProcesorInterface();
-            IProcessManager processManager = new IProcessManager();
             RAM memory = new RAM();
             IPCB PCB = new PCB();
 

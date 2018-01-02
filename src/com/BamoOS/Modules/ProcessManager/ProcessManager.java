@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import com.BamoOS.Modules.ProcessManager.PCB.Register;
 
-public class ProcessManager {
+public class ProcessManager implements IProcessManager {
 	ArrayList<ArrayList<PCB>> ProcessGroups;
 	private int ProcessCounter;
 	private int GroupsCounter;
@@ -14,13 +14,16 @@ public class ProcessManager {
 		this.ProcessGroups = new ArrayList<ArrayList<PCB>>();
 		this.ProcessCounter = 0;
 		this.GroupsCounter = 0;
-		NewProcessGroup("Proces bezczynno�ci");
+		newProcessGroup("Proces bezczynno�ci");
+	}
+	public PCB getActivePCB(){
+		return ActivePCB;
 	}
 	//Nowy proces o ile zosta�a wcze�niej utworzona grupa
-	public void NewProcess(String ProcessName, int PGID) {
+	public void newProcess(String ProcessName, int PGID) {
 		try {
 			if(PGID == 0) throw new Exception("Brak dost�pu do grupy procesu bezczynno�ci");
-			ArrayList<PCB> temp = CheckIfGroupExists(PGID);
+			ArrayList<PCB> temp = checkIfGroupExists(PGID);
 			if(temp != null) {
 				PCB pcb = new PCB(this.ProcessCounter, ProcessName, PGID);
 				temp.add(pcb);
@@ -28,10 +31,10 @@ public class ProcessManager {
 			}else throw new Exception("Brak grupy o podanym PGID");
 		}catch(Exception e) {System.out.println(e);}
 	}
-	public void NewProcess(String ProcessName, int PGID, String FileName) {
+	public void newProcess(String ProcessName, int PGID, String FileName) {
 		try {
 			if(PGID == 0) throw new Exception("Brak dost�pu do grupy procesu bezczynno�ci");
-			ArrayList<PCB> temp = CheckIfGroupExists(PGID);
+			ArrayList<PCB> temp = checkIfGroupExists(PGID);
 			if(temp != null) {
 				PCB pcb = new PCB(this.ProcessCounter, ProcessName, PGID);
 				temp.add(pcb);
@@ -44,36 +47,36 @@ public class ProcessManager {
 			}else throw new Exception("Brak grupy o podanym PGID");
 		}catch(Exception e) {System.out.println(e);}
 	}
-	public void RunNew() {
-		NewProcess("P"+this.ProcessCounter, this.ActivePCB.GetPGID());
+	public void runNew() {
+		newProcess("P"+this.ProcessCounter, this.ActivePCB.getPGID());
 	}
-	public void RunNew(String FileName) {
-		NewProcess("P"+this.ProcessCounter, this.ActivePCB.GetPGID(), FileName);
+	public void runNew(String FileName) {
+		newProcess("P"+this.ProcessCounter, this.ActivePCB.getPGID(), FileName);
 	}
 	//Usuwanie procesu
-	public void KillProcess(int PID) {
+	public void killProcess(int PID) {
 		//TODO powiadomi� inne modu�y ?pami��?
 		try {
 			if(PID == 0) throw new Exception("Nie mo�na zabi� procesu bezczynno�ci");
-			PCB temp = CheckIfProcessExists(PID);
+			PCB temp = checkIfProcessExists(PID);
 			if(temp != null) {
-				CheckIfGroupExists(temp.GetPGID()).remove(temp);
+				checkIfGroupExists(temp.getPGID()).remove(temp);
 			}else throw new Exception("Brak procesu o podanym PID");
 		}catch(Exception e) {System.out.println(e);}
 	}
 	//Usuwanie grup
-	public void KillProcessGroup(int PGID) {
+	public void killProcessGroup(int PGID) {
 		//TODO powiadomi� inne modu�y ?pami��?
 		try {
 			if(PGID == 0) throw new Exception("Brak dost�pu do grupy procesu bezczynno�ci");
-			ArrayList<PCB> temp = CheckIfGroupExists(PGID);
+			ArrayList<PCB> temp = checkIfGroupExists(PGID);
 			if(temp != null) {
 				ProcessGroups.remove(temp);
 			}else throw new Exception("Brak grupy o podanym PGID");
 		}catch(Exception e) {System.out.println(e);}
 	}
 	//Tworzenie nowej grupy oraz pierwszego procesu
-	public void NewProcessGroup(String ProcessName) {
+	public void newProcessGroup(String ProcessName) {
 		PCB pcb = new PCB(this.ProcessCounter, ProcessName, this.GroupsCounter);
 		ArrayList<PCB> al = new ArrayList<PCB>();
 		al.add(pcb);
@@ -82,20 +85,20 @@ public class ProcessManager {
 		this.GroupsCounter++;
 	}
 	
-	public ArrayList<PCB> CheckIfGroupExists(int PGID) {
+	public ArrayList<PCB> checkIfGroupExists(int PGID) {
 		for(ArrayList<PCB> processlist : this.ProcessGroups) {
 			if(!processlist.isEmpty()) {
-				if(processlist.get(0).GetPGID() == PGID) {
+				if(processlist.get(0).getPGID() == PGID) {
 					return processlist;
 				}
 			}
 		}
 		return null;
 	}
-	public PCB CheckIfProcessExists(int PID) {
+	public PCB checkIfProcessExists(int PID) {
 		for(ArrayList<PCB> processlist : this.ProcessGroups) {
 			for(PCB pcb : processlist) {
-				if(pcb.GetPID() == PID) {
+				if(pcb.getPID() == PID) {
 					return pcb;
 				}
 			}
@@ -103,9 +106,9 @@ public class ProcessManager {
 		return null;
 	}
 	//Get ProcessControlBlock
-	public PCB GetPCB(int PID) {
+	public PCB getPCB(int PID) {
 		try {
-		PCB temp = CheckIfProcessExists(PID);
+		PCB temp = checkIfProcessExists(PID);
 		if (temp == null) throw new Exception("Brak procesu o podanym PID");
 		return temp;
 		}catch (Exception e) {
@@ -114,13 +117,13 @@ public class ProcessManager {
 		}
 	}
 	//Zwracanie listy proces�w
-	public ArrayList<ArrayList<PCB>> GetProcessList(){
+	public ArrayList<ArrayList<PCB>> getProcessList(){
 		return this.ProcessGroups;
 	}
 	
 	public void PrintGroupInfo(int PGID) {
 		try {
-			ArrayList<PCB> temp = CheckIfGroupExists(PGID);
+			ArrayList<PCB> temp = checkIfGroupExists(PGID);
 			if (temp == null) throw new Exception("Brak grupy proces�w o podanym PGID");
 			//System.out.println("PID"+'\t'+"PGID"+'\t'+"Nazwa");
 			//System.out.println("------------------------");
@@ -128,9 +131,9 @@ public class ProcessManager {
 			System.out.println("------------------------------------------------------------------------");
 			for(PCB pcb : temp) {
 				//System.out.println(pcb.GetPID()+"\t"+pcb.GetPGID()+"\t"+pcb.GetName());
-				System.out.print(pcb.GetPID()+"\t"+pcb.GetPGID()+"\t");
-				System.out.print(pcb.GetRegister(Register.A)+"\t"+pcb.GetRegister(Register.B)+"\t"+pcb.GetRegister(Register.C)+"\t");
-				System.out.println(pcb.GetCounter()+"\t"+pcb.GetTimer()+"\t"+pcb.GetState()+"\t"+pcb.GetName());
+				System.out.print(pcb.getPID()+"\t"+pcb.getPGID()+"\t");
+				System.out.print(pcb.getRegister(Register.A)+"\t"+pcb.getRegister(Register.B)+"\t"+pcb.getRegister(Register.C)+"\t");
+				System.out.println(pcb.getCounter()+"\t"+pcb.getTimer()+"\t"+pcb.getState()+"\t"+pcb.getName());
 			}
 		}catch (Exception e) {System.out.println(e);}
 	}
@@ -143,9 +146,9 @@ public class ProcessManager {
 		for(ArrayList<PCB> processlist : this.ProcessGroups) {
 			for(PCB pcb : processlist) {
 				//System.out.println(pcb.GetPID()+"\t"+pcb.GetPGID()+"\t"+pcb.GetName());
-				System.out.print(pcb.GetPID()+"\t"+pcb.GetPGID()+"\t");
-				System.out.print(pcb.GetRegister(Register.A)+"\t"+pcb.GetRegister(Register.B)+"\t"+pcb.GetRegister(Register.C)+"\t");
-				System.out.println(pcb.GetCounter()+"\t"+pcb.GetTimer()+"\t"+pcb.GetState()+"\t"+pcb.GetName());
+				System.out.print(pcb.getPID()+"\t"+pcb.getPGID()+"\t");
+				System.out.print(pcb.getRegister(Register.A)+"\t"+pcb.getRegister(Register.B)+"\t"+pcb.getRegister(Register.C)+"\t");
+				System.out.println(pcb.getCounter()+"\t"+pcb.getTimer()+"\t"+pcb.getState()+"\t"+pcb.getName());
 			}
 		}
 	}

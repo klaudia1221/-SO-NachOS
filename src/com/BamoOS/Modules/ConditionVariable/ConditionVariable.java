@@ -1,6 +1,8 @@
 package com.BamoOS.Modules.ConditionVariable;
 
 import java.util.LinkedList;
+
+import com.BamoOS.Modules.ProcessManager.IProcessManager;
 import com.BamoOS.Modules.ProcessManager.PCB;
 import com.BamoOS.Modules.ProcessManager.ProcessManager;
 
@@ -10,7 +12,7 @@ import com.BamoOS.Modules.ProcessManager.ProcessManager;
 public class ConditionVariable implements IConditionVariable {
     private LinkedList<PCB> waiting; // kolejka FIFO (bufor)
     private boolean busy; // czy zasób jest zajęty (używany)
-    private ProcessManager processManager;
+    private IProcessManager processManager;
 
     /**
      * Tworzy obiekt nowy zmiennej warunkowej.
@@ -20,7 +22,7 @@ public class ConditionVariable implements IConditionVariable {
      * @see ProcessManager
      * @see PCB
      */
-    public ConditionVariable(ProcessManager processManager) {
+    public ConditionVariable(IProcessManager processManager) {
         this.waiting = new LinkedList<>();
         this.busy = false;
         this.processManager = processManager;
@@ -31,8 +33,8 @@ public class ConditionVariable implements IConditionVariable {
      * Wywołanie planisty następuje w metodzie SetState.
      */
     public void await() {
-        processManager.ActivePCB.SetState(PCB.State.WAITING); // zmien stan procesu i wywołaj planiste
-        this.waiting.addLast(this.processManager.ActivePCB); // dodaj do kolejki
+        processManager.getActivePCB().setState(PCB.State.WAITING); // zmien stan procesu i wywołaj planiste
+        this.waiting.addLast(this.processManager.getActivePCB()); // dodaj do kolejki
         this.busy = true;
     }
 
@@ -45,7 +47,7 @@ public class ConditionVariable implements IConditionVariable {
     public void signal() {
         if(!this.waiting.isEmpty()) { // jezeli sa oczekujace procesy
             PCB pcb = this.waiting.getFirst(); // weź pierwszy z kolejki (bufora)
-            pcb.SetState(PCB.State.READY); // zmien stan procesu na READY i wywolaj planiste
+            pcb.setState(PCB.State.READY); // zmien stan procesu na READY i wywolaj planiste
             this.waiting.removeFirst(); // usuń z początku kolejki oczekujących (ten ktorego stan zmienilismy)
             if(this.waiting.isEmpty()){
                 this.busy = false;
