@@ -3,6 +3,8 @@ package com.BamoOS.Modules.Interpreter;
 import com.BamoOS.Modules.ACL.Interfaces.ILoginService;
 import com.BamoOS.Modules.FileSystem.IFileSystem;
 import com.BamoOS.Modules.Interpreter.IInterpreter;
+import com.BamoOS.Modules.ProcessManager.IProcessManager;
+import com.BamoOS.Modules.ProcessManager.PCB;
 
 import java.lang.String;
 import java.util.*;
@@ -62,7 +64,7 @@ public class Interpreter implements IInterpreter{
     private IProcessManager processManager;
     private RAM memory;
     private IFileSystem fileSystem;
-    private IPCB PCB;
+//    private IPCB PCB;
     private BoxOffice boxOffice;
     private ILoginService loginService;
 
@@ -71,30 +73,34 @@ public class Interpreter implements IInterpreter{
         this.memory = memory;
         this.processManager = processManager;
         this.fileSystem = fileSystem;
-        this.PCB = PCB;
+//        this.PCB = PCB;
         this.boxOffice = boxOffice;
 
         this.loginService = loginService;
     }
 
     public void set_A(){
-        this.A = PCB.GetRegister(IPCB.Register.A);
+//        this.A = PCB.GetRegister(IPCB.Register.A);
+        this.A = processManager.getActivePCB().getRegister(PCB.Register.A);
     }
 
     public void set_B(){
-        this.B = PCB.GetRegister(IPCB.Register.B);
+//        this.B = PCB.GetRegister(IPCB.Register.B);
+        this.B = processManager.getActivePCB().getRegister(PCB.Register.B);
     }
 
     public void set_C(){
-        this.C = PCB.GetRegister(IPCB.Register.C);
+//        this.C = PCB.GetRegister(IPCB.Register.C);
+        this.C = processManager.getActivePCB().getRegister(PCB.Register.C);
     }
 
     public void set_PC(){
-        this.PC = PCB.GetCounter();
+        this.PC = processManager.getActivePCB().getCounter();
     }
 
     public void set_PID(){
-        this.PID = PCB.GetPID();
+//        this.PID = PCB.GetPID();
+        this.PID = processManager.getActivePCB().getPID();
     }
 
     public int get_A(){
@@ -135,10 +141,14 @@ public class Interpreter implements IInterpreter{
     }
 
     private void SaveRegister() {
-        PCB.SetRegister(IPCB.Register.A, get_A());
-        PCB.SetRegister(IPCB.Register.B, get_B());
-        PCB.SetRegister(IPCB.Register.C, get_C());
-        PCB.SetCounter(get_PC());
+//        PCB.SetRegister(IPCB.Register.A, get_A());
+//        PCB.SetRegister(IPCB.Register.B, get_B());
+//        PCB.SetRegister(IPCB.Register.C, get_C());
+//        PCB.SetCounter(get_PC());
+        processManager.getActivePCB().setRegister(PCB.Register.A, get_A());
+        processManager.getActivePCB().setRegister(PCB.Register.B, get_B());
+        processManager.getActivePCB().setRegister(PCB.Register.C, get_C());
+        processManager.getActivePCB().setCounter(get_PC());
     }
 
     private void AD(String [] order){
@@ -805,7 +815,7 @@ public class Interpreter implements IInterpreter{
     private void NG(String[] order) {
         try {
             String ProcessName = order[1];
-            processManager.NewProcessGroup(ProcessName);
+            processManager.newProcessGroup(ProcessName);
         } catch (Exception e){
             System.out.println(e);
         }
@@ -814,7 +824,7 @@ public class Interpreter implements IInterpreter{
     private void KP(String[] order) {
         try {
             int PID = Integer.parseInt(order[1]);
-            processManager.KillProcess(PID);
+            processManager.killProcess(PID);
         }catch (Exception e) {
             System.out.println(e);
         }
@@ -825,7 +835,8 @@ public class Interpreter implements IInterpreter{
             int PID = Integer.parseInt(order[1]);
             String state = order[2];
             if (state == "ACTIVE") {
-                PCB.SetState(PID, IPCB.State.ACTIVE);
+//                PCB.setState(PID, IPCB.State.ACTIVE);
+                processManager.g
             } else if (state == "WAITING") {
                 PCB.SetState(PID, IPCB.State.WAITING);
             } else if (state == "READY") {
@@ -839,7 +850,7 @@ public class Interpreter implements IInterpreter{
     private void RP(String[] order) {
         try {
             int PID = Integer.parseInt(order[1]);
-            procesor.RunProcess(PID);
+            procesor.runProcess(PID);
         } catch (Exception e) {
             System.out.println(e);
         }
@@ -848,7 +859,7 @@ public class Interpreter implements IInterpreter{
     private void KG(String[] order) {
         try {
             int PGID = Integer.parseInt(order[1]);
-            processManager.KillProcessGroup(PGID);
+            processManager.killProcessGroup(PGID);
         } catch (Exception e) {
             System.out.println(e);
         }
@@ -918,7 +929,7 @@ public class Interpreter implements IInterpreter{
         }
     }
 
-    public Boolean Exe(String [] order) {
+    public boolean Exe(String [] order) {
         DownloadRegisters();
         RegisterStatus();
         PC++;
