@@ -1,8 +1,11 @@
 package com.BambOS.com.BambOS.Modules;
 
+import com.BamoOS.Modules.ACL.Group;
 import com.BamoOS.Modules.ACL.Interfaces.IACLController;
 import com.BamoOS.Modules.ACL.Interfaces.ILoginService;
 import com.BamoOS.Modules.ACL.Interfaces.IUserController;
+import com.BamoOS.Modules.ACL.Mask;
+import com.BamoOS.Modules.ACL.User;
 import com.BamoOS.Modules.FileSystem.IFileSystem;
 import com.BamoOS.Modules.ProcessManager.IProcessManager;
 
@@ -13,13 +16,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 
-import static com.BambOS.com.BambOS.Modules.OperationType.MODIFY;
-import static com.BambOS.com.BambOS.Modules.OperationType.READ;
+
+import static com.BamoOS.Modules.ACL.OperationType.MODIFY;
+import static com.BamoOS.Modules.ACL.OperationType.READ;
 
 
 public class Shell {
     private String testString;
-    private ProcesorInterface procesor;
+    private  ProcesorInterface processor;
     private IProcessManager processManager;
     private RAM memory;
     private IFileSystem fileSystem;
@@ -31,14 +35,14 @@ public class Shell {
 
     public Shell(IUserController userController,
                  IFileSystem fileSystem, RAM memory,
-                 ProcesorInterface procesor,
+                 ProcesorInterface processor,
                  IACLController ACLController,
                  IProcessManager processManager,
                  ILoginService loginService ) {
         this.userController = userController;
         this.fileSystem = fileSystem;
         this.memory = memory;
-        this.procesor = procesor;
+        this.processor = processor;
         this.ACLController= ACLController;
         this.processManager = processManager;
 //        this.PCB= PCB;
@@ -73,7 +77,6 @@ public class Shell {
         allCommands.put("mv", "Zmiana nazwy pliku");
         allCommands.put("ls", "Wyswietla zawartosc katalogow");
         allCommands.put("process", "Dzaialnia dotyczace procesu");
-        allCommands.put("memory", "Wyswietlenie pamieci");
         allCommands.put("pcbinfo", "Blok kontrolny");
         allCommands.put("go", "Wykonanie jednego rozkau");
         allCommands.put("login", "Zamiana uzytkownika");
@@ -81,6 +84,7 @@ public class Shell {
         allCommands.put("close", "Zamykanie pliku");
         allCommands.put("access", "Dodanie uprawnień do pliku dla konkretnego  użytkownika ");
         allCommands.put("whoami", "Wyswietla aktualnie zalogowanego uzytkownika ");
+        allCommands.put("meminfo", "Wyswietlenie RAM");
     }
 
     private void logo(){
@@ -309,7 +313,7 @@ public class Shell {
                     }
                 }
                 //user --add [nazwa_uzytkownika]
-                if (command.length == 3) {
+               else if (command.length == 3) {
                     try {
                         userController.addUser(command[2], null);
                     } catch (Exception e) {
@@ -321,7 +325,7 @@ public class Shell {
                     readCommend();
                 }
             }
-            if (command[1].equals("--remove")) {
+          else  if (command[1].equals("--remove")) {
                 //user --remove [nazwa_uzytkownika]
                 if (command.length == 3) {
                     try {
@@ -406,14 +410,14 @@ public class Shell {
      * Wywoływane sa tutaj metody ACLControllera oraz filesystem oraz loginService
      * @param command
      */
-    private void create(String[] command){
+   private void create(String[] command){
         if(command.length>1) {
             //cr [nazwa_pliku]
             if (command.length == 3) {
                 if (ACLController.hasUserPremissionToOperation(fileSystem.getCatalog(), loginService.getLoggedUser(), MODIFY)) { //sprawdzenie uprawnien
                     try {
                         //tworzenie pliku
-                        errorFileSystem(fileSystem.createEmptyFile(command[1])); // errorFileSystem - obsługuje jakiekolwiek errory związane z FileSystem
+                        errorFileSystem(fileSystem.createFile(command[1],loginService.getLoggedUser())); // errorFileSystem - obsługuje jakiekolwiek errory związane z FileSystem
                         try {
                             ACLController.setDefaultPremissionToFile(fileSystem.getFileBase(command[1])); //nadanie uprawnieni do utworzonego pliku
                         } catch (Exception e) {
@@ -442,7 +446,7 @@ public class Shell {
         // {zawartosc do dodania}
         if (command.length == 3) {
             if (command[1].equals(">")) {
-                if (ACLController.hasUserPremissionToOperation(fileSystem.getFileBase(command[1]), loginService.getLoggedUser(), MODIFY)) {  //sprawdzenie uprawnien
+                if (ACLController.hasUserPremissionToOperation(fileSystem.getFileBase(command[2]), loginService.getLoggedUser(), MODIFY)) {  //sprawdzenie uprawnien
                         try {
                             System.out.println("Podaj zawartosc do pliku : ");
                             StringBuilder out = new StringBuilder();
@@ -453,7 +457,7 @@ public class Shell {
                                 out.append(content);
                             }
                             scanner.close();
-                            errorFileSystem(fileSystem.appendFile(command[1], content));
+                            errorFileSystem(fileSystem.appendFile(command[2], content));
                         } catch (Exception e) {
                             System.out.println(e.getMessage());
                             readCommend();
@@ -547,9 +551,9 @@ public class Shell {
                 }
             }
             //rm --content [nazwa_pliku]
-            if(command.length==3) {
-                if (ACLController.hasUserPremissionToOperation(fileSystem.getFileBase(command[1]), loginService.getLoggedUser(), MODIFY)) {  //sprawdzenie uprawnien
-                    errorFileSystem(fileSystem.deleteContent(command[1]));
+            else if(command.length==3) {
+                if (ACLController.hasUserPremissionToOperation(fileSystem.getFileBase(command[2]), loginService.getLoggedUser(), MODIFY)) {  //sprawdzenie uprawnien
+                    errorFileSystem(fileSystem.deleteContent(command[2]));
                 }else{
                     System.out.println("Brak uprawnien do pliku");
                     readCommend();
@@ -575,28 +579,44 @@ public class Shell {
         if (command.length == 5) {
             //access [file_name] --user [user_name] (R)(M)(E) 111/000 ...
             if (command[2].equals("--user")) {
-                User user = userController.getUser(command[3]);
+                User user = null;
+                try {
+                    user = userController.getUser(command[3]);
+                } catch (Exception e) {
+                    e.getMessage();
+                    readCommend();
+                }
                 if(isAdmin(user)){
                     try {
                         ACLController.addAceForUser(user, whichMask(command[4]), fileSystem.getFileBase(command[1]));
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        e.getMessage();
+                        readCommend();
                     }
-                }else if(fileSystem.getFileBase(command[1]).getOwner().getName().equals(loginService.getLogged().getName())){
+                }else if(fileSystem.getFileBase(command[1]).getOwner().getName().equals(loginService.getLoggedUser().getName())){
                     try {
                         ACLController.addAceForUser(user, whichMask(command[4]), fileSystem.getFileBase(command[1]));
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        e.getMessage();
+                        readCommend();
                     }
                 }
 
             }
-            //access [file_name] --group [group_name]
-            if (command[2].equals("--group")) {
+            //access [file_name] --group [group_name] (R)(M)(E) 111/000 ...
+           else if (command[2].equals("--group")) {
+                Group group = null;
                 try {
-                    ACLController.addAceForGroup(userController.getUser(command[3]), whichMask(command[4]), fileSystem.getFileBase(command[1]));
+                    group = userController.getGroup(command[3]);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    e.getMessage();
+                    readCommend();
+                }
+                try {
+                    ACLController.addAceForGroup(group, whichMask(command[4]), fileSystem.getFileBase(command[1]));
+                } catch (Exception e) {
+                    e.getMessage();
+                    readCommend();
                 }
             }
         } else {
@@ -615,29 +635,29 @@ public class Shell {
                 //process --kill [PID]
                 if(command[1].equals("--kill")){
                     //zakonczenie pracy procesu
-                    processManager.KillProcess(Integer.parseInt(command[3]));
+                    processManager.killProcess(Integer.parseInt(command[2]));
                 }
                 //process --killall [PGID]
-                if(command[1].equals("--killall") ){
-                    processManager.KillProcessGroup(Integer.parseInt(command[3]));
+               else if(command[1].equals("--killall") ){
+                    processManager.killProcessGroup(Integer.parseInt(command[2]));
                 }
                 //process --ps [PGID]
-                if(command[1].equals("--ps")){
-                    processManager.PrintGroupInfo(Integer.parseInt(command[2]));
+               else if(command[1].equals("--ps")){
+                   // processManager.PrintGroupInfo(Integer.parseInt(command[2]));
                 }
             }
-            if(command.length==2){
+           else if(command.length==2){
                 //process --ps
                 if(command[1].equals("--ps")){
                     processManager.PrintProcesses();
                 }
             }
-            //process –create [nazwaProcesu] [nazwaPliku]
-            if(command.length==4){
-                processManager.NewProcessGroup(command[2], command[3]);
+            //process -–create [nazwaProcesu] [PGID]
+            else if(command.length==4){
+                processManager.newProcess(command[2], Integer.parseInt(command[3]));
             }//process –create [nazwaProcesu] [nazwaPliku] [PGID]
-            if(command.length==5) {
-                processManager.NewProcessGroup(command[2], command[3], Integer.parseInt(command[4]));
+            else if(command.length==5) {
+                processManager.newProcess(command[2],Integer.parseInt(command[4]), command[3]);
             }
         }else{
             System.out.println("Bledna komenda");
@@ -668,7 +688,7 @@ public class Shell {
     private void meminfo(String[] command){
         if(command.length==2){
             if(command[1].equals("--print")){
-                memory.printRAM();
+               memory.printRAM();
             }
             else {
                 System.out.println("Bledna komenda");
@@ -688,7 +708,7 @@ public class Shell {
      */
     private void go(String[]command){
         if(command.length==1){
-            procesor.wykonaj();
+            processor.wykonaj();
         }else{
             System.out.println("Bledna komenda");
             readCommend();
@@ -701,6 +721,7 @@ public class Shell {
      * @param command
      */
     private void changeLogin(String[] command){
+        //login [nazwaUsera]
         if(command.length==2) {
             try {
                 loginService.loginUser(command[1]);
@@ -802,7 +823,7 @@ public class Shell {
     private void open(String[] command){
         //open [nazwa_pliku]
         if(command.length==2){
-            errorFileSystem(fileSystem.open(command[1]));
+            errorFileSystem(fileSystem.openFile(command[1]));
         }else{
             System.out.println("Bledna komenda");
             readCommend();
@@ -816,7 +837,7 @@ public class Shell {
     private void close(String[] command){
         //close [nazwa_pliku]
         if(command.length==2){
-            errorFileSystem(fileSystem.open(command[1]));
+            errorFileSystem(fileSystem.closeFile(command[1]));
         }else{
             System.out.println("Bledna komenda");
             readCommend();
@@ -829,10 +850,15 @@ public class Shell {
      * @return true jest tak
      */
     private boolean isAdmin(User user){
-        for(Group group : userController.getUserGroups(user.getName())){
-            if(group.getName().equals("admin")){
-                return true;
+        try {
+            for(Group group : userController.getUserGroups(user.getName())){
+                if(group.getName().equals("admin")){
+                    return true;
+                }
             }
+        } catch (Exception e) {
+            e.getMessage();
+            readCommend();
         }
         return false;
     }

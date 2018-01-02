@@ -15,6 +15,7 @@ import com.BamoOS.Modules.Shell.*;
 
 
 public class Main{
+
     private static ILoginService loginService;
     private static IUserController userController;
     private static IACLController aclController;
@@ -38,12 +39,12 @@ public class Main{
             conditionVariable = new ConditionVariable(processManager);
 
 
-            ProcesorInterface procesor = new ProcesorInterface();
+            ProcesorInterface processor = new ProcesorInterface();
             RAM memory = new RAM();
             IPCB PCB = new PCB();
 
 
-            com.BambOS.com.BambOS.Modules.Shell shell = new Shell(userController, fileSystem, memory, procesor, ACLController, processManager, PCB, loginService);
+            com.BambOS.com.BambOS.Modules.Shell shell = new Shell(userController, fileSystem, memory, processor, aclController, processManager,  loginService);
             shell.start();
         }
         private static void CreateDefaultUsers(){
