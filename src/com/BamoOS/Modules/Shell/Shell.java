@@ -419,7 +419,13 @@ public class Shell {
                 if (ACLController.hasUserPremissionToOperation(fileSystem.getCatalog(), loginService.getLoggedUser(), MODIFY)) { //sprawdzenie uprawnien
                     try {
                         //tworzenie pliku
-                        errorFileSystem(fileSystem.createFile(command[1],loginService.getLoggedUser())); // errorFileSystem - obsługuje jakiekolwiek errory związane z FileSystem
+
+                        try {
+                            fileSystem.createFile(command[1],loginService.getLoggedUser());
+                        }catch(Exception e){
+                            System.out.println(e.getMessage());
+                            readCommend();
+                        }
                         try {
                             ACLController.setDefaultPremissionToFile(fileSystem.getFileBase(command[1])); //nadanie uprawnieni do utworzonego pliku
                         } catch (Exception e) {
@@ -473,7 +479,13 @@ public class Shell {
                                 }
                             }
                             String content = new String(out.toString());
-                            errorFileSystem(fileSystem.appendFile(command[2], content));
+                            try {
+                                fileSystem.appendFile(command[2], content);
+                            }catch(Exception e){
+                                System.out.println(e.getMessage());
+                                readCommend();
+                            }
+
                         } catch (Exception e) {
                             System.out.println(e.getMessage());
                             readCommend();
@@ -490,14 +502,11 @@ public class Shell {
         //cat [nazwa_pliku] //wyswietla zawartosc pliku
         if (command.length == 2) {
             if (ACLController.hasUserPremissionToOperation(fileSystem.getFileBase(command[1]), loginService.getLoggedUser(), READ)) {  //sprawdzenie uprawnien
-                if (fileSystem.readFile(command[1]).charAt(0) == '0') {
-                    StringBuilder toPrint = new StringBuilder(fileSystem.readFile(command[1]));
-                    toPrint.deleteCharAt(0);
-                    System.out.println(toPrint.toString());
-                } else if (fileSystem.readFile(command[1]).charAt(0) == '2') {  // sprawdza czy plik jest pusty
-                    errorFileSystem(2); //bledna nazwa
-                } else {
-                    errorFileSystem(3); // plik nie otwarty
+                try {
+                    fileSystem.readFile(command[1]);
+                }catch(Exception e){
+                    System.out.println(e.getMessage());
+                    readCommend();
                 }
             } else {
                 System.out.println("Brak uprawnien do pliku");
@@ -518,7 +527,13 @@ public class Shell {
         //ls
         if(command.length==1){
             if (ACLController.hasUserPremissionToOperation(fileSystem.getCatalog(), loginService.getLoggedUser(), READ)) {
-                System.out.println(fileSystem.list());
+                try {
+                    System.out.println(fileSystem.list());
+                }catch(Exception e) {
+                    System.out.println(e.getMessage());
+                    readCommend();
+                }
+
             }else{
                 System.out.println("Brak uprawnien do pliku");
                 readCommend();
@@ -538,7 +553,12 @@ public class Shell {
         if (command.length > 1) {
             if (command.length == 3) {
                 if (ACLController.hasUserPremissionToOperation(fileSystem.getFileBase(command[1]), loginService.getLoggedUser(), MODIFY)) {  //sprawdzenie uprawnien
-                    errorFileSystem(fileSystem.renameFile(command[1], command[2]));
+                    try {
+                        fileSystem.renameFile(command[1], command[2]);
+                    }catch(Exception e) {
+                        System.out.println(e.getMessage());
+                        readCommend();
+                    }
                 }
             }else{
                 System.out.println("Brak uprawnien do pliku");
@@ -560,7 +580,13 @@ public class Shell {
         if (command.length > 1) {
             if (command.length == 2) {
                 if (ACLController.hasUserPremissionToOperation(fileSystem.getFileBase(command[1]), loginService.getLoggedUser(), MODIFY)) {  //sprawdzenie uprawnien
-                    errorFileSystem(fileSystem.deleteFile(command[1]));
+                    try {
+                        fileSystem.deleteFile(command[1]);
+                    }catch(Exception e) {
+                        System.out.println(e.getMessage());
+                        readCommend();
+                    }
+
                 }else{
                     System.out.println("Brak uprawnien do pliku");
                     readCommend();
@@ -569,7 +595,12 @@ public class Shell {
             //rm --content [nazwa_pliku]
             else if(command.length==3) {
                 if (ACLController.hasUserPremissionToOperation(fileSystem.getFileBase(command[2]), loginService.getLoggedUser(), MODIFY)) {  //sprawdzenie uprawnien
-                    errorFileSystem(fileSystem.deleteContent(command[2]));
+                    try {
+                        fileSystem.deleteContent(command[2]);
+                    }catch(Exception e) {
+                        System.out.println(e.getMessage());
+                        readCommend();
+                    }
                 }else{
                     System.out.println("Brak uprawnien do pliku");
                     readCommend();
@@ -763,36 +794,6 @@ public class Shell {
             readCommend();
         }
     }
-
-    /**
-     *Pomocnicza metoda obslugująca blędy związane z modułem filesystem
-     * @param error
-     */
-
-    private void errorFileSystem(int error){
-        switch (error){
-            case 0:
-                System.out.println("Operacja wykonana poprawnie");
-                break;
-            case 1:
-                System.out.println("Brak miejsca na dysku");
-                break;
-            case 2:
-                System.out.println("Bledna nazwa");
-                break;
-            case 3:
-                System.out.println("Plik jest nie otwarty");
-                break;
-            case 4:
-                System.out.println("Nowa nazwa istnieje");
-                break;
-            case 5:
-                System.out.println("Plik jest otwraty");
-                break;
-        }
-        readCommend();
-    }
-
     /**
      *Pomocnicza metoda, do sprawdzenia maski podanej w komendzie przez użytkownika
      * @param m // maska
@@ -839,7 +840,12 @@ public class Shell {
     private void open(String[] command){
         //open [nazwa_pliku]
         if(command.length==2){
-            errorFileSystem(fileSystem.openFile(command[1]));
+            try {
+                fileSystem.openFile(command[1]);
+            }catch(Exception e) {
+                System.out.println(e.getMessage());
+                readCommend();
+            }
         }else{
             System.out.println("Bledna komenda");
             readCommend();
@@ -853,7 +859,12 @@ public class Shell {
     private void close(String[] command){
         //close [nazwa_pliku]
         if(command.length==2){
-            errorFileSystem(fileSystem.closeFile(command[1]));
+            try {
+                fileSystem.closeFile(command[1]);
+            }catch(Exception e) {
+                System.out.println(e.getMessage());
+                readCommend();
+            }
         }else{
             System.out.println("Bledna komenda");
             readCommend();
