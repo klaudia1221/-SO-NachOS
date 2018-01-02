@@ -2,7 +2,7 @@ package com.BamoOS.Modules.FileSystem;
 
 import com.BamoOS.Modules.ACL.User;
 
-public class FileSystem {
+public class FileSystem implements IFileSystem {
     DiscDrive Drive = new DiscDrive();      //Dysk
     private Catalog dir;    //Katalog domyslny, w ktorym zapisywane sa wszystkie wpisy - obiekty File
 
@@ -10,6 +10,9 @@ public class FileSystem {
 
     public FileSystem(Catalog catalog){
         this.dir = catalog;
+    }
+    public FileBase getFileBase(String name){
+        return dir.getFileByName(name);
     }
     public int openFile(String fileName) {
         if (!nameExists(fileName)) { return 2; }
