@@ -1,5 +1,3 @@
-package com.BamoOS.Modules.FileSystem;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -35,7 +33,7 @@ public class Catalog {
         }
     }
 
-    public void open_file(String fileName, String content) {
+    public void updateFileContent(String fileName, String content) {
         for(File file : root){
             if(file.FILE_NAME.equals(fileName)){ file.open(content); }
         }

@@ -1,8 +1,6 @@
-package com.BamoOS.Modules.FileSystem;
-
 public class FileSystem {
     DiscDrive Drive = new DiscDrive();      //Dysk
-    private Catalog dir = new Catalog();    //Katalog domyslny, w ktorym zapisywane sa wszystkie wpisy - obiekty File
+    /*private*/ Catalog dir = new Catalog();    //Katalog domyslny, w ktorym zapisywane sa wszystkie wpisy - obiekty File
 
     //Operacje na dysku
 
@@ -19,7 +17,7 @@ public class FileSystem {
                 tmp += Drive.getAt(i+block*32);
                 i++;
             }
-            dir.open_file(fileName, tmp);
+            dir.updateFileContent(fileName, tmp);
         }
     }
 
@@ -46,6 +44,7 @@ public class FileSystem {
         else if (!dir.open_check(fileName)) { throw new Exception("Plik o takiej nazwie nie jest otwarty."); }
         else if (((double)content.length()/31.0)>Drive.FREE_BLOCKS) { throw new Exception("Za mało miejsca na dysku."); }
         else {
+            dir.updateFileContent(fileName, content);
             int current_block, i;
             if (dir.getFileByName(fileName).FILE_SIZE==0) { current_block = dir.getFirstBlock(fileName); i = 0; }
             else { current_block = dir.getLastBlock(fileName); i = dir.getFileByName(fileName).FILE_SIZE%31; }
