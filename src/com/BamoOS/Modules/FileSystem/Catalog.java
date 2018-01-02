@@ -34,7 +34,7 @@ public class Catalog {
         }
     }
 
-    public void open_file(String fileName, String content) {
+    public void updateFileContent(String fileName, String content) {
         for(File file : root){
             if(file.FILE_NAME.equals(fileName)){ file.open(content); }
         }
