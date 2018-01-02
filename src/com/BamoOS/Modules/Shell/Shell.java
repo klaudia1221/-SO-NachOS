@@ -6,6 +6,8 @@ import com.BamoOS.Modules.ACL.Interfaces.ILoginService;
 import com.BamoOS.Modules.ACL.Interfaces.IUserController;
 import com.BamoOS.Modules.ACL.Mask;
 import com.BamoOS.Modules.ACL.User;
+import com.BamoOS.Modules.FileSystem.Catalog;
+import com.BamoOS.Modules.FileSystem.FileBase;
 import com.BamoOS.Modules.FileSystem.IFileSystem;
 import com.BamoOS.Modules.ProcessManager.IProcessManager;
 
@@ -25,13 +27,13 @@ import static com.BamoOS.Modules.ACL.OperationType.READ;
 
 public class Shell {
     private String testString;
-    private  ProcesorInterface processor;
+    private ProcesorInterface processor;
     private IProcessManager processManager;
     private RAM memory;
     private IFileSystem fileSystem;
     private ILoginService loginService;
     private IUserController userController;
-//    private IPCB PCB; //Tutaj niewiadoma, bo Bartek powinien to w ProcessManagerze udostępniać.
+    //    private IPCB PCB; //Tutaj niewiadoma, bo Bartek powinien to w ProcessManagerze udostępniać.
     private IACLController ACLController;
     private Map<String, String> allCommands; //Mapa z wszystkimi komednami w shellu
 
@@ -40,17 +42,18 @@ public class Shell {
                  ProcesorInterface processor,
                  IACLController ACLController,
                  IProcessManager processManager,
-                 ILoginService loginService ) {
+                 ILoginService loginService) {
         this.userController = userController;
         this.fileSystem = fileSystem;
         this.memory = memory;
         this.processor = processor;
-        this.ACLController= ACLController;
+        this.ACLController = ACLController;
         this.processManager = processManager;
 //        this.PCB= PCB;
         this.loginService = loginService;
         allCommands = new HashMap<>();
     }
+
     /**
      * Metoda, ktora wypelnia mape komendami, wyswietla logo, oraz dopoki nie zostanie przerwana przez uzytkownika wykonuje metode readCommend()
      */
@@ -89,7 +92,7 @@ public class Shell {
         allCommands.put("meminfo", "Wyswietlenie RAM");
     }
 
-    private void logo(){
+    private void logo() {
         System.out.println("__/\\\\\\\\\\\\\\\\\\\\\\\\\\_______/\\\\\\\\\\\\\\\\\\_____/\\\\\\\\____________/\\\\\\\\__/\\\\\\\\\\\\\\\\\\\\\\\\\\_________/\\\\\\\\\\__________/\\\\\\\\\\\\\\\\\\\\\\___        \n" +
                 " _\\/\\\\\\/////////\\\\\\___/\\\\\\\\\\\\\\\\\\\\\\\\\\__\\/\\\\\\\\\\\\________/\\\\\\\\\\\\_\\/\\\\\\/////////\\\\\\_____/\\\\\\///\\\\\\______/\\\\\\/////////\\\\\\_       \n" +
                 "  _\\/\\\\\\_______\\/\\\\\\__/\\\\\\/////////\\\\\\_\\/\\\\\\//\\\\\\____/\\\\\\//\\\\\\_\\/\\\\\\_______\\/\\\\\\___/\\\\\\/__\\///\\\\\\___\\//\\\\\\______\\///__      \n" +
@@ -102,17 +105,18 @@ public class Shell {
                 "\n" +
                 "                                   ~Bardzo Amatorski, Modulowy, ale Bezpieczny Operacyjny System~");
     }
+
     /**
      * Metoda ktora wywoluje sie dopoki uzytkownik nie poda prawidlowego loginu lub poda exit, wtedy kończy się praca systemu
      */
-    private void loginLoad(){
+    private void loginLoad() {
         System.out.println("Podaj login:");
-        BufferedReader in= new BufferedReader(new InputStreamReader(System.in));
+        BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
         try {
-            String line=in.readLine();
-            if(line.equals("exit")){
+            String line = in.readLine();
+            if (line.equals("exit")) {
                 exit();
-            }else {
+            } else {
                 login(line); // prywatna metoda, ktora ma w sobie loginService
             }
         } catch (IOException e) {
@@ -120,11 +124,13 @@ public class Shell {
             readCommend();
         }
     }
+
     /**
      * Metoda, ktora zostaje wywolana na poczatku uruchamiania sie shella, loguje użytkownika do systemu
+     *
      * @param name
      */
-    private void login(String name){
+    private void login(String name) {
         try {
             loginService.loginUser(name);
         } catch (Exception e) {
@@ -132,12 +138,13 @@ public class Shell {
             loginLoad();
         }
     }
+
     /**
      * Metoda, ktora czyta komende od uzytkownika z konsoli, pobiera stringa, ktory dzieli na czesci przedzielone spacja
      * i w zaleznosci od piewsego czlonu komendy wywoluje inne prywante metody shella
      */
     private void readCommend() {
-        System.out.print(loginService.getLoggedUser().getName()+">"); // podaje nazwe zalogowanego uzytkownika podczas kazdej komendy
+        System.out.print(loginService.getLoggedUser().getName() + ">"); // podaje nazwe zalogowanego uzytkownika podczas kazdej komendy
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
         try {
             String line = in.readLine();
@@ -216,12 +223,14 @@ public class Shell {
                 readCommend();
             }
         } catch (IOException e) {
-           System.out.println(e.getMessage());
+            System.out.println(e.getMessage());
             readCommend();
         }
     }
+
     /**
      * Metoda, ktora sprawdza, czy komenda podana przez uzytkownika, znajduje sie wsrod komend zapisanych w mapie shella
+     *
      * @param command
      * @return zwraca ture, gdy jest, false gdy nie ma
      */
@@ -229,6 +238,7 @@ public class Shell {
         if (allCommands.containsKey(command)) return true;
         return false;
     }
+
     /**
      * Metoda, ktora zostaje wywolana, gdy uzytkownik poda komende 'man' : Wyswietla ona wszystkie komendy dostepne
      * dla uzytkownika i ich opis
@@ -240,22 +250,20 @@ public class Shell {
         for (Map.Entry<String, String> command : allCommands.entrySet()) {
             if (command.getKey().length() == 2) {
                 System.out.println(command.getKey() + "                " + command.getValue());
-            } else if (command.getKey().length()==4) {
-                System.out.println(command.getKey() + "              "+ command.getValue());
-            } else if (command.getKey().length()==7) {
+            } else if (command.getKey().length() == 4) {
+                System.out.println(command.getKey() + "              " + command.getValue());
+            } else if (command.getKey().length() == 7) {
                 System.out.println(command.getKey() + "           " + command.getValue());
-            }
-            else if (command.getKey().length()==3) {
-                System.out.println(command.getKey() + "               "+ command.getValue());
-            }
-            else if (command.getKey().length()==5) {
+            } else if (command.getKey().length() == 3) {
+                System.out.println(command.getKey() + "               " + command.getValue());
+            } else if (command.getKey().length() == 5) {
                 System.out.println(command.getKey() + "             " + command.getValue());
-            }
-            else {
+            } else {
                 System.out.println(command.getKey() + "            " + command.getValue());
             }
         }
     }
+
     /**
      * Metoda, ktora zostaje wywolana, gdy uzytkownik poda komende 'exit'
      * Asekuracyjnie sprawdza czy uzytkownik chce zakonczyc prace,
@@ -280,6 +288,7 @@ public class Shell {
             e.printStackTrace();
         }
     }
+
     /**
      * Metoda, ktora zostaje wywolana, gdy uzytkownik poda komedne 'uname'
      * Wyswietla ona informacje dotyczace autorow systemu operacyjnego
@@ -297,9 +306,11 @@ public class Shell {
         System.out.println("Michal Wlodarczyk        Zarzadrzanie pliaki/katalogami");
         System.out.println("Jedrzej Wyzgala          Mechanizm synchronizacji");
     }
+
     /**
      * Metoda, ktora zostaje wywolana, gdy uzytkownik poda komedne 'user ...'
      * Wywolywane sa tutaj metody userControllera
+     *
      * @param command
      */
     private void user(String[] command) {
@@ -307,7 +318,7 @@ public class Shell {
             if (command[1].equals("--add")) {
                 //user --add [nazwa_uzytkownika] --group [nazwa_groupy]
                 if (command.length == 5) {
-                    try{
+                    try {
                         userController.addUser(command[2], command[4]);
                     } catch (Exception e) {
                         System.out.println(e.getMessage());
@@ -315,7 +326,7 @@ public class Shell {
                     }
                 }
                 //user --add [nazwa_uzytkownika]
-               else if (command.length == 3) {
+                else if (command.length == 3) {
                     try {
                         userController.addUser(command[2], null);
                     } catch (Exception e) {
@@ -326,8 +337,7 @@ public class Shell {
                     System.out.println("Bledna komenda");
                     readCommend();
                 }
-            }
-          else  if (command[1].equals("--remove")) {
+            } else if (command[1].equals("--remove")) {
                 //user --remove [nazwa_uzytkownika]
                 if (command.length == 3) {
                     try {
@@ -343,38 +353,41 @@ public class Shell {
             }
         }
     }
+
     /**
      * Metoda ktora zostaje wywolana gdy uzytkowniki poda komende users, wyswietla ona liste uzytkownikow
      * Wywolywane sa tutaj metody userControllera
+     *
      * @param command
      */
     private void users(String[] command) {
         //users
-        if (command.length==1) {
+        if (command.length == 1) {
             System.out.println(userController.showUserList());
-        }
-        else {
+        } else {
             System.out.println("Bledna komenda");
             readCommend();
         }
     }
+
     /**
-     *Metoda, ktora zostaje wywolana, gdy uzytkownik poda komedne 'group. ...'
+     * Metoda, ktora zostaje wywolana, gdy uzytkownik poda komedne 'group. ...'
      * Wywolywane sa tutaj metody userControllera
+     *
      * @param command
      */
-    private void group(String[] command){
-        if(command.length>1) {
+    private void group(String[] command) {
+        if (command.length > 1) {
             // group --add [nazwa_uzytkownika] [nazwa_grupy]
             if (command[1].equals("--add")) {
-                if(command.length==4) {
+                if (command.length == 4) {
                     try {
                         userController.addUserToGroup(userController.getUser(command[2]), command[3]);
                     } catch (Exception e) {
                         System.out.println(e.getMessage());
                         readCommend();
                     }
-                }else {
+                } else {
                     System.out.println("Bledna komenda");
                     readCommend();
                 }
@@ -397,37 +410,114 @@ public class Shell {
                         System.out.println(e.getMessage());
                         readCommend();
                     }
-                }else {
+                } else {
                     System.out.println("Bledna komenda");
                     readCommend();
                 }
             }
-        }else{
+        } else {
             System.out.println("Bledna komenda");
             readCommend();
         }
     }
+
     /**
      * Metoda, ktora zostaje wywolalan gdy uzytkownik poda komende 'cr ...'
      * Wywoływane sa tutaj metody ACLControllera oraz filesystem oraz loginService
+     *
      * @param command
      */
-   private void create(String[] command){
-        if(command.length>1) {
+    private void create(String[] command) {
+        if (command.length > 1) {
             //cr [nazwa_pliku]
             if (command.length == 3) {
-                if (ACLController.hasUserPremissionToOperation(fileSystem.getCatalog(), loginService.getLoggedUser(), MODIFY)) { //sprawdzenie uprawnien
+                Catalog catalog = null;
+                try {
+                    catalog = fileSystem.getCatalog();
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
+                    readCommend();
+                }
+                if (ACLController.hasUserPremissionToOperation(catalog, loginService.getLoggedUser(), MODIFY)) { //sprawdzenie uprawnien
+                    //tworzenie pliku
                     try {
-                        //tworzenie pliku
+                        fileSystem.createFile(command[1], loginService.getLoggedUser());
+                    } catch (Exception e) {
+                        System.out.println(e.getMessage());
+                        readCommend();
+                    }
+                    FileBase fileBase = null;
+                    try {
+                        fileBase = fileSystem.getFileBase(command[1]);
+                    } catch (Exception e) {
+                        System.out.println(e.getMessage());
+                        readCommend();
+                    }
+                    try {
+                        ACLController.setDefaultPremissionToFile(fileBase); //nadanie uprawnieni do utworzonego pliku
+                    } catch (Exception e) {
+                        System.out.println(e.getMessage());
+                        readCommend();
+                    }
+                } else {
+                    System.out.println("Brak uprawnien do katalogu");
+                    readCommend();
+                }
+            } else {
+                System.out.println("Bledna komenda");
+                readCommend();
+            }
+        } else {
+            System.out.println("Bledna komenda");
+            readCommend();
+        }
+    }
 
-                        try {
-                            fileSystem.createFile(command[1],loginService.getLoggedUser());
-                        }catch(Exception e){
-                            System.out.println(e.getMessage());
-                            readCommend();
+    /**
+     * Metoda, ktora zostanie wywolana gdy uzytkwonik poda komende 'cat ...'
+     * Wywoływane sa tutaj metody ACLControllera oraz filesystem oraz loginService
+     * Metoda readFile zwraca w Stringu zawartosc pliku zczytana z dysku
+     * @param command
+     */
+    private void cat(String[] command) {
+        //cat > [nazwa_pliku]
+        // {zawartosc do dodania} // zakonczenie wpisywania danych -> "^D"
+        if (command.length == 3) {
+            if (command[1].equals(">")) {
+                FileBase fileBase = null;
+                try {
+                    fileBase = fileSystem.getFileBase(command[2]);
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
+                    readCommend();
+                }
+                if (ACLController.hasUserPremissionToOperation(fileBase, loginService.getLoggedUser(), MODIFY)) {  //sprawdzenie uprawnien
+                    try {
+                        System.out.println("Podaj zawartosc do pliku : ");
+                        BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+                        StringBuilder out = new StringBuilder();
+                        Pattern pattern;
+                        Matcher matcher;
+                        String end = "(.)*\\^D";
+                        while (true) {
+                            String line = in.readLine();
+                            pattern = Pattern.compile(end);
+                            matcher = pattern.matcher(line);
+                            if (!matcher.lookingAt()) { // jesli nie zawiera linijka ^D to :
+                                out.append(line);
+                            } else {
+                                //dodanie bez ^D // jesli dana linijka zawiera ^D
+                                int size = line.length();
+                                StringBuilder str = new StringBuilder(line);
+                                str.deleteCharAt(size - 2); //usuniecie D
+                                str.deleteCharAt(size - 2); // usuniecie ^
+                                out.append(str.toString());
+                                break;
+                            }
                         }
+                        String content = new String(out.toString());
                         try {
-                            ACLController.setDefaultPremissionToFile(fileSystem.getFileBase(command[1])); //nadanie uprawnieni do utworzonego pliku
+                            fileSystem.appendFile(command[2], content);
                         } catch (Exception e) {
                             System.out.println(e.getMessage());
                             readCommend();
@@ -436,75 +526,28 @@ public class Shell {
                         System.out.println(e.getMessage());
                         readCommend();
                     }
-                }
-            } else {
-                System.out.println("Brak uprawnien do katalogu");
-                readCommend();
-            }
-        }
-    }
-    /**
-     * Metoda, ktora zostanie wywolana gdy uzytkwonik poda komende 'cat ...'
-     *  Wywoływane sa tutaj metody ACLControllera oraz filesystem oraz loginService
-     *  Metoda readFile zwraca w Stringu zawartosc pliku zczytana z dysku
-     * @param command
-     */
-    private void cat(String[] command) {
-        //cat > [nazwa_pliku]
-        // {zawartosc do dodania} // zakonczenie wpisywania danych -> "^D"
-        if (command.length == 3) {
-            if (command[1].equals(">")) {
-                if (ACLController.hasUserPremissionToOperation(fileSystem.getFileBase(command[2]), loginService.getLoggedUser(), MODIFY)) {  //sprawdzenie uprawnien
-                        try {
-                            System.out.println("Podaj zawartosc do pliku : ");
-                            BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-                            StringBuilder out = new StringBuilder();
-                            Pattern pattern;
-                            Matcher matcher;
-                            String end ="(.)*\\^D";
-                            while (true) {
-                                String line = in.readLine();
-                                pattern=Pattern.compile(end);
-                                matcher=pattern.matcher(line);
-                                if(!matcher.lookingAt()){
-                                    out.append(line);
-                                }else{
-                                    //dodanie bez ^D
-                                    int size=line.length();
-                                    StringBuilder str = new StringBuilder(line);
-                                    str.deleteCharAt(size-2);
-                                    str.deleteCharAt(size-2);
-                                    out.append(str.toString());
-                                    break;
-                                }
-                            }
-                            String content = new String(out.toString());
-                            try {
-                                fileSystem.appendFile(command[2], content);
-                            }catch(Exception e){
-                                System.out.println(e.getMessage());
-                                readCommend();
-                            }
-
-                        } catch (Exception e) {
-                            System.out.println(e.getMessage());
-                            readCommend();
-                        }
                 } else {
                     System.out.println("Brak uprawnien do pliku");
                     readCommend();
                 }
-            }else {
+            } else {
                 System.out.println("Bledne parametry");
                 readCommend();
             }
         }
         //cat [nazwa_pliku] //wyswietla zawartosc pliku
-        if (command.length == 2) {
-            if (ACLController.hasUserPremissionToOperation(fileSystem.getFileBase(command[1]), loginService.getLoggedUser(), READ)) {  //sprawdzenie uprawnien
+        else if (command.length == 2) {
+            FileBase fileBase = null;
+            try {
+                fileBase = fileSystem.getFileBase(command[1]);
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+                readCommend();
+            }
+            if (ACLController.hasUserPremissionToOperation(fileBase, loginService.getLoggedUser(), READ)) {  //sprawdzenie uprawnien
                 try {
                     fileSystem.readFile(command[1]);
-                }catch(Exception e){
+                } catch (Exception e) {
                     System.out.println(e.getMessage());
                     readCommend();
                 }
@@ -517,28 +560,37 @@ public class Shell {
             readCommend();
         }
     }
+
     /**
      * Metoda, ktora zostaje wywoalana gdy uzytkownik poda komende 'ls'
      * Wywoływane sa tutaj metody ACLControllera oraz filesystem oraz loginService
      * Wyświetla  nazwy i rozmiar wpisów w katalogu domyślnym
+     *
      * @param command
      */
-    private void ls(String[] command){
+    private void ls(String[] command) {
         //ls
-        if(command.length==1){
-            if (ACLController.hasUserPremissionToOperation(fileSystem.getCatalog(), loginService.getLoggedUser(), READ)) {
+        if (command.length == 1) {
+            Catalog catalog = null;
+            try {
+                catalog = fileSystem.getCatalog();
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+                readCommend();
+            }
+            if (ACLController.hasUserPremissionToOperation(catalog, loginService.getLoggedUser(), READ)) {
                 try {
                     System.out.println(fileSystem.list());
-                }catch(Exception e) {
+                } catch (Exception e) {
                     System.out.println(e.getMessage());
                     readCommend();
                 }
 
-            }else{
-                System.out.println("Brak uprawnien do pliku");
+            } else {
+                System.out.println("Brak uprawnien do katalogu");
                 readCommend();
             }
-        }else{
+        } else {
             System.out.println("Bledna komenda");
             readCommend();
         }
@@ -546,25 +598,36 @@ public class Shell {
     /**
      * Metoda, ktora zostaje wywolana gdy uzytkownik poda komende 'mv' [stara_nazwa_pliku] [nowa_nazwa_pliku]'
      * Wywoływane sa tutaj metody ACLControllera oraz filesystem oraz loginService
+     *
      * @param command
      */
     private void mv(String[] command) {
         //mv [nazwa_1][nazwa_2]
         if (command.length > 1) {
             if (command.length == 3) {
-                if (ACLController.hasUserPremissionToOperation(fileSystem.getFileBase(command[1]), loginService.getLoggedUser(), MODIFY)) {  //sprawdzenie uprawnien
+                FileBase fileBase = null;
+                try {
+                    fileBase = fileSystem.getFileBase(command[1]);
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
+                    readCommend();
+                }
+                if (ACLController.hasUserPremissionToOperation(fileBase, loginService.getLoggedUser(), MODIFY)) {  //sprawdzenie uprawnien
                     try {
                         fileSystem.renameFile(command[1], command[2]);
-                    }catch(Exception e) {
+                    } catch (Exception e) {
                         System.out.println(e.getMessage());
                         readCommend();
                     }
+                } else {
+                    System.out.println("Brak uprawnien do pliku");
+                    readCommend();
                 }
-            }else{
-                System.out.println("Brak uprawnien do pliku");
+            } else {
+                System.out.println("Bledna komenda");
                 readCommend();
             }
-        }else{
+        } else {
             System.out.println("Bledna komenda");
             readCommend();
         }
@@ -579,14 +642,20 @@ public class Shell {
         //rm [nazwa_pliku]
         if (command.length > 1) {
             if (command.length == 2) {
-                if (ACLController.hasUserPremissionToOperation(fileSystem.getFileBase(command[1]), loginService.getLoggedUser(), MODIFY)) {  //sprawdzenie uprawnien
+                FileBase fileBase = null;
+                try {
+                    fileBase = fileSystem.getFileBase(command[1]);
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
+                    readCommend();
+                }
+                if (ACLController.hasUserPremissionToOperation(fileBase, loginService.getLoggedUser(), MODIFY)) {  //sprawdzenie uprawnien
                     try {
                         fileSystem.deleteFile(command[1]);
                     }catch(Exception e) {
                         System.out.println(e.getMessage());
                         readCommend();
                     }
-
                 }else{
                     System.out.println("Brak uprawnien do pliku");
                     readCommend();
@@ -594,7 +663,14 @@ public class Shell {
             }
             //rm --content [nazwa_pliku]
             else if(command.length==3) {
-                if (ACLController.hasUserPremissionToOperation(fileSystem.getFileBase(command[2]), loginService.getLoggedUser(), MODIFY)) {  //sprawdzenie uprawnien
+                FileBase fileBase = null;
+                try {
+                    fileBase = fileSystem.getFileBase(command[2]);
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
+                    readCommend();
+                }
+                if (ACLController.hasUserPremissionToOperation(fileBase, loginService.getLoggedUser(), MODIFY)) {  //sprawdzenie uprawnien
                     try {
                         fileSystem.deleteContent(command[2]);
                     }catch(Exception e) {
@@ -605,8 +681,7 @@ public class Shell {
                     System.out.println("Brak uprawnien do pliku");
                     readCommend();
                 }
-            }else
-            {
+            }else {
                 System.out.println("Bledne parametry");
                 readCommend();
             }
@@ -619,7 +694,6 @@ public class Shell {
      *Metoda, ktora zostaje wywolanna gdy uzytkownik poda komende 'access ...'
      * Wywoływane sa tutaj metody ACLControllera oraz filesystem oraz loginService
      * Dodanie uprawnień do pliku dla konkretnego  użytkownika
-     *
      * Jeżeli jest właścicielem pliku, lub adminem może nadawać uprawnienia
      */
     private void access(String[] command) {
@@ -630,25 +704,24 @@ public class Shell {
                 try {
                     user = userController.getUser(command[3]);
                 } catch (Exception e) {
-                    e.getMessage();
+                    System.out.println( e.getMessage());
                     readCommend();
                 }
                 if(isAdmin(user)){
                     try {
                         ACLController.addAceForUser(user, whichMask(command[4]), fileSystem.getFileBase(command[1]));
                     } catch (Exception e) {
-                        e.getMessage();
+                        System.out.println( e.getMessage());
                         readCommend();
                     }
                 }else if(fileSystem.getFileBase(command[1]).getOwner().getName().equals(loginService.getLoggedUser().getName())){
                     try {
                         ACLController.addAceForUser(user, whichMask(command[4]), fileSystem.getFileBase(command[1]));
                     } catch (Exception e) {
-                        e.getMessage();
+                       System.out.println( e.getMessage());
                         readCommend();
                     }
                 }
-
             }
             //access [file_name] --group [group_name] (R)(M)(E) 111/000 ...
            else if (command[2].equals("--group")) {
@@ -656,15 +729,18 @@ public class Shell {
                 try {
                     group = userController.getGroup(command[3]);
                 } catch (Exception e) {
-                    e.getMessage();
+                    System.out.println( e.getMessage());
                     readCommend();
                 }
                 try {
                     ACLController.addAceForGroup(group, whichMask(command[4]), fileSystem.getFileBase(command[1]));
                 } catch (Exception e) {
-                    e.getMessage();
+                    System.out.println( e.getMessage());
                     readCommend();
                 }
+            }else {
+                System.out.println("Bledna komenda");
+                readCommend();
             }
         } else {
             System.out.println("Bledna komenda");
