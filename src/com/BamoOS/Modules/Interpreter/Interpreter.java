@@ -737,7 +737,10 @@ public class Interpreter {
         try {
             String filename = order[1];
             String fileContent = order[2];
-            fileSystem.createFile(filename, fileContent);
+            fileSystem.createFile(filename, loginService.getLoggedUser());
+            fileSystem.openFile(filename);
+            fileSystem.appendFile(filename,fileContent);
+            fileSystem.closeFile(filename);
         } catch (Exception e) {
             System.out.println(e);
         }
