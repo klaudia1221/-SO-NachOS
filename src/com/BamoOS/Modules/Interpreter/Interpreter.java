@@ -1,3 +1,6 @@
+import com.BamoOS.Modules.ACL.Interfaces.ILoginService;
+import com.BamoOS.Modules.FileSystem.IFileSystem;
+
 import java.lang.String;
 import java.util.*;
 
@@ -55,17 +58,20 @@ public class Interpreter {
     private ProcesorInterface procesor;
     private IProcessManager processManager;
     private RAM memory;
-    private FileSystemInterface fileSystem;
+    private IFileSystem fileSystem;
     private IPCB PCB;
     private BoxOffice boxOffice;
+    private ILoginService loginService;
 
-    Interpreter(ProcesorInterface procesor, RAM memory, IProcessManager processManager, FileSystemInterface fileSystem, IPCB PCB, BoxOffice boxOffice) {
+    Interpreter(ProcesorInterface procesor, RAM memory, IProcessManager processManager, IFileSystem fileSystem, IPCB PCB, BoxOffice boxOffice, ILoginService loginService) {
         this.procesor = procesor;
         this.memory = memory;
         this.processManager = processManager;
         this.fileSystem = fileSystem;
         this.PCB = PCB;
         this.boxOffice = boxOffice;
+
+        this.loginService = loginService;
     }
 
     public void set_A(){
@@ -721,7 +727,7 @@ public class Interpreter {
     private void CE(String[] order) {
         try {
             String filename = order[1];
-            fileSystem.createEmptyFile(filename);
+            fileSystem.createFile(filename, loginService.getLoggedUser());
         } catch (Exception e) {
             System.out.println(e);
         }
