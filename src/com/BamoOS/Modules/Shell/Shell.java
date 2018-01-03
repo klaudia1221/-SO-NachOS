@@ -132,7 +132,6 @@ public class Shell {
     }
     /**
      * Metoda, ktora zostaje wywolana na poczatku uruchamiania sie shella, loguje użytkownika do systemu
-     *
      * @param name
      */
     private void login(String name) {
@@ -312,7 +311,7 @@ public class Shell {
         System.out.println("Jedrzej Wyzgala          Mechanizm synchronizacji");
     }
     /**
-     * Metoda, ktora zostaje wywolana, gdy uzytkownik poda komedne 'user ...'
+     * Metoda, ktora zostaje wywolana, gdy uzytkownik poda komedne 'user ...' z pewnymi parametrami
      * Wywolywane sa tutaj metody userControllera
      * @param command
      */
@@ -779,15 +778,6 @@ public class Shell {
                         readCommend();
                     }
                 }
-                //process –-groupCreate [nazwaProcesu]  // nowa grupa
-                else if (command[1].equals("--groupCreate")) {
-                    try {
-                        processManager.newProcessGroup(command[2]);
-                    } catch (Exception e) {
-                        System.out.println(e.getMessage());
-                        readCommend();
-                    }
-                }
                 //process --killall [PGID]
                 else if (command[1].equals("--killall")) {
                     try {
@@ -796,14 +786,10 @@ public class Shell {
                         System.out.println(e.getMessage());
                         readCommend();
                     }
-
-                }
-                //process --ps [PGID] // info o danej grupie
-                else if (command[1].equals("--ps")) {
-
                 }
                 //process -–create [nazwaProcesu] [nazwaPliku][PGID]
-                else if (command.length == 5) {
+            }
+            else if (command.length == 5) {
                     if (command[1].equals("--create")) {
                         try {
                             processManager.newProcess(command[2], Integer.parseInt(command[4]), command[3]);
@@ -811,7 +797,23 @@ public class Shell {
                             System.out.println(e.getMessage());
                             readCommend();
                         }
+                    }else {
+                        System.out.println("Bledna komenda");
+                        readCommend();
                     }
+            }
+            //process –-groupCreate [nazwaProcesu] [nazwaPliku]  // nowa grupa
+            else if (command.length==4){
+                if (command[1].equals("--groupCreate")) {
+                    try {
+                        processManager.newProcessGroup(command[2], command[3]);
+                    } catch (Exception e) {
+                        System.out.println(e.getMessage());
+                        readCommend();
+                    }
+                }else{
+                    System.out.println("Bledna komenda");
+                    readCommend();
                 }
             } else {
                 System.out.println("Bledna komenda");
@@ -880,6 +882,7 @@ public class Shell {
      * @param command
      */
     private void meminfo(String[] command){
+        // meminfo --print
         if(command.length==2){
             if(command[1].equals("--print")){
                memory.writeRAM();
