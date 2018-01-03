@@ -1,5 +1,4 @@
 package com.BamoOS.Modules.FileSystem;
-import com.BamoOS.Modules.ACL.User;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -51,7 +50,7 @@ public class Catalog extends FileBase {
         }
     }
 
-    public void open_file(String fileName, String content) {
+    public void updateFileContent(String fileName, String content) {
         for(FileBase file : root){
             File tempFile = (File) file;
             if(tempFile.FILE_NAME.equals(fileName)){ tempFile.open(content); }

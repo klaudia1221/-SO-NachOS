@@ -1,5 +1,3 @@
-package com.BamoOS.Modules.FileSystem;
-
 public class DiscDrive {
 
     final int DISC_SIZE = 1024;                     //Rozmiar dysku

@@ -2,12 +2,12 @@ package com.BamoOS.Modules.Interpreter;
 
 import com.BamoOS.Modules.ACL.Interfaces.ILoginService;
 import com.BamoOS.Modules.FileSystem.IFileSystem;
-import com.BamoOS.Modules.Interpreter.IInterpreter;
+import com.BamoOS.Modules.MemoryManagment.PageTable;
+import com.BamoOS.Modules.MemoryManagment.RAM;
 import com.BamoOS.Modules.ProcessManager.IProcessManager;
 import com.BamoOS.Modules.ProcessManager.PCB;
 
-import java.lang.String;
-import java.util.*;
+import java.util.ArrayList;
 
 public class Interpreter implements IInterpreter{
 
@@ -192,7 +192,8 @@ public class Interpreter implements IInterpreter{
             String raw_address = order[2];
             raw_address = raw_address.replaceAll("[", "").replaceAll("]", "");
             int address = Integer.parseInt(raw_address);
-
+//            PageTable programPageTable = memory.pageTables.get(processManager.getActivePCB().getPID());
+//            char pom = memory.getCommand(PC,processManager.getActivePCB().getPID(), programPageTable);
             char pom = memory.readMemory(address);
             int address_content = (int) memory.readMemory(address);
 
@@ -268,7 +269,6 @@ public class Interpreter implements IInterpreter{
             String raw_address = order[2];
             raw_address = raw_address.replaceAll("[", "").replaceAll("]", "");
             int address = Integer.parseInt(raw_address);
-
             char pom = memory.readMemory(address);
             int address_content = (int) memory.readMemory(address);
 

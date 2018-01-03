@@ -1,4 +1,4 @@
-package com.BambOS.com.BambOS.Modules;
+package com.BamoOS.Modules.Shell;
 
 import com.BamoOS.Modules.ACL.Group;
 import com.BamoOS.Modules.ACL.Interfaces.IACLController;
@@ -9,6 +9,7 @@ import com.BamoOS.Modules.ACL.User;
 import com.BamoOS.Modules.FileSystem.Catalog;
 import com.BamoOS.Modules.FileSystem.FileBase;
 import com.BamoOS.Modules.FileSystem.IFileSystem;
+import com.BamoOS.Modules.MemoryManagment.RAM;
 import com.BamoOS.Modules.ProcessManager.IProcessManager;
 
 import java.io.BufferedReader;
