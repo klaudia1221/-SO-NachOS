@@ -9,6 +9,7 @@ import com.BamoOS.Modules.ACL.User;
 import com.BamoOS.Modules.FileSystem.Catalog;
 import com.BamoOS.Modules.FileSystem.FileBase;
 import com.BamoOS.Modules.FileSystem.IFileSystem;
+import com.BamoOS.Modules.MemoryManagment.RAM;
 import com.BamoOS.Modules.ProcessManager.IProcessManager;
 
 import java.io.BufferedReader;
