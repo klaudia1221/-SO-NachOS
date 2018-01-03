@@ -753,12 +753,12 @@ public class Interpreter implements IInterpreter{
         }
     }
 
-    private void CE(String[] order) {
+    private void CE(String[] order) throws Exception {
         try {
             String filename = order[1];
-            fileSystem.createFile(filename, loginService.getLoggedUser());
+            fileSystem.createFile(filename, loginService.getLoggedUser(), processManager);
         } catch (Exception e) {
-            System.out.println(e);
+            throw;
         }
     }
 
@@ -766,7 +766,7 @@ public class Interpreter implements IInterpreter{
         try {
             String filename = order[1];
             String fileContent = order[2];
-            fileSystem.createFile(filename, loginService.getLoggedUser());
+            fileSystem.createFile(filename, loginService.getLoggedUser(), processManager);
             fileSystem.openFile(filename);
             fileSystem.appendFile(filename,fileContent);
             fileSystem.closeFile(filename);
@@ -775,7 +775,7 @@ public class Interpreter implements IInterpreter{
         }
     }
 
-    private void AF(String[] order) {
+    private void AF(String[] order) throws Exception {
         try {
             String filename = order[1];
             String fileContent = order[2];
@@ -783,16 +783,16 @@ public class Interpreter implements IInterpreter{
             fileSystem.appendFile(filename, fileContent);
             fileSystem.closeFile(filename);
         } catch (Exception e) {
-            System.out.println(e);
+            throw e;
         }
     }
 
-    private void DF(String[] order) {
+    private void DF(String[] order) throws Exception{
         try {
             String filename = order[1];
             fileSystem.deleteFile(filename);
         } catch (Exception e) {
-            throw;
+            throw e;
 
         }
     }
@@ -891,7 +891,7 @@ public class Interpreter implements IInterpreter{
             int PID = Integer.parseInt(order[1]);
             communication.receiveMessage();
         } catch (Exception e){
-            System.out.println(e);
+            throw e;
         }
     }
 
@@ -901,7 +901,7 @@ public class Interpreter implements IInterpreter{
             Sms sms = new Sms(order[2]);
             communication.sendMessage(PID, sms);
         } catch (Exception e){
-            System.out.println(e);
+            throw e;
 
         }
     }
@@ -915,7 +915,7 @@ public class Interpreter implements IInterpreter{
             int counter = Integer.parseInt(order[1]);
             PC = counter;
         } catch (Exception e) {
-            System.out.println();
+            throw e;
         }
     }
 
@@ -1027,11 +1027,11 @@ public class Interpreter implements IInterpreter{
             } else {
                 System.out.println("Undefined order.");
             }
-        }catch (ArrayIndexOutOfBoundsException e) {
+        }catch (Exception e) {
             System.out.println(e);
             System.out.println("Incorrect order");
             SaveRegister();
-            throw;
+            throw e;
         }
         PC++;
     }
