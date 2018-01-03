@@ -46,7 +46,7 @@ public class Main{
             PCB PCB = new PCB();
 
 
-            com.BambOS.com.BambOS.Modules.Shell shell = new Shell(userController, fileSystem, memory, processor, aclController, processManager,  loginService);
+            Shell shell = new Shell( userController,  fileSystem,  memory,  procesor, ACLController,  processManager, PCB, loginService );
             shell.start();
         }
         private static void CreateDefaultUsers(){

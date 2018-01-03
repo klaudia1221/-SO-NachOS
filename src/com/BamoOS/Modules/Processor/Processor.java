@@ -1,5 +1,5 @@
 
-package Processor;
+package com.BamoOS.Modules.Processor;
 import java.util.ArrayList;
 
 import Interpreter.Interpreter;
@@ -7,22 +7,25 @@ import ProcessMenager.PCB;
 import ProcessMenager.PCB.State;
 import ProcessMenager.ProcessManager;
 import ProcessMenager.IProcessManager;
+import com.BamoOS.Modules.Interpreter.Interpreter;
+import com.BamoOS.Modules.ProcessManager.IProcessManager;
+import com.BamoOS.Modules.ProcessManager.PCB;
 
 
 // do zmiany argumenty wszedzie tam gdzie jest PID jak zobacze jak to wyglada u Bartka
-public class Processor implements ProcessorInterface{
+public class Processor implements Processor.ProcessorInterface {
 	private ArrayList<PCB> lista_procesow_gotowych = new ArrayList<PCB>();
 //	private ArrayList<PCB> lista_procesow_gotowych2 = new ArrayList<PCB>();
 
-	private PCB Running;
+	private PCB Active;
 	private PCB proces;
 	public double alpha; // Weighting factor od 0 do 1 (postarzanie) okresla poziom istotnosci ostatnej fazy
 	public int time;
-	private ProcessManager processManager;
+	private IProcessManager processManager;
 	private Interpreter interpreter;
 	 //private IProcessManager ProcessManager;
 	ArrayList<ArrayList<PCB>> lista = processManager.getProcessList();
-public Processor(ProcessManager processManager,Interpreter interpreter) {
+public Processor(IProcessManager processManager,Interpreter interpreter) {
 	this.interpreter = interpreter;
 	this.processManager = processManager;
 	alpha = 0.5; // Weighting factor od 0 do 1 (postarzanie) okresla poziom istotnosci ostatnej fazy
@@ -45,12 +48,12 @@ public void dodaj_proces() { // dodaje na liste procesow gotowych proces // nie 
 
 //jesli istnieje i ma stan zakonczony to go usuwa wedlug metody Bartka
 public void Scheduler() {
-	if (Running != null && Running.getState() == State.FINISHED) {
-		time = Running.getTimer();
-		processManager.killProcess(Running.getPID());
+	if (Active != null && Active.getState() == PCB.State.FINISHED) {
+		time = Active.getTimer();
+		processManager.killProcess(Active.getPID());
 		//Running = processManager.getMain().pcb;
 	}
-	if(Running!=null && Running.getState()!=State.ACTIVE)
+	if(Active != null && Active.getState() != PCB.State.ACTIVE)
 	{
 		if (lista_procesow_gotowych.size() > 0)
 		{
