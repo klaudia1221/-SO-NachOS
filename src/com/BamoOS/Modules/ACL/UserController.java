@@ -152,9 +152,20 @@ public class UserController implements IUserController {
     }
 
     @Override
+    public String printGroups() {
+        String result = "";
+        for(Group group : groups){
+            result += group.getName();
+            result += " ";
+        }
+        return result;
+    }
+
+    @Override
     public List<Group> getGroups() {
         return groups;
     }
+
 
     public boolean userExist(String name) {
         for(User u : users) {

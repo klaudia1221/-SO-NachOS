@@ -11,7 +11,7 @@ public interface IUserController {
     void addUserToGroup(User user, String groupName) throws Exception;
     User getUser(String name) throws Exception;
     void removeUser(String name) throws Exception;
-
+    String printGroups();
     List<Group> getGroups();
     List<Group> getUserGroups(String userName) throws Exception;
     void addGroup(String groupName) throws Exception;
