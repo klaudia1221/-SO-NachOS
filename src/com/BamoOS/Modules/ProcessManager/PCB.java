@@ -1,10 +1,8 @@
 package com.BamoOS.Modules.ProcessManager;
 
 import com.BamoOS.Modules.Communication.Sms;
-import com.BamoOS.Modules.ConditionVariable.ConditionVariable;
 
 import java.util.ArrayList;
-import java.util.Map;
 
 public class PCB {
 	

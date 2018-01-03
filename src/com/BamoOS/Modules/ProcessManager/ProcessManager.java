@@ -155,4 +155,8 @@ public class ProcessManager implements IProcessManager {
 			}
 		}
 	}
+
+	public ConditionVariable getConditionVariable(int PID){
+
+	}
 }
