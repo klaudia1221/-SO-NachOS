@@ -74,11 +74,8 @@ public class ConditionVariable implements IConditionVariable {
             PCB pcb = this.waiting.getFirst(); // weź pierwszy z kolejki (bufora)
             pcb.setState(PCB.State.READY); // zmien stan procesu na READY i wywolaj planiste
             this.waiting.removeFirst(); // usuń z początku kolejki oczekujących (ten ktorego stan zmienilismy)
-
         }
-        else {
-            this.busy = false; // "uwolnij" zasób jezeli lista byla pusta
-        }
+        this.busy = false; // "uwolnij" zasób
     }
 
     /**
