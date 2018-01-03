@@ -14,6 +14,7 @@ import com.BamoOS.Modules.FileSystem.IFileSystem;
 import com.BamoOS.Modules.MemoryManagment.RAM;
 import com.BamoOS.Modules.ProcessManager.IProcessManager;
 import com.BamoOS.Modules.ProcessManager.ProcessManager;
+import com.BamoOS.Modules.Processor.IProcessor;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -30,7 +31,7 @@ import static com.BamoOS.Modules.ACL.OperationType.READ;
 
 
 public class Shell {
-    private ProcesorInterface processor;
+    private IProcessor processor;
     private ProcessManager processManager;
     private RAM memory;
     private IFileSystem fileSystem;
@@ -42,7 +43,7 @@ public class Shell {
 
     public Shell(IUserController userController,
                  IFileSystem fileSystem, RAM memory,
-                 ProcesorInterface processor,
+                 IProcessor processor,
                  IACLController ACLController,
                  ProcessManager processManager,
                  ILoginService loginService, IConditionVariable conditionVariable) {
@@ -96,17 +97,19 @@ public class Shell {
     }
 
     private void logo() {
-        System.out.println("__/\\\\\\\\\\\\\\\\\\\\\\\\\\_______/\\\\\\\\\\\\\\\\\\_____/\\\\\\\\____________/\\\\\\\\__/\\\\\\\\\\\\\\\\\\\\\\\\\\_________/\\\\\\\\\\__________/\\\\\\\\\\\\\\\\\\\\\\___        \n" +
-                " _\\/\\\\\\/////////\\\\\\___/\\\\\\\\\\\\\\\\\\\\\\\\\\__\\/\\\\\\\\\\\\________/\\\\\\\\\\\\_\\/\\\\\\/////////\\\\\\_____/\\\\\\///\\\\\\______/\\\\\\/////////\\\\\\_       \n" +
-                "  _\\/\\\\\\_______\\/\\\\\\__/\\\\\\/////////\\\\\\_\\/\\\\\\//\\\\\\____/\\\\\\//\\\\\\_\\/\\\\\\_______\\/\\\\\\___/\\\\\\/__\\///\\\\\\___\\//\\\\\\______\\///__      \n" +
-                "   _\\/\\\\\\\\\\\\\\\\\\\\\\\\\\\\__\\/\\\\\\_______\\/\\\\\\_\\/\\\\\\\\///\\\\\\/\\\\\\/_\\/\\\\\\_\\/\\\\\\\\\\\\\\\\\\\\\\\\\\\\___/\\\\\\______\\//\\\\\\___\\////\\\\\\_________     \n" +
-                "    _\\/\\\\\\/////////\\\\\\_\\/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\_\\/\\\\\\__\\///\\\\\\/___\\/\\\\\\_\\/\\\\\\/////////\\\\\\_\\/\\\\\\_______\\/\\\\\\______\\////\\\\\\______    \n" +
-                "     _\\/\\\\\\_______\\/\\\\\\_\\/\\\\\\/////////\\\\\\_\\/\\\\\\____\\///_____\\/\\\\\\_\\/\\\\\\_______\\/\\\\\\_\\//\\\\\\______/\\\\\\__________\\////\\\\\\___   \n" +
-                "      _\\/\\\\\\_______\\/\\\\\\_\\/\\\\\\_______\\/\\\\\\_\\/\\\\\\_____________\\/\\\\\\_\\/\\\\\\_______\\/\\\\\\__\\///\\\\\\__/\\\\\\_____/\\\\\\______\\//\\\\\\__  \n" +
-                "       _\\/\\\\\\\\\\\\\\\\\\\\\\\\\\/__\\/\\\\\\_______\\/\\\\\\_\\/\\\\\\_____________\\/\\\\\\_\\/\\\\\\\\\\\\\\\\\\\\\\\\\\/_____\\///\\\\\\\\\\/_____\\///\\\\\\\\\\\\\\\\\\\\\\/___ \n" +
-                "        _\\/////////////____\\///________\\///__\\///______________\\///__\\/////////////_________\\/////_________\\///////////_____\n" +
+
+        System.out.println("\n" +
+                "_____/\\\\\\\\\\\\\\\\\\\\\\\\_        _____/\\\\\\\\\\\\\\\\\\____        ______/\\\\\\\\\\\\\\\\\\\\\\_        _______/\\\\\\\\\\______        _____/\\\\\\\\\\\\\\\\\\\\\\___        \n" +
+                " ___/\\\\\\//////////__        ___/\\\\\\\\\\\\\\\\\\\\\\\\\\__        _____\\/////\\\\\\///__        _____/\\\\\\///\\\\\\____        ___/\\\\\\/////////\\\\\\_       \n" +
+                "  __/\\\\\\_____________        __/\\\\\\/////////\\\\\\_        _________\\/\\\\\\_____        ___/\\\\\\/__\\///\\\\\\__        __\\//\\\\\\______\\///__      \n" +
+                "   _\\/\\\\\\____/\\\\\\\\\\\\\\_        _\\/\\\\\\_______\\/\\\\\\_        _________\\/\\\\\\_____        __/\\\\\\______\\//\\\\\\_        ___\\////\\\\\\_________     \n" +
+                "    _\\/\\\\\\___\\/////\\\\\\_        _\\/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\_        _________\\/\\\\\\_____        _\\/\\\\\\_______\\/\\\\\\_        ______\\////\\\\\\______    \n" +
+                "     _\\/\\\\\\_______\\/\\\\\\_        _\\/\\\\\\/////////\\\\\\_        _________\\/\\\\\\_____        _\\//\\\\\\______/\\\\\\__        _________\\////\\\\\\___   \n" +
+                "      _\\/\\\\\\_______\\/\\\\\\_        _\\/\\\\\\_______\\/\\\\\\_        __/\\\\\\___\\/\\\\\\_____        __\\///\\\\\\__/\\\\\\____        __/\\\\\\______\\//\\\\\\__  \n" +
+                "       _\\//\\\\\\\\\\\\\\\\\\\\\\\\/__        _\\/\\\\\\_______\\/\\\\\\_        _\\//\\\\\\\\\\\\\\\\\\______        ____\\///\\\\\\\\\\/_____        _\\///\\\\\\\\\\\\\\\\\\\\\\/___ \n" +
+                "        __\\////////////____        _\\///________\\///__        __\\/////////_______        ______\\/////_______        ___\\///////////_____\n" +
                 "\n" +
-                "                                   ~Bardzo Amatorski, Modulowy, ale Bezpieczny Operacyjny System~");
+                "                                                ~Genialny, Amatorski, Javowy Operacyjny System~");
     }
 
     /**
@@ -239,7 +242,6 @@ public class Shell {
 
     /**
      * Metoda, ktora sprawdza, czy komenda podana przez uzytkownika, znajduje sie wsrod komend zapisanych w mapie shella
-     *
      * @param command
      * @return zwraca ture, gdy jest, false gdy nie ma
      */
@@ -440,14 +442,7 @@ public class Shell {
         if (command.length > 1) {
             //cr [nazwa_pliku]
             if (command.length == 3) {
-                Catalog catalog = null;
-                try {
-                    catalog = fileSystem.getCatalog();
-                } catch (Exception e) {
-                    System.out.println(e.getMessage());
-                    readCommend();
-                }
-                if (ACLController.hasUserPremissionToOperation(catalog, loginService.getLoggedUser(), MODIFY)) { //sprawdzenie uprawnien
+                if (ACLController.hasUserPremissionToOperation(fileSystem.getCatalog(), loginService.getLoggedUser(), MODIFY)) { //sprawdzenie uprawnien
                     //tworzenie pliku
                     try {
                         fileSystem.createFile(command[1], loginService.getLoggedUser(), processManager);
@@ -514,6 +509,7 @@ public class Shell {
                             matcher = pattern.matcher(line);
                             if (!matcher.lookingAt()) { // jesli nie zawiera linijka ^D to :
                                 out.append(line);
+                                out.append('\n');
                             } else {
                                 //dodanie bez ^D // jesli dana linijka zawiera ^D
                                 int size = line.length();
@@ -1059,12 +1055,13 @@ public class Shell {
             File file=null;
 
             try {
-               file= fileSystem.getFile(command[2]);
+               file=fileSystem.getFile(command[1]);
+               file.cv.printInfo();
             }catch(Exception e){
                 System.out.println(e.getMessage());
                 readCommend();
             }
-            file.cv.printInfo();
+
         }else {
             System.out.println("Bledna komenda");
             readCommend();

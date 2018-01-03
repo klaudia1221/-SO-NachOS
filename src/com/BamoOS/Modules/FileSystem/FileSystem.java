@@ -24,6 +24,7 @@ public class FileSystem implements IFileSystem {
     public void openFile(String fileName) throws Exception {
         if (!nameExists(fileName)) { throw new Exception("Plik o takiej nazwie nie istnieje."); }
         else {
+
             String tmp = new String();
             int block = dir.getFirstBlock(fileName), i=0;
             while (tmp.length()<=dir.getSize(fileName)) {
@@ -132,6 +133,14 @@ public class FileSystem implements IFileSystem {
             dir_list = dir_list + "\n";
         }
         return dir_list;
+    }
+
+    public File getFile(String fileName)throws Exception{
+        if(!nameExists(fileName)){
+            throw new Exception("Plik o takiej nazwie nie istnieje.");
+        }else {
+            return dir.getFileByName(fileName);
+        }
     }
 
     //Metody pomocnicze

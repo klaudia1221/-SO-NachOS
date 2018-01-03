@@ -13,9 +13,11 @@ public class ConditionVariable implements IConditionVariable {
     private LinkedList<PCB> waiting; // kolejka FIFO (bufor)
     private boolean busy; // czy zasób jest zajęty (używany)
     private IProcessManager processManager;
+    private int pgid;
+
 
     /**
-     * Tworzy obiekt nowy zmiennej warunkowej.
+     * Tworzy obiekt nowy zmiennej warunkowej do synchronizacji plików.
      * Inicjalizuje pustą kolejkę procesów oczekujących (PCB) oraz zmienną busy wskazującą czy zasób jest zajęty.
      *
      * @param processManager obiekt klasy ProcessManager. Potrzebna metoda SetState oraz zmienna ActivePCB.
@@ -26,18 +28,37 @@ public class ConditionVariable implements IConditionVariable {
         this.waiting = new LinkedList<>();
         this.busy = false;
         this.processManager = processManager;
+        this.pgid = 0;
+    }
+
+    /**
+     * Tworzy obiekt nowy zmiennej warunkowej do sychronizacji komunikatów (synchronizacja w grupie procesów)
+     * Inicjalizuje pustą kolejkę procesów oczekujących (PCB) oraz zmienną busy wskazującą czy zasób jest zajęty.
+     *
+     * @param processManager obiekt klasy ProcessManager. Potrzebna metoda SetState oraz zmienna ActivePCB.
+     * @param pgid id grupy do ktorej nalezy dana zmienna warunkowa.
+     * @see ProcessManager
+     * @see PCB
+     */
+    public ConditionVariable(IProcessManager processManager, int pgid) {
+        this.waiting = new LinkedList<>();
+        this.busy = false;
+        this.processManager = processManager;
+        this.pgid = pgid;
     }
 
     /**
      * Zmienia stan aktualnie aktywnego procesu na `WAITING` i dodaje do kolejki procesów oczekujących.
      * Wywołanie planisty następuje w metodzie SetState.
+     *
+     * @param forceLock jezeli `true` powoduje bezwarunkowe zablokowanie procesu bez sprawdzania czy zasób jest zajęty
+     *                  i nie powoduje ustawienia pola `busy` na `true`
      */
-    public void await() {
-        if(this.busy) {
+    public void await(boolean forceLock) {
+        if (this.busy || forceLock) {
             processManager.getActivePCB().setState(PCB.State.WAITING); // zmien stan procesu i wywołaj planis // zmien stan procesu i wywołaj planiste
             this.waiting.addLast(this.processManager.getActivePCB()); // dodaj do kolejki
-        }
-        else {
+        } else {
             this.busy = true;
         }
     }
@@ -70,20 +91,8 @@ public class ConditionVariable implements IConditionVariable {
     }
 
     /**
-     * Getter zmiennej `busy` określającej zajętość zasobu.
-     * Zwraca `true`, gdy zajęty lub `false` w przeciwnym wypadku.
+     * Wyswietla informacje o zmiennej warunkowej dla uzytkownika
      */
-    public boolean getBusy() {
-        return this.busy;
-    }
-
-    /**
-     * Getter zmiennej `waiting`. Zwraca listę oczekujących procesów.
-     */
-    public LinkedList<PCB> getWaiting() {
-        return this.waiting;
-    }
-
     public void printInfo() {
         System.out.println("Procesy oczekujące w kolejce:");
         for(PCB pcb : this.waiting){
@@ -95,5 +104,21 @@ public class ConditionVariable implements IConditionVariable {
         else {
             System.out.println("Zasób jest `wolny` (not busy).");
         }
+    }
+
+    public boolean getBusy() {
+        return this.busy;
+    }
+
+    public LinkedList<PCB> getWaiting() {
+        return this.waiting;
+    }
+
+    public int getPgid() {
+        return pgid;
+    }
+
+    public void setPgid(int pgid) {
+        this.pgid = pgid;
     }
 }

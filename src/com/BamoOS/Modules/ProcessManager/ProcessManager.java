@@ -6,12 +6,14 @@ import java.util.Map;
 import com.BamoOS.Modules.ConditionVariable.ConditionVariable;
 import com.BamoOS.Modules.ProcessManager.PCB.Register;
 
+
+
 public class ProcessManager implements IProcessManager {
 	private ArrayList<ArrayList<PCB>> ProcessGroups;
 	private int ProcessCounter;
 	public PCB ActivePCB;
 	private int GroupsCounter;
-	private ArrayList<Map<Integer, ConditionVariable>> ConditionVariables;
+	private ArrayList<ConditionVariable> ConditionVariables;
 	
 	public ProcessManager() {
 		this.ProcessGroups = new ArrayList<ArrayList<PCB>>();
@@ -22,6 +24,9 @@ public class ProcessManager implements IProcessManager {
 	public PCB getActivePCB(){
 		return ActivePCB;
 	}
+	public void setActivePCB(PCB activePCB){
+	    this.ActivePCB = activePCB;
+    }
 	//Nowy proces o ile zosta�a wcze�niej utworzona grupa
 	public void newProcess(String ProcessName, int PGID) {
 		try {
@@ -156,7 +161,15 @@ public class ProcessManager implements IProcessManager {
 		}
 	}
 
-	public ConditionVariable getConditionVariable(int PID){
-
+	public ConditionVariable getConditionVariable(int PID) throws Exception {
+		PCB temp = checkIfProcessExists(PID);
+		if(temp != null){
+			for(ConditionVariable cv : this.ConditionVariables){
+				if(cv.getPGID() == temp.getPGID()){
+					return cv;
+				}
+			}
+		}
+		throw new Exception("Brak procesu o podanym PID");
 	}
 }
