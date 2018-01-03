@@ -29,7 +29,7 @@ public class FileSystem implements IFileSystem {
                 tmp += Drive.getAt(i+block*32);
                 i++;
             }
-            dir.open_file(fileName, tmp);
+            dir.updateFileContent(fileName, tmp);
         }
     }
 
@@ -56,6 +56,7 @@ public class FileSystem implements IFileSystem {
         else if (!dir.open_check(fileName)) { throw new Exception("Plik o takiej nazwie nie jest otwarty."); }
         else if (((double)content.length()/31.0)>Drive.FREE_BLOCKS) {throw new Exception("Za mało miejsca na dysku."); }
         else {
+            dir.updateFileContent(fileName, content);
             int current_block, i;
             if (dir.getFileByName(fileName).FILE_SIZE==0) { current_block = dir.getFirstBlock(fileName); i = 0; }
             else { current_block = dir.getLastBlock(fileName); i = dir.getFileByName(fileName).FILE_SIZE%31; }
@@ -160,6 +161,13 @@ public class FileSystem implements IFileSystem {
         build.deleteCharAt(0);
         return build.toString();
     }
+
+    //Testowanie
+
+    public void printBitVec(){
+        Drive.printBitVec();
+    }
+
     public void printDrive() {
         Drive.print();
     }
