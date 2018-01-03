@@ -58,14 +58,28 @@ public class FileSystem implements IFileSystem {
     }
 
     public void appendFile(String fileName, String content) throws Exception {
-        if (!nameExists(fileName)) {throw new Exception("Plik o takiej nazwie nie istnieje."); }
+        if (!nameExists(fileName)) { throw new Exception("Plik o takiej nazwie nie istnieje."); }
         else if (!dir.open_check(fileName)) { throw new Exception("Plik o takiej nazwie nie jest otwarty."); }
-        else if (((double)content.length()/31.0)>Drive.FREE_BLOCKS) {throw new Exception("Za mało miejsca na dysku."); }
+        else if (((double)content.length()/31.0)>=Drive.FREE_BLOCKS) { throw new Exception("Za mało miejsca na dysku."); }
         else {
             dir.updateFileContent(fileName, content);
             int current_block, i;
-            if (dir.getFileByName(fileName).FILE_SIZE==0) { current_block = dir.getFirstBlock(fileName); i = 0; }
-            else { current_block = dir.getLastBlock(fileName); i = dir.getFileByName(fileName).FILE_SIZE%31; }
+            if (dir.getFileByName(fileName).FILE_SIZE==0) {
+                current_block = dir.getFirstBlock(fileName);
+                i = 0;
+            }
+            else {
+                current_block = dir.getLastBlock(fileName);
+                if (dir.getFileByName(fileName).FILE_SIZE%31==0) {
+                    dir.incBlocksNum(fileName);
+                    Drive.putByte((char) firstFreeBlock(), (current_block+1) * 32 - 1);
+                    current_block = firstFreeBlock();
+                    Drive.bitVec[current_block]=false;
+                    Drive.FREE_BLOCKS--;
+                }
+                i = dir.getFileByName(fileName).FILE_SIZE%31;
+
+            }
             dir.getFileByName(fileName).FILE_SIZE += content.length();
             while (content.length()!=0) {
                 if (i==31) {
@@ -73,6 +87,7 @@ public class FileSystem implements IFileSystem {
                     current_block=firstFreeBlock();
                     Drive.bitVec[current_block]=false;
                     Drive.FREE_BLOCKS--;
+                    dir.incBlocksNum(fileName);
                     i=0;
                 }
                 Drive.putByte(getChar(content), (i + ((current_block * 32))));
@@ -81,7 +96,7 @@ public class FileSystem implements IFileSystem {
                 i++;
             }
         }
-    }
+            }
 
     public void deleteContent(String fileName) throws Exception {
         if (!nameExists(fileName)) {throw new Exception("Plik o takiej nazwie nie istnieje."); }
@@ -115,6 +130,7 @@ public class FileSystem implements IFileSystem {
                 Drive.bitVec[block] = true;
                 block = Drive.lastByte(block);
             }
+            Drive.FREE_BLOCKS += dir.getFileByName(fileName).BLOCK_NUM;
             dir.deleteFile(fileName);
         }
     }
