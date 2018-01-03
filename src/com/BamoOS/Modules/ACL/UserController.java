@@ -145,6 +145,15 @@ public class UserController implements IUserController {
         }
         return userGroups;
     }
+    public String printUserGroups(String userName) throws Exception{
+        List<Group> userGroups = getUserGroups(userName);
+        String result = "";
+        for(Group group : userGroups){
+            result += group.getName();
+            result += " ";
+        }
+        return result;
+    }
     @Override
     public void removeUser(String name) throws Exception {
         removeUserFromAllGroups(getUser(name));
