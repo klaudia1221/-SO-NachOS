@@ -59,7 +59,7 @@ public class ProcessManager implements IProcessManager {
 			throw new Exception("Brak grupy o podanym PGID");
 	}
 	public PCB newProcess(String ProcessName, int PGID, String FileName) throws Exception {
-			if(PGID == 0) throw new Exception("Brak dost�pu do grupy procesu bezczynno�ci");
+			if(PGID == 0 && checkIfProcessExists(0) != null) throw new Exception("Brak dost�pu do grupy procesu bezczynno�ci");
 			ArrayList<PCB> temp = checkIfGroupExists(PGID);
 			if(temp != null) {
 				String textFileContent = readCommandFile("src/" + FileName + ".txt");
