@@ -925,7 +925,7 @@ public class Interpreter implements IInterpreter{
     }
 
     public void Exe() throws Exception{
-        String raw_order = ;
+        String raw_order = processManager.getCommand(get_PC());
         String[] order = raw_order.split(" ");
         DownloadRegisters();
         RegisterStatus();
@@ -1016,5 +1016,6 @@ public class Interpreter implements IInterpreter{
             throw e;
         }
         PC++;
+        set_PC();
     }
 }
