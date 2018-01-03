@@ -79,6 +79,7 @@ public class Shell {
         allCommands.put("uname", "Informacje o autorach systemu");
         allCommands.put("user", "Kontrola uzytkownikow");
         allCommands.put("users", "Wyświetla listę użytkowników ");
+        allCommands.put("groups", "Wyświetla listę grup");
         allCommands.put("group", "Kontrola grup");
         allCommands.put("cr", "Tworzenie wpisu");
         allCommands.put("cat", "wyswietlenie pliku/dodanie na koniec pliku");
@@ -221,6 +222,9 @@ public class Shell {
                                 break;
                             case "sms":
                                 sms(separateCommand);
+                                break;
+                            case "groups":
+                                groups(separateCommand);
                                 break;
                         }
                     } else if (!isCommandGood(separateCommand[0])) {
@@ -414,6 +418,15 @@ public class Shell {
                     readCommend();
                 }
             }
+        } else {
+            System.out.println("Bledna komenda");
+            readCommend();
+        }
+    }
+    private void groups(String[] command){
+        //groups
+        if (command.length == 1) {
+            System.out.println(userController.printGroups());
         } else {
             System.out.println("Bledna komenda");
             readCommend();
