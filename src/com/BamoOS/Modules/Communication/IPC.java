@@ -56,14 +56,14 @@ public class IPC
         System.out.println("Nie znaleziono procesu o ID "+recID);
     }
     //ogarnąć te kontenery wiadomości czy dla grupy czy nie
-    public void RM(int senID, Sms sms) //wyjebać te bezsensowne parametry z dupy
+    public void RM() //int senID, Sms sms)
     {
 
         ArrayList<Sms> temp_list = pm.getActivePCB().getSmsList();
         if(temp_list.size()==0)//kontener wiadomości z PCB jest pusty
         {
             //przechodzi w stan waiting
-            //pm.getConditionVariable().(); //gettować CV
+            pm.getConditionVariable(pm.getActivePCB().getPID()).await();
 
         }else
         {
