@@ -11,6 +11,7 @@ public class File extends FileBase{
     public String FILE_NAME;	//Nazwa pliku
     public int FILE_SIZE;		//Rozmiar pliku
     int FIRST_BLOCK;			//Pierwszy blok zajmowany przez plik
+    int BLOCK_NUM;
     int LAST_BLOCK;
     String opened_file;
     boolean opened=false;
@@ -25,6 +26,7 @@ public class File extends FileBase{
     public void open(String fileContent) {
         this.opened_file+=fileContent; opened=true;
     }
+    public void update(String fileContent) { this.opened_file+=fileContent; }
 
     public void close() { opened=false; this.opened_file = new String(); }
 
@@ -43,6 +45,7 @@ public class File extends FileBase{
         this.FILE_SIZE=0;
         this.FIRST_BLOCK=first;
         this.LAST_BLOCK=first;
+        this.BLOCK_NUM = 1;
         this.cv = new ConditionVariable(processManager);
         //Pytanie do michała, dlaczego to jest kalasa String,
         // a nie sam string
