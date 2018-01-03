@@ -1,8 +1,16 @@
 package com.BamoOS.Modules.ProcessManager;
 
+import java.io.*;
+import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Scanner;
+import java.util.stream.Stream;
 
 import com.BamoOS.Modules.ConditionVariable.ConditionVariable;
+import com.BamoOS.Modules.MemoryManagment.PageTable;
 import com.BamoOS.Modules.MemoryManagment.RAM;
 import com.BamoOS.Modules.ProcessManager.PCB.Register;
 import com.BamoOS.Modules.Processor.IProcessor;
@@ -40,7 +48,7 @@ public class ProcessManager implements IProcessManager {
 			if(PGID == 0) throw new Exception("Brak dost�pu do grupy procesu bezczynno�ci");
 			ArrayList<PCB> temp = checkIfGroupExists(PGID);
 			if(temp != null) {
-				PCB pcb = new PCB(this.ProcessCounter, ProcessName, PGID, processor);
+				PCB pcb = new PCB(this.ProcessCounter, ProcessName, PGID);
 				temp.add(pcb);
 				this.ProcessCounter++;
 				return pcb;
@@ -53,14 +61,24 @@ public class ProcessManager implements IProcessManager {
 			if(temp != null) {
 				PCB pcb = new PCB(this.ProcessCounter, ProcessName, PGID);
 				temp.add(pcb);
-				//TODO odczyt z pliku
+				String textFileContent = readCommandFile("src/" + FileName + ".txt");
 				//TODO �adowanie programu z pliku do pami�ci
-				//PageTable pt1 = new PageTable("proces1", testTable1.length);
-		        //ram.pageTables.put(pt1.processName, pt1);
-				//ram.exchangeFile.writeToExchangeFile("proces1", testTable1);
+                char[] code = new char[];
+				PageTable pt1 = new PageTable(this.ProcessCounter, code.length);
+		        ram.pageTables.put(this.ProcessCounter, pt1);
+				ram.exchangeFile.writeToExchangeFile(this.ProcessCounter, code);
 				this.ProcessCounter++;
 			}
 			throw new Exception("Brak grupy o podanym PGID");
+	}
+	private String readCommandFile(String relativePathToFile){
+		StringBuilder contentBuilder = new StringBuilder();
+		try(Stream<String> stream = Files.lines(Paths.get(relativePathToFile), StandardCharsets.UTF_8)){
+			stream.forEach(s -> contentBuilder.append(s));
+		}catch(IOException e){
+			e.printStackTrace();
+		}
+		return contentBuilder.toString();
 	}
 	public PCB runNew() throws Exception {
 		return newProcess("P"+this.ProcessCounter, this.ActivePCB.getPGID());
@@ -205,4 +223,6 @@ public class ProcessManager implements IProcessManager {
 		}
 		return Processes;
 	}
+
+	public void
 }

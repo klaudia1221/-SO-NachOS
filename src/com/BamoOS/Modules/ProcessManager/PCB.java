@@ -33,6 +33,7 @@ public class PCB {
 	private int A;
 	private int B;
 	private int C;
+	private int D;
 	//Pola dla interpretera oraz cpu
 	private int Counter;
 	private int Timer;
