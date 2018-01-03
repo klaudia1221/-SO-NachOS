@@ -64,7 +64,6 @@ public class Interpreter implements IInterpreter{
     private int PC = 0;
     private int PID = 0;
 
-    private ProcesorInterface procesor;
     private IProcessManager processManager;
     private RAM memory;
     private IFileSystem fileSystem;
@@ -72,8 +71,11 @@ public class Interpreter implements IInterpreter{
     private IPC communication;
     private ILoginService loginService;
 
-    Interpreter(ProcesorInterface procesor, RAM memory, IProcessManager processManager, IFileSystem fileSystem, IPC communication, ILoginService loginService) {
-        this.procesor = procesor;
+    public Interpreter(RAM memory,
+                IProcessManager processManager,
+                IFileSystem fileSystem,
+                IPC communication,
+                ILoginService loginService) {
         this.memory = memory;
         this.processManager = processManager;
         this.fileSystem = fileSystem;

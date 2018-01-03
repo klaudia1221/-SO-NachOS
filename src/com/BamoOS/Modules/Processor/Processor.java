@@ -23,7 +23,9 @@ public class Processor implements IProcessor {
         alpha = 0.5d; // Weighting factor od 0 do 1 (postarzanie) okresla poziom istotnosci ostatnej fazy
         time = 0;
     }
-
+    public void setInterpreter(Interpreter interpreter){
+        this.interpreter = interpreter;
+    }
     public void Scheduler() {
         ArrayList<PCB> readyProcesses = processManager.getReadyProcesses();
 
