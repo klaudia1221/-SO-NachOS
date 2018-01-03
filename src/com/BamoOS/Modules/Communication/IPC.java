@@ -106,4 +106,12 @@ public class IPC
             System.out.println("ID nadawcy: "+sms.get_senID()+"; ID odbiorcy: "+sms.get_recID()+"; tresc: "+sms.get_mes());
         }
     }
+
+    public void display_all()
+    {
+        System.out.println("Wyslane wiadomosci:");
+        display_sent();
+        System.out.println("Odebrane wiadomosci:");
+        display_received();
+    }
 }
