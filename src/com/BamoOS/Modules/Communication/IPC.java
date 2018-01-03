@@ -13,7 +13,6 @@ public class IPC
     private ArrayList<Sms> allSent;
     private ArrayList<Sms> allReceived;
 
-
     public IPC(ProcessManager pm)
     {
         this.pm=pm;
@@ -81,11 +80,13 @@ public class IPC
             //wyświetla pierwszą wiadomość, którą znajdzie w kontenerze wiadomości w PCB
             System.out.println(temp_list.get(0).get_mes());
 
-            //zapisuje wiadomosc w kontenerze odebranych
+            //zapisuje wiadomosc w kontenerze odebranych i ID nadawcy w PCB
             allReceived.add(temp_list.get(0));
+            pm.getActivePCB().setLastSenderID(temp_list.get(0).get_senID());
 
             //usuwa z kontenera w PCB pierwszą wiadomość
             temp_list.remove(0);
+            pm.getActivePCB().setSmsList(temp_list);
         }
     }
 
