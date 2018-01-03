@@ -439,7 +439,7 @@ public class Shell {
                 if (ACLController.hasUserPremissionToOperation(catalog, loginService.getLoggedUser(), MODIFY)) { //sprawdzenie uprawnien
                     //tworzenie pliku
                     try {
-                        fileSystem.createFile(command[1], loginService.getLoggedUser());
+                        fileSystem.createFile(command[1], loginService.getLoggedUser(), processManager);
                     } catch (Exception e) {
                         System.out.println(e.getMessage());
                         readCommend();
