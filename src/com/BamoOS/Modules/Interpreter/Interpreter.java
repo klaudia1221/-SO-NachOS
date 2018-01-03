@@ -6,6 +6,9 @@ import com.BamoOS.Modules.MemoryManagment.PageTable;
 import com.BamoOS.Modules.MemoryManagment.RAM;
 import com.BamoOS.Modules.ProcessManager.IProcessManager;
 import com.BamoOS.Modules.ProcessManager.PCB;
+import com.BamoOS.Modules.Communication.IPC;
+import com.BamoOS.Modules.Communication.Sms;
+
 
 import java.util.ArrayList;
 
@@ -46,9 +49,10 @@ public class Interpreter implements IInterpreter{
      •RP PID  – uruchamia proces o danej PID, 
      •KG PGID - usunięcie grupy procesów o danym PGID,
      •SS PID state - zmiana stanu procesu na dany,
-     •RM sender - czytanie komunikat, 
+     •PP - wyświetla informacje o wszystkich procesach,
+     •RM sender - zapisywanie otrzymanego komunikatu do RAM,
      •SM receiver message - wysłanie komunikatu, 
-     •LM PID - czytanie komunikatów od danego procesu,
+     •DM - czytanie komunikatów wysłanych procesów,
      •JP counter - skacze do innego rozkazu poprzez zmianę licznika, 
      •JZ reg n - skok przy zerowej zawartości rejestru będącego argumentem, 
      •EX - kończy program,
@@ -64,18 +68,17 @@ public class Interpreter implements IInterpreter{
     private IProcessManager processManager;
     private RAM memory;
     private IFileSystem fileSystem;
-//    private IPCB PCB;
-    private BoxOffice boxOffice;
+    //    private IPCB PCB;
+    private IPC communication;
     private ILoginService loginService;
 
-    Interpreter(ProcesorInterface procesor, RAM memory, IProcessManager processManager, IFileSystem fileSystem, IPCB PCB, BoxOffice boxOffice, ILoginService loginService) {
+    Interpreter(ProcesorInterface procesor, RAM memory, IProcessManager processManager, IFileSystem fileSystem, IPCB PCB, IPC communication, ILoginService loginService) {
         this.procesor = procesor;
         this.memory = memory;
         this.processManager = processManager;
         this.fileSystem = fileSystem;
 //        this.PCB = PCB;
-        this.boxOffice = boxOffice;
-
+        this.communication = communication;
         this.loginService = loginService;
     }
 
@@ -155,26 +158,26 @@ public class Interpreter implements IInterpreter{
         String reg_1 = order[1];
         String reg_2 = order[2];
 
-        if (reg_1 == "A") {
-            if (reg_2 == "B") {
+        if (reg_1.equals("A")) {
+            if (reg_2.equals("B")) {
                 A += B;
-            } else if (reg_2 == "C") {
+            } else if (reg_2.equals("C")) {
                 A += C;
             } else {
                 System.out.println("Incorrect register.");
             }
-        } else if (reg_1 == "B") {
-            if (reg_2 == "A") {
+        } else if (reg_1.equals("B")) {
+            if (reg_2.equals("A")) {
                 B += A;
-            } else if (reg_2 == "C") {
+            } else if (reg_2.equals("C")) {
                 B += C;
             } else {
                 System.out.println("Incorrect register.");
             }
-        } else if (reg_1 == "C") {
-            if (reg_2 == "A") {
+        } else if (reg_1.equals("C")) {
+            if (reg_2.equals("A")) {
                 C += A;
-            } else if (reg_2 == "B") {
+            } else if (reg_2.equals("B")) {
                 C += B;
             } else {
                 System.out.println("Incorrect register.");
@@ -188,9 +191,9 @@ public class Interpreter implements IInterpreter{
         String reg = order[1];
         int len = order[2].length();
 
-        if ((order[2].substring(0,1) == "[")&&(order[2].substring(len-2,len-1))=="]"){
+        if ((order[2].substring(0,1).equals("["))&&(order[2].substring(len-2,len-1)).equals("]")){
             String raw_address = order[2];
-            raw_address = raw_address.replaceAll("[", "").replaceAll("]", "");
+            raw_address = raw_address.replaceAll("\\[", "").replaceAll("]", "");
             int address = Integer.parseInt(raw_address);
 //            PageTable programPageTable = memory.pageTables.get(processManager.getActivePCB().getPID());
 //            char pom = memory.getCommand(PC,processManager.getActivePCB().getPID(), programPageTable);
@@ -198,12 +201,11 @@ public class Interpreter implements IInterpreter{
             int address_content = (int) memory.readMemory(address);
 
             if (pom != '#' && Character.isDigit(pom)) {
-
-                if (reg == "A") {
+                if (reg.equals("A")) {
                     A += address_content;
-                } else if (reg == "B") {
+                } else if (reg.equals("B")) {
                     B += address_content;
-                } else if (reg == "C") {
+                } else if (reg.equals("C")) {
                     C += address_content;
                 } else {
                     System.out.println("Incorrect register.");
@@ -211,20 +213,20 @@ public class Interpreter implements IInterpreter{
             }else {
                 System.out.println("Address is empty.");
             }
-        }else if ((order[2].substring(0,1) == "[")&&(order[2].substring(len-2,len-1))!="]") {
+        }else if ((order[2].substring(0,1).equals("["))&&(order[2].substring(len-2,len-1).equals("]"))) {
             System.out.println("Incorrect address.");
-        }else if ((order[2].substring(0,1) != "[")&&(order[2].substring(len-2,len-1))=="]") {
+        }else if ((!order[2].substring(0,1).equals("["))&&(order[2].substring(len-2,len-1).equals("]"))) {
             System.out.println("Incorrect address.");
-        }else if ((order[2].substring(0,1) == "[")&&(order[2].substring(1,2))=="]") {
+        }else if ((order[2].substring(0,1).equals("["))&&(order[2].substring(1,2).equals("]"))) {
             System.out.println("Incorrect address.");
-        }else if ((order[2].substring(0,1) != "[")&&(order[2].substring(len-2,len-1))!="]"){
+        }else if ((!order[2].substring(0,1).equals("["))&&(!order[2].substring(len-2,len-1).equals("]"))){
             int val = Integer.parseInt(order[2]);
 
-            if (reg == "A") {
+            if (reg.equals("A")) {
                 A += val;
-            } else if (reg == "B") {
+            } else if (reg.equals("B")) {
                 B += val;
-            } else if (reg == "C") {
+            } else if (reg.equals("C")) {
                 C += val;
             } else {
                 System.out.println("Incorrect register.");
@@ -236,24 +238,24 @@ public class Interpreter implements IInterpreter{
         String reg_1 = order[1];
         String reg_2 = order[2];
 
-        if (reg_1 == "A") {
-            if (reg_2 == "B") {
+        if (reg_1.equals("A")) {
+            if (reg_2.equals("B")) {
                 A -= B;
-            } else if (reg_2 == "C") {
+            } else if (reg_2.equals("C")) {
                 A -= C;
             } else System.out.println("Incorrect register.");
 
-        } else if (reg_1 == "B") {
-            if (reg_2 == "A") {
+        } else if (reg_1.equals("B")) {
+            if (reg_2.equals("A")) {
                 B -= A;
-            } else if (reg_2 == "C") {
+            } else if (reg_2.equals("C")) {
                 B -= C;
             } else System.out.println("Incorrect register.");
 
-        } else if (reg_1 == "C") {
-            if (reg_2 == "A") {
+        } else if (reg_1.equals("C")) {
+            if (reg_2.equals("A")) {
                 C -= A;
-            } else if (reg_2 == "B") {
+            } else if (reg_2.equals("B")) {
                 C -= B;
             } else System.out.println("Incorrect register.");
         } else {
@@ -265,20 +267,20 @@ public class Interpreter implements IInterpreter{
         String reg = order[1];
         int len = order[2].length();
 
-        if ((order[2].substring(0,1) == "[")&&(order[2].substring(len-2,len-1))=="]"){
+        if ((order[2].substring(0,1).equals("["))&&(order[2].substring(len-2,len-1).equals("]"))){
             String raw_address = order[2];
-            raw_address = raw_address.replaceAll("[", "").replaceAll("]", "");
+            raw_address = raw_address.replaceAll("\\[", "").replaceAll("]", "");
             int address = Integer.parseInt(raw_address);
             char pom = memory.readMemory(address);
             int address_content = (int) memory.readMemory(address);
 
             if (pom != '#' && Character.isDigit(pom)) {
 
-                if (reg == "A") {
+                if (reg.equals("A")) {
                     A -= address_content;
-                } else if (reg == "B") {
+                } else if (reg.equals("B")) {
                     B -= address_content;
-                } else if (reg == "C") {
+                } else if (reg.equals("C")) {
                     C -= address_content;
                 } else {
                     System.out.println("Incorrect register.");
@@ -286,20 +288,20 @@ public class Interpreter implements IInterpreter{
             }else {
                 System.out.println("Address is empty.");
             }
-        }else if ((order[2].substring(0,1) == "[")&&(order[2].substring(len-2,len-1))!="]") {
+        }else if ((order[2].substring(0,1).equals("["))&&(!order[2].substring(len-2,len-1).equals("]"))) {
             System.out.println("Incorrect address.");
-        }else if ((order[2].substring(0,1) != "[")&&(order[2].substring(len-2,len-1))=="]") {
+        }else if ((!order[2].substring(0,1).equals("["))&&(order[2].substring(len-2,len-1).equals("]"))) {
             System.out.println("Incorrect address.");
-        }else if ((order[2].substring(0,1) == "[")&&(order[2].substring(1,2))=="]") {
+        }else if ((order[2].substring(0,1).equals("["))&&(order[2].substring(1,2).equals("]"))) {
             System.out.println("Incorrect address.");
-        }else if ((order[2].substring(0,1) != "[")&&(order[2].substring(len-2,len-1))!="]"){
+        }else if ((!order[2].substring(0,1).equals("["))&&(!order[2].substring(len-2,len-1).equals("]")){
             int val = Integer.parseInt(order[2]);
 
-            if (reg == "A") {
+            if (reg.equals("A")) {
                 A -= val;
-            } else if (reg == "B") {
+            } else if (reg.equals("B")) {
                 B -= val;
-            } else if (reg == "C") {
+            } else if (reg.equals("C")) {
                 C -= val;
             } else {
                 System.out.println("Incorrect register.");
@@ -310,11 +312,11 @@ public class Interpreter implements IInterpreter{
     private void DC(String[] order){
         String reg = order[1];
 
-        if (reg == "A") {
+        if (reg.equals("A")) {
             A -= 1;
-        } else if (reg == "B") {
+        } else if (reg.equals("B")) {
             B -= 1;
-        } else if (reg == "C") {
+        } else if (reg.equals("C")) {
             C -= 1;
         } else {
             System.out.println("Incorrect register.");
@@ -323,11 +325,11 @@ public class Interpreter implements IInterpreter{
 
     private void IC(String[] order){
         String reg = order[1];
-        if (reg == "A") {
+        if (reg.equals("A")) {
             A += 1;
-        } else if (reg == "B") {
+        } else if (reg.equals("B")) {
             B += 1;
-        } else if (reg == "C") {
+        } else if (reg.equals("C")) {
             C += 1;
         } else {
             System.out.println("Incorrect register.");
@@ -338,24 +340,24 @@ public class Interpreter implements IInterpreter{
         String reg_1 = order[1];
         String reg_2 = order[2];
 
-        if (reg_1 == "A") {
-            if (reg_2 == "B") {
+        if (reg_1.equals("A")) {
+            if (reg_2.equals("B")) {
                 A *= B;
-            } else if (reg_2 == "C") {
+            } else if (reg_2.equals("C")) {
                 A *= C;
             } else System.out.println("Incorrect register.");
 
-        } else if (reg_1 == "B") {
-            if (reg_2 == "A") {
+        } else if (reg_1.equals("B")) {
+            if (reg_2.equals("A")) {
                 B *= A;
-            } else if (reg_2 == "C") {
+            } else if (reg_2.equals("C")) {
                 B *= C;
             } else System.out.println("Incorrect register.");
 
-        } else if (reg_1 == "C") {
-            if (reg_2 == "A") {
+        } else if (reg_1.equals("C")) {
+            if (reg_2.equals("A")) {
                 C *= A;
-            } else if (reg_2 == "B") {
+            } else if (reg_2.equals("B")) {
                 C *= B;
             } else {
                 System.out.println("Incorrect register.");
@@ -369,9 +371,9 @@ public class Interpreter implements IInterpreter{
         String reg = order[1];
         int len = order[2].length();
 
-        if ((order[2].substring(0,1) == "[")&&(order[2].substring(len-2,len-1))=="]"){
+        if ((order[2].substring(0,1).equals("["))&&(order[2].substring(len-2,len-1).equals("]"))){
             String raw_address = order[2];
-            raw_address = raw_address.replaceAll("[", "").replaceAll("]", "");
+            raw_address = raw_address.replaceAll("\\[", "").replaceAll("]", "");
             int address = Integer.parseInt(raw_address);
 
             char pom = memory.readMemory(address);
@@ -379,11 +381,11 @@ public class Interpreter implements IInterpreter{
 
             if (pom != '#' && Character.isDigit(pom)) {
 
-                if (reg == "A") {
+                if (reg.equals("A")) {
                     A *= address_content;
-                } else if (reg == "B") {
+                } else if (reg.equals("B")) {
                     B *= address_content;
-                } else if (reg == "C") {
+                } else if (reg.equals("C")) {
                     C *= address_content;
                 } else {
                     System.out.println("Incorrect register.");
@@ -391,20 +393,20 @@ public class Interpreter implements IInterpreter{
             }else {
                 System.out.println("Address is empty.");
             }
-        }else if ((order[2].substring(0,1) == "[")&&(order[2].substring(len-2,len-1))!="]") {
+        }else if ((order[2].substring(0,1).equals("["))&&(!order[2].substring(len-2,len-1).equals("]"))) {
             System.out.println("Incorrect address.");
-        }else if ((order[2].substring(0,1) != "[")&&(order[2].substring(len-2,len-1))=="]") {
+        }else if ((!order[2].substring(0,1).equals("["))&&(order[2].substring(len-2,len-1).equals("]"))) {
             System.out.println("Incorrect address.");
-        }else if ((order[2].substring(0,1) == "[")&&(order[2].substring(1,2))=="]") {
+        }else if ((order[2].substring(0,1).equals("["))&&(order[2].substring(1,2).equals("]"))) {
             System.out.println("Incorrect address.");
-        }else if ((order[2].substring(0,1) != "[")&&(order[2].substring(len-2,len-1))!="]"){
+        }else if ((!order[2].substring(0,1).equals("["))&&(!order[2].substring(len-2,len-1).equals("]"))){
             int val = Integer.parseInt(order[2]);
 
-            if (reg == "A") {
+            if (reg.equals("A")) {
                 A *= val;
-            } else if (reg == "B") {
+            } else if (reg.equals("B")) {
                 B *= val;
-            } else if (reg == "C") {
+            } else if (reg.equals("C")) {
                 C *= val;
             } else {
                 System.out.println("Incorrect register.");
@@ -416,24 +418,24 @@ public class Interpreter implements IInterpreter{
         String reg_1 = order[1];
         String reg_2 = order[2];
 
-        if (reg_1 == "A") {
-            if (reg_2 == "B"&& B!=0) {
+        if (reg_1.equals("A")) {
+            if (reg_2.equals("B")&& B!=0) {
                 A /= B;
-            } else if (reg_2 == "C"&& C!=0) {
+            } else if (reg_2.equals("C")&& C!=0) {
                 A /= C;
             } else System.out.println("Incorrect register.");
 
-        } else if (reg_1 == "B") {
-            if (reg_2 == "A"&& A!=0) {
+        } else if (reg_1.equals("B")) {
+            if (reg_2.equals("A")&& A!=0) {
                 B /= A;
-            } else if (reg_2 == "C"&& C!=0) {
+            } else if (reg_2.equals("C")&& C!=0) {
                 B /= C;
             } else System.out.println("Incorrect register.");
 
-        } else if (reg_1 == "C") {
-            if (reg_2 == "A" && A!=0) {
+        } else if (reg_1.equals("C")) {
+            if (reg_2.equals("A") && A!=0) {
                 C /= A;
-            } else if (reg_2 == "B" && B!=0) {
+            } else if (reg_2.equals("B") && B!=0) {
                 C /= B;
             } else System.out.println("Incorrect register.");
         } else {
@@ -445,20 +447,20 @@ public class Interpreter implements IInterpreter{
         String reg = order[1];
         int len = order[2].length();
 
-        if ((order[2].substring(0,1) == "[")&&(order[2].substring(len-2,len-1))=="]"){
+        if ((order[2].substring(0,1).equals("["))&&(order[2].substring(len-2,len-1).equals("]"))){
             String raw_address = order[2];
-            raw_address = raw_address.replaceAll("[", "").replaceAll("]", "");
+            raw_address = raw_address.replaceAll("\\[", "").replaceAll("]", "");
             int address = Integer.parseInt(raw_address);
 
             char pom = memory.readMemory(address);
             int addres_content = (int) memory.readMemory(address);
 
             if (pom != '#'&& addres_content!=0 && Character.isDigit(pom)) {
-                if (reg == "A") {
+                if (reg.equals("A")) {
                     A /= addres_content;
-                } else if (reg == "B") {
+                } else if (reg.equals("B")) {
                     B /= addres_content;
-                } else if (reg == "C") {
+                } else if (reg.equals("C")) {
                     C /= addres_content;
                 } else {
                     System.out.println("Incorrect register.");
@@ -468,21 +470,21 @@ public class Interpreter implements IInterpreter{
             }else if(addres_content == 0) {
                 System.out.println("Not divide by zero.");
             }
-        }else if ((order[2].substring(0,1) == "[")&&(order[2].substring(len-2,len-1))!="]") {
+        }else if ((order[2].substring(0,1).equals("["))&&(!order[2].substring(len-2,len-1).equals("]"))) {
             System.out.println("Incorrect address.");
-        }else if ((order[2].substring(0,1) != "[")&&(order[2].substring(len-2,len-1))=="]") {
+        }else if ((!order[2].substring(0,1).equals("["))&&(order[2].substring(len-2,len-1).equals("]"))) {
             System.out.println("Incorrect address.");
-        }else if ((order[2].substring(0,1) == "[")&&(order[2].substring(1,2))=="]") {
+        }else if ((order[2].substring(0,1).equals("["))&&(order[2].substring(1,2).equals("]"))){
             System.out.println("Incorrect address.");
-        }else if ((order[2].substring(0,1) != "[")&&(order[2].substring(len-2,len-1))!="]"){
+        }else if ((!order[2].substring(0,1).equals("["))&&(!order[2].substring(len-2,len-1).equals("]"))){
             int val = Integer.parseInt(order[2]);
 
             if (val != 0) {
-                if (reg == "A") {
+                if (reg.equals("A")) {
                     A /= val;
-                } else if (reg == "B") {
+                } else if (reg.equals("B")) {
                     B /= val;
-                } else if (reg == "C") {
+                } else if (reg.equals("C")) {
                     C /= val;
                 } else {
                     System.out.println("Incorrect register.");
@@ -496,50 +498,50 @@ public class Interpreter implements IInterpreter{
         String reg_2 = order[2];
         String reg_3 = order[3];
 
-        if (reg_1 == "A") {
-            if (reg_2 == "B" && reg_3 == "A" && B != 0) {
+        if (reg_1.equals("A")) {
+            if ((reg_2.equals("B")) && (reg_3.equals("A")) && B != 0) {
                 A = A%B;
-            } else if (reg_2 == "B" && reg_3 == "B" && B != 0) {
+            } else if ((reg_2.equals("B") && (reg_3.equals("B")) && B != 0)) {
                 B = A%B;
-            } else if (reg_2 == "B" && reg_3 == "C" && B != 0) {
+            } else if ((reg_2.equals("B") && (reg_3.equals("C")) && B != 0)) {
                 C = A%B;
-            } else if (reg_2 == "C" && reg_3 == "A" && C != 0){
+            } else if ((reg_2.equals("C") && (reg_3.equals("A")) && C != 0)){
                 A = A%C;
-            } else if (reg_2 == "C" && reg_3 == "B" && C != 0){
+            } else if (reg_2.equals("C") && (reg_3.equals("B")) && C != 0){
                 B = A%C;
-            } else if (reg_2 == "C" && reg_3 == "C" && C != 0){
+            } else if ((reg_2.equals("C") && (reg_3.equals("C")) && C != 0)){
                 C = A%C;
             } else {
                 System.out.println("Incorrect register.");
             }
-        } else if (reg_1 == "B") {
-            if (reg_2 == "A" && reg_3 == "A" && A != 0) {
+        } else if (reg_1.equals("B")) {
+            if ((reg_2.equals("A")) && (reg_3.equals("A")) && A != 0) {
                 A = B%A;
-            } else if (reg_2 == "A" && reg_3 == "B" && A != 0) {
+            } else if ((reg_2.equals("A")) && (reg_3.equals("B")) && A != 0) {
                 B = B%A;
-            } else if (reg_2 == "A" && reg_3 == "C" && A != 0) {
+            } else if ((reg_2.equals("A")) && (reg_3.equals("C")) && A != 0) {
                 C = B%A;
-            } else if (reg_2 == "C" && reg_3 == "A" && C != 0){
+            } else if ((reg_2.equals("C")) && (reg_3.equals("A")) && C != 0){
                 A = B%C;
-            } else if (reg_2 == "C" && reg_3 == "B" && C != 0){
+            } else if ((reg_2.equals("C"))&& (reg_3.equals("B")) && C != 0){
                 B = B%C;
-            } else if (reg_2 == "C" && reg_3 == "C" && C != 0){
+            } else if ((reg_2.equals("C")) && (reg_3.equals("C")) && C != 0){
                 C = B%C;
             } else {
                 System.out.println("Incorrect register.");
             }
-        } else if (reg_1 == "C") {
-            if (reg_2 == "A" && reg_3 == "A" && A != 0) {
+        } else if (reg_1.equals("C")) {
+            if ((reg_2.equals("A")) && (reg_3.equals("A")) && A != 0) {
                 A = C%A;
-            } else if (reg_2 == "A" && reg_3 == "B" && A != 0) {
+            } else if ((reg_2.equals("A")) && (reg_3.equals("B")) && A != 0) {
                 B = C%A;
-            } else if (reg_2 == "A" && reg_3 == "C" && A != 0) {
+            } else if ((reg_2.equals("A")) && (reg_3.equals("C")) && A != 0) {
                 C = C%A;
-            } else if (reg_2 == "C" && reg_3 == "A" && B != 0){
+            } else if ((reg_2.equals("C")) && (reg_3.equals("A")) && B != 0){
                 A = C%B;
-            } else if (reg_2 == "C" && reg_3 == "B" && B != 0){
+            } else if ((reg_2.equals("C")) && (reg_3.equals("B")) && B != 0){
                 B = C%B;
-            } else if (reg_2 == "C" && reg_3 == "C" && B != 0){
+            } else if ((reg_2.equals("C")) && (reg_3.equals("C")) && B != 0){
                 C = C%B;
             } else {
                 System.out.println("Incorrect register.");
@@ -555,35 +557,35 @@ public class Interpreter implements IInterpreter{
 
         int len = order[2].length();
 
-        if ((order[2].substring(0,1) == "[")&&(order[2].substring(len-2,len-1))=="]"){
+        if ((order[2].substring(0,1).equals("["))&&(order[2].substring(len-2,len-1).equals("]"))){
             String raw_address = order[2];
-            raw_address = raw_address.replaceAll("[", "").replaceAll("]", "");
+            raw_address = raw_address.replaceAll("\\[", "").replaceAll("]", "");
             int address = Integer.parseInt(raw_address);
 
             char pom = memory.readMemory(address);
             int address_content = (int) memory.readMemory(address);
 
             if (pom != '#' && Character.isDigit(pom)) {
-                if (reg_1 == "A") {
-                    if (reg_3 == "A") {
+                if (reg_1.equals("A")) {
+                    if (reg_3.equals("A")) {
                         A = A % address_content; }
-                    if (reg_3 == "B") {
+                    if (reg_3.equals("B")) {
                         B = A % address_content; }
-                    if (reg_3 == "C") {
+                    if (reg_3.equals("C")) {
                         C = A % address_content; }
-                } else if (reg_1 == "B") {
-                    if (reg_3 == "A") {
+                } else if (reg_1.equals("B")) {
+                    if (reg_3.equals("A")) {
                         A = B % address_content; }
-                    if (reg_3 == "B") {
+                    if (reg_3.equals("B")) {
                         B = B % address_content; }
-                    if (reg_3 == "C") {
+                    if (reg_3.equals("C")) {
                         C = B % address_content; }
-                } else if (reg_1 == "C") {
-                    if (reg_3 == "A") {
+                } else if (reg_1.equals("C")) {
+                    if (reg_3.equals("A")) {
                         A = C % address_content; }
-                    if (reg_3 == "B") {
+                    if (reg_3.equals("B")) {
                         B = C % address_content; }
-                    if (reg_3 == "C") {
+                    if (reg_3.equals("C")) {
                         C = C % address_content; }
                 } else {
                     System.out.println("Incorrect register.");
@@ -591,42 +593,42 @@ public class Interpreter implements IInterpreter{
             }else {
                 System.out.println("Address is empty.");
             }
-        }else if ((order[2].substring(0,1) == "[")&&(order[2].substring(len-2,len-1))!="]") {
+        }else if ((order[2].substring(0,1).equals("["))&&(!order[2].substring(len-2,len-1).equals("]"))) {
             System.out.println("Incorrect address.");
-        }else if ((order[2].substring(0,1) != "[")&&(order[2].substring(len-2,len-1))=="]") {
+        }else if ((!order[2].substring(0,1).equals("["))&&(order[2].substring(len-2,len-1).equals("]"))) {
             System.out.println("Incorrect address.");
-        }else if ((order[2].substring(0,1) == "[")&&(order[2].substring(1,2))=="]") {
+        }else if ((order[2].substring(0,1).equals("["))&&(order[2].substring(1,2).equals("]"))) {
             System.out.println("Incorrect address.");
-        }else if ((order[2].substring(0,1) != "[")&&(order[2].substring(len-2,len-1))!="]"){
+        }else if ((!order[2].substring(0,1).equals("["))&&(!order[2].substring(len-2,len-1).equals("]"))){
             int val = Integer.parseInt(order[2]);
 
             if(val != 0) {
-                if (reg_1 == "A") {
-                    if (reg_3 == "A") {
+                if (reg_1.equals("A")) {
+                    if (reg_3.equals("A")) {
                         A = A % val;
-                    } else if (reg_3 == "B") {
+                    } else if (reg_3.equals("B")) {
                         B = A % val;
-                    } else if (reg_3 == "C") {
+                    } else if (reg_3.equals("C")) {
                         C = A % val;
                     } else {
                         System.out.println("Incorrect register.");
                     }
-                } else if (reg_1 == "B") {
-                    if (reg_3 == "A") {
+                } else if (reg_1.equals("B")) {
+                    if (reg_3.equals("A")) {
                         A = B % val;
-                    } else if (reg_3 == "B") {
+                    } else if (reg_3.equals("B")) {
                         B = B % val;
-                    } else if (reg_3 == "C") {
+                    } else if (reg_3.equals("C")) {
                         C = B % val;
                     } else {
                         System.out.println("Incorrect register.");
                     }
-                } else if (reg_1 == "C") {
-                    if (reg_3 == "A") {
+                } else if (reg_1.equals("C")) {
+                    if (reg_3.equals("A")) {
                         A = C % val;
-                    } else if (reg_3 == "B") {
+                    } else if (reg_3.equals("B")) {
                         B = C % val;
-                    } else if (reg_3 == "C") {
+                    } else if (reg_3.equals("C")) {
                         C = C % val;
                     } else {
                         System.out.println("Incorrect register.");
@@ -643,26 +645,26 @@ public class Interpreter implements IInterpreter{
         String reg_1 = order[1];
         String reg_2 = order[2];
 
-        if (reg_1 == "A") {
-            if (reg_2 == "B") {
+        if (reg_1.equals("A")) {
+            if (reg_2.equals("B")) {
                 A = B;
-            } else if (reg_2 == "C") {
+            } else if (reg_2.equals("C")) {
                 A = C;
             } else System.out.println("Incorrect register.");
 
-        } else if (reg_1 == "B") {
-            if (reg_2 == "A") {
+        } else if (reg_1.equals("B")) {
+            if (reg_2.equals("A")) {
                 B = A;
-            } else if (reg_2 == "C") {
+            } else if (reg_2.equals("C")) {
                 B = C;
             } else {
                 System.out.println("Incorrect register.");
             }
 
-        } else if (reg_1 == "C") {
-            if (reg_2 == "A") {
+        } else if (reg_1.equals("C")) {
+            if (reg_2.equals("A")) {
                 C = A;
-            } else if (reg_2 == "B") {
+            } else if (reg_2.equals("B")) {
                 C = B;
             } else {
                 System.out.println("Incorrect register.");
@@ -678,16 +680,16 @@ public class Interpreter implements IInterpreter{
         String register = order[2];
         String[] split_address = raw_address.split("");
 
-        if((split_address[0] != "[")|| (split_address[raw_address.length()-1] != "]")){
+        if((!split_address[0].equals("["))|| (!split_address[raw_address.length()-1].equals("]"))){
             System.out.println("Incorrect address.");
         }else {
-            raw_address = raw_address.replaceAll("[", "").replaceAll("]", "");
+            raw_address = raw_address.replaceAll("\\[", "").replaceAll("]", "");
             int address = Integer.parseInt(raw_address);
-            if (register == "A") {
+            if (register.equals("A")) {
                 memory.writeMemory((char) A, address);
-            } else if(register == "B"){
+            } else if(register.equals("B")){
                 memory.writeMemory((char) B, address);
-            } else if(register == "C"){
+            } else if(register.equals("C")){
                 memory.writeMemory((char) C, address);
             } else {
                 System.out.println("Incorrect register.");
@@ -699,11 +701,11 @@ public class Interpreter implements IInterpreter{
         String reg = order[1];
         int val = Integer.parseInt(order[2]);
 
-        if (reg == "A") {
+        if (reg.equals("A")) {
             A = val;
-        } else if (reg == "B") {
+        } else if (reg.equals("B")) {
             B = val;
-        } else if (reg == "C") {
+        } else if (reg.equals("C")) {
             C = val;
         } else {
             System.out.println("Incorrect register.");
@@ -715,18 +717,19 @@ public class Interpreter implements IInterpreter{
         String raw_address = order[2];
         String[] split_address = raw_address.split("");
 
-        if ((split_address[0] != "[") || (split_address[raw_address.length() - 1] != "]")) {
+        if ((!split_address[0].equals("[")) || (!split_address[raw_address.length() - 1].equals("]"))) {
             System.out.println("Incorrect address.");
         } else {
-            raw_address = raw_address.replaceAll("[", "").replaceAll("]", "");
+            raw_address = raw_address.replaceAll("\\[", "").replaceAll("]", "");
             int address = Integer.parseInt(raw_address);
             char pom = memory.readMemory(address);
+
             if (pom != '#') {
-                if (register == "A") {
+                if (register.equals("A")) {
                     A = memory.readMemory(address);
-                } else if (register == "B") {
+                } else if (register.equals("B")) {
                     B = memory.readMemory(address);
-                } else if (register == "C") {
+                } else if (register.equals("C")) {
                     C = memory.readMemory(address);
                 } else {
                     System.out.println("Incorrect register.");
@@ -805,8 +808,8 @@ public class Interpreter implements IInterpreter{
 
     private void NP(String[] order) {
         try {
-            String ProcessName = order[1];
-            processManager.NewProcess(ProcessName);
+            String FileName = order[1];
+            processManager.runNew(FileName);
         } catch (Exception e){
             System.out.println(e);
         }
@@ -830,17 +833,21 @@ public class Interpreter implements IInterpreter{
         }
     }
 
+    private void PP(String[] order){
+        processManager.PrintProcesses();
+    }
+
     private void SS(String[] order) {
         try {
             int PID = Integer.parseInt(order[1]);
             String state = order[2];
-            if (state == "ACTIVE") {
+            if (state.equals("ACTIVE")) {
 //                PCB.setState(PID, IPCB.State.ACTIVE);
-                processManager.getActivePCB();
-            } else if (state == "WAITING") {
-                PCB.SetState(PID, IPCB.State.WAITING);
-            } else if (state == "READY") {
-                PCB.SetState(PID, IPCB.State.READY);
+                processManager.getActivePCB().setState(PCB.State.ACTIVE);
+            } else if (state.equals("WAITING")) {
+                processManager.getActivePCB().setState(PCB.State.WAITING);
+            } else if (state.equals("READY")) {
+                processManager.getActivePCB().setState(PCB.State.READY);
             }
         } catch (Exception e){
             System.out.println(e);
@@ -868,7 +875,8 @@ public class Interpreter implements IInterpreter{
     private void RM(String[] order) {
         try {
             int PID = Integer.parseInt(order[1]);
-            String message = boxOffice.receiveMessage(PID);
+            String message = communication.receiveMessage(PID);
+
             System.out.println(message);
         } catch (Exception e){
             System.out.println(e);
@@ -878,21 +886,15 @@ public class Interpreter implements IInterpreter{
     private void SM(String[] order) {
         try {
             int PID = Integer.parseInt(order[1]);
-            String message = order[2];
-            boxOffice.sendMessage(PID, message);
+            Sms sms = new Sms(order[2]);
+            communication.sendMessage(PID, sms);
         } catch (Exception e){
             System.out.println(e);
         }
     }
 
     private void LM(String[] order) {
-        try {
-            int PID = Integer.parseInt(order[1]);
-            ArrayList<ArrayList<BoxOffice.Message>> message = boxOffice.printMessage(PID);
-            System.out.println(message);
-        } catch (Exception e){
-            System.out.println(e);
-        }
+        communication.display_all();
     }
 
     private void JP(String[] order) {
@@ -909,15 +911,15 @@ public class Interpreter implements IInterpreter{
             String register = order[1];
             int counter = Integer.parseInt(order[1]);
 
-            if (register == "A") {
+            if (register.equals("A")) {
                 if (A == 0) {
                     PC = counter;
                 }
-            } else if (register == "B") {
+            } else if (register.equals("B")) {
                 if (B == 0) {
                     PC = counter;
                 }
-            } else if (register == "C") {
+            } else if (register.equals("C")) {
                 if (C == 0) {
                     PC = counter;
                 }
@@ -929,86 +931,85 @@ public class Interpreter implements IInterpreter{
         }
     }
 
-    public boolean Exe(String [] order) {
+    public void Exe(String raw_order) {
+        String[] order = raw_order.split(" ");
         DownloadRegisters();
         RegisterStatus();
-        PC++;
 
         try {
             String operation = order[0];
 
-            if (operation == "AD") {
+            if (operation.equals("AD")) {
                 AD(order);
-            } else if (operation == "AX") {
+            } else if (operation.equals("AX")) {
                 AX(order);
-            } else if (operation == "SB") {
+            } else if (operation.equals("SB")) {
                 SB(order);
-            } else if (operation == "SX") {
+            } else if (operation.equals("SX")) {
                 SX(order);
-            } else if (operation == "DC") {
+            } else if (operation.equals("DC")) {
                 DC(order);
-            } else if (operation == "IC") {
+            } else if (operation.equals("IC")) {
                 IC(order);
-            } else if (operation == "MU") {
+            } else if (operation.equals("MU")) {
                 MU(order);
-            } else if (operation == "MX") {
+            } else if (operation.equals("MX")) {
                 MX(order);
-            } else if (operation == "DV") {
+            } else if (operation.equals("DV")) {
                 DV(order);
-            } else if (operation == "DX") {
+            } else if (operation.equals("DX")) {
                 DX(order);
-            } else if (operation == "MD") {
+            } else if (operation.equals("MD")) {
                 MD(order);
-            } else if (operation == "XM") {
+            } else if (operation.equals("XM")) {
                 XM(order);
-            } else if (operation == "MV") {
+            } else if (operation.equals("MV")) {
                 MV(order);
-            } else if (operation == "MZ") {
+            } else if (operation.equals("MZ")) {
                 MZ(order);
-            } else if (operation == "MO") {
+            } else if (operation.equals("MO")) {
                 MO(order);
-            } else if (operation == "MY") {
+            } else if (operation.equals("MY")) {
                 MY(order);
-            } else if (operation == "CE") {
+            } else if (operation.equals("CE")) {
                 CE(order);
-            } else if (operation == "CF") {
+            } else if (operation.equals("CF")) {
                 CF(order);
-            } else if (operation == "AF") {
+            } else if (operation.equals("AF")) {
                 AF(order);
-            } else if (operation == "DF") {
+            } else if (operation.equals("DF")) {
                 DF(order);
-            } else if (operation == "RF") {
+            } else if (operation.equals("RF")) {
                 RF(order);
-            } else if (operation == "RN") {
+            } else if (operation.equals("RN")) {
                 RN(order);
-            } else if (operation == "NP") {
+            } else if (operation.equals("NP")) {
                 NP(order);
-            } else if (operation == "NG") {
+            } else if (operation.equals("NG")) {
                 NG(order);
-            } else if (operation == "KP") {
+            } else if (operation.equals("KP")) {
                 KP(order);
-            } else if (operation == "SS") {
+            } else if (operation.equals("SS")) {
                 SS(order);
-            } else if (operation == "RP") {
+            } else if (operation.equals("RP")) {
                 RP(order);
-            } else if (operation == "KG") {
+            } else if (operation.equals("KG")) {
                 KG(order);
-            } else if (operation == "RM") {
+            } else if (operation.equals("RM")) {
                 RM(order);
-            } else if (operation == "SM") {
+            } else if (operation.equals("SM")) {
                 SM(order);
-            } else if (operation == "LM") {
+            } else if (operation.equals("DM")) {
                 LM(order);
-            } else if (operation == "JP") {
+            } else if (operation.equals("JP")) {
                 JP(order);
-            } else if (operation == "JZ") {
+            } else if (operation.equals("JZ")) {
                 JZ(order);
-            } else if (operation == "EX") {
+            } else if (operation.equals("EX")) {
                 SaveRegister();
                 procesor.Scheduler();
             } else {
                 System.out.println("Undefined order.");
-                return false;
             }
         }catch (ArrayIndexOutOfBoundsException e) {
             System.out.println(e);
@@ -1016,6 +1017,7 @@ public class Interpreter implements IInterpreter{
             SaveRegister();
             procesor.Scheduler();
         }
-        return true;
+        PC++;
+        procesor.Scheduler();
     }
 }
