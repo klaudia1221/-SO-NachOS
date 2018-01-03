@@ -15,6 +15,7 @@ public class ConditionVariable implements IConditionVariable {
     private IProcessManager processManager;
     private int pgid;
 
+
     /**
      * Tworzy obiekt nowy zmiennej warunkowej do synchronizacji plików.
      * Inicjalizuje pustą kolejkę procesów oczekujących (PCB) oraz zmienną busy wskazującą czy zasób jest zajęty.
@@ -88,20 +89,8 @@ public class ConditionVariable implements IConditionVariable {
     }
 
     /**
-     * Getter zmiennej `busy` określającej zajętość zasobu.
-     * Zwraca `true`, gdy zajęty lub `false` w przeciwnym wypadku.
+     * Wyswietla informacje o zmiennej warunkowej dla uzytkownika
      */
-    public boolean getBusy() {
-        return this.busy;
-    }
-
-    /**
-     * Getter zmiennej `waiting`. Zwraca listę oczekujących procesów.
-     */
-    public LinkedList<PCB> getWaiting() {
-        return this.waiting;
-    }
-
     public void printInfo() {
         System.out.println("Procesy oczekujące w kolejce:");
         for(PCB pcb : this.waiting){
@@ -113,5 +102,21 @@ public class ConditionVariable implements IConditionVariable {
         else {
             System.out.println("Zasób jest `wolny` (not busy).");
         }
+    }
+
+    public boolean getBusy() {
+        return this.busy;
+    }
+
+    public LinkedList<PCB> getWaiting() {
+        return this.waiting;
+    }
+
+    public int getPgid() {
+        return pgid;
+    }
+
+    public void setPgid(int pgid) {
+        this.pgid = pgid;
     }
 }
