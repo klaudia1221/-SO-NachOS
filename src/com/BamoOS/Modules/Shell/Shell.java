@@ -1059,7 +1059,7 @@ public class Shell {
             File file=null;
 
             try {
-               file= fileSystem.getFile(command[1]);
+               file=fileSystem.
                file.cv.printInfo();
             }catch(Exception e){
                 System.out.println(e.getMessage());
