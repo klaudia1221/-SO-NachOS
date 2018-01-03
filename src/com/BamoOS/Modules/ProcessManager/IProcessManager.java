@@ -8,7 +8,7 @@ public interface IProcessManager {
     PCB runNew() throws Exception;
     PCB runNew(String FileName) throws Exception;
     void killProcess(int PID) throws Exception;
-    void killProcessGroup(int PGID);
+    void killProcessGroup(int PGID) throws Exception;
     PCB newProcessGroup(String ProcessName) throws Exception;
     ArrayList<PCB> checkIfGroupExists(int PGID);
     PCB checkIfProcessExists(int PID);
@@ -18,4 +18,5 @@ public interface IProcessManager {
     PCB getActivePCB();
     void setActivePCB(PCB activePCB);
     ArrayList<PCB> getReadyProcesses();
+    public String getCommand(int pointer);
 }

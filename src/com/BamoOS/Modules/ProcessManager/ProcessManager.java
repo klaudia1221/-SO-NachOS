@@ -6,6 +6,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
 import java.util.stream.Stream;
 
@@ -59,12 +61,16 @@ public class ProcessManager implements IProcessManager {
 			if(PGID == 0) throw new Exception("Brak dost�pu do grupy procesu bezczynno�ci");
 			ArrayList<PCB> temp = checkIfGroupExists(PGID);
 			if(temp != null) {
-				PCB pcb = new PCB(this.ProcessCounter, ProcessName, PGID);
-				temp.add(pcb);
 				String textFileContent = readCommandFile("src/" + FileName + ".txt");
-				//TODO �adowanie programu z pliku do pami�ci
-                char[] code = new char[];
+				Map mapLine = new HashMap<Integer, Integer>();
+				for(int i = 0, j = 0; i != -1;j++){
+					i = textFileContent.indexOf(";", i);
+					mapLine.put(j,i-1);
+				}
+                char[] code = textFileContent.toCharArray();
 				PageTable pt1 = new PageTable(this.ProcessCounter, code.length);
+				PCB pcb = new PCB(this.ProcessCounter, ProcessName, PGID, pt1, mapLine);
+				temp.add(pcb);
 		        ram.pageTables.put(this.ProcessCounter, pt1);
 				ram.exchangeFile.writeToExchangeFile(this.ProcessCounter, code);
 				this.ProcessCounter++;
@@ -88,24 +94,27 @@ public class ProcessManager implements IProcessManager {
 	}
 	//Usuwanie procesu
 	public void killProcess(int PID) throws Exception {
-		//TODO powiadomi� inne modu�y ?pami��?
 		if(PID == 0) throw new Exception("Nie mo�lna zabi� procesu bezczynno�ci");
 		PCB temp = checkIfProcessExists(PID);
 		if(temp != null) {
+			ram.deleteProcessData(temp.getPID());
 			checkIfGroupExists(temp.getPGID()).remove(temp);
 		}
 		throw new Exception("Brak procesu o podanym PID");
 	}
 	//Usuwanie grup
-	public void killProcessGroup(int PGID) {
-		//TODO powiadomi� inne modu�y ?pami��?
-		try {
+	public void killProcessGroup(int PGID) throws Exception {
 			if(PGID == 0) throw new Exception("Brak dost�pu do grupy procesu bezczynno�ci");
 			ArrayList<PCB> temp = checkIfGroupExists(PGID);
 			if(temp != null) {
+				deleteDateForProcessesInGroup(temp);
 				ProcessGroups.remove(temp);
 			}else throw new Exception("Brak grupy o podanym PGID");
-		}catch(Exception e) {System.out.println(e);}
+	}
+	private void deleteDateForProcessesInGroup(ArrayList<PCB> listOfProcesses){
+		for(PCB pcb : listOfProcesses){
+			ram.deleteProcessData(pcb.getPID());
+		}
 	}
 	//Tworzenie nowej grupy oraz pierwszego procesu
 	public PCB newProcessGroup(String ProcessName) throws Exception {
@@ -224,5 +233,17 @@ public class ProcessManager implements IProcessManager {
 		return Processes;
 	}
 
-	public void
+	public String getCommand(int pointer){
+		int firstchar = this.ActivePCB.getMapLine().get(pointer);
+		String command = "";
+		char ch;
+		do{
+			ch = ram.getCommand(firstchar,ActivePCB.getPID(), ActivePCB.pageTable);
+			if(ch == ';' || ch == '&'){
+				break;
+			}
+			command += ch;
+		}while(true);
+		return command;
+    }
 }
