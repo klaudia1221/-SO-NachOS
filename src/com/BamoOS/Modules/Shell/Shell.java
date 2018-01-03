@@ -91,6 +91,8 @@ public class Shell {
         allCommands.put("access", "Dodanie uprawnień do pliku dla konkretnego  użytkownika ");
         allCommands.put("whoami", "Wyswietla aktualnie zalogowanego uzytkownika ");
         allCommands.put("meminfo", "Wyswietlenie RAM");
+        allCommands.put("cv", "Wyswietlenie informacji o zmiennej warunkowej");
+        allCommands.put("sms", "Wyswietlenie wszytskich komunikatow wyslanych podczas komunikacji miedzyprocesorowej");
     }
 
     private void logo() {
@@ -216,6 +218,9 @@ public class Shell {
                                 break;
                             case "cv":
                                 conditionVariable(separateCommand);
+                                break;
+                            case "sms":
+                                sms(separateCommand);
                                 break;
                         }
                     } else if (!isCommandGood(separateCommand[0])) {
@@ -1057,6 +1062,14 @@ public class Shell {
             readCommend();
         }
 
+    }
+
+    /**
+     * Metoda, ktora zostanie wywolana gdy uzytkownik poda komede 'sms'
+     * @param command
+     */
+    private void sms(String[] command){
+        //sms
     }
 
 }
