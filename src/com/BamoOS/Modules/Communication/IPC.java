@@ -17,9 +17,10 @@ public class IPC
         this.pm=pm;
     }
 
-    public void SM(int recID, Sms sms)
+    public void sendMessage(int recID, Sms sms)
     {
         sms.set_recID(recID);
+        sms.set_senID(pm.getActivePCB().getPID());
         if(pm.getActivePCB().getPID()==recID) //sprawdza czy nadawca nie jest odbiorca
         {
             System.out.println("Nadawca nie moze byc jednoczesnie odbiorca");
@@ -60,7 +61,7 @@ public class IPC
         System.out.println("Nie znaleziono procesu o ID "+recID);
     }
     //ogarnąć te kontenery wiadomości czy dla grupy czy nie
-    public void RM() //int senID, Sms sms)
+    public void receiveMessage() //int senID, Sms sms)
     {
 
         ArrayList<Sms> temp_list = pm.getActivePCB().getSmsList();
