@@ -12,5 +12,5 @@ public interface IInterpreter {
     int get_PC();
     int get_PID();
     void RegisterStatus();
-    void Exe();
+    void Exe() throws Exception;
 }

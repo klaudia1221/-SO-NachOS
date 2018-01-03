@@ -11,7 +11,6 @@ import com.BamoOS.Modules.ProcessManager.PCB;
 public class Processor implements IProcessor {
 
     private PCB Active;
-    private PCB proces;
     public double alpha; // Weighting factor od 0 do 1 (postarzanie) okresla poziom istotnosci ostatnej fazy
     public int time;
     private IProcessManager processManager;
@@ -23,7 +22,9 @@ public class Processor implements IProcessor {
         alpha = 0.5d; // Weighting factor od 0 do 1 (postarzanie) okresla poziom istotnosci ostatnej fazy
         time = 0;
     }
-
+    public void setInterpreter(Interpreter interpreter){
+        this.interpreter = interpreter;
+    }
     public void Scheduler() {
         ArrayList<PCB> readyProcesses = processManager.getReadyProcesses();
 
