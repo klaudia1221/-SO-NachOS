@@ -1,5 +1,6 @@
 package com.BamoOS.Modules.ProcessManager;
 
+import com.BamoOS.Modules.Communication.Sms;
 import com.BamoOS.Modules.ConditionVariable.ConditionVariable;
 
 import java.util.ArrayList;
@@ -37,7 +38,7 @@ public class PCB {
 	private int Timer;
 	//public PageTable pageTable;
 	//
-	private ArrayList<Sms>
+	private ArrayList<Sms> SmsList;
 	private ArrayList<ConditionVariable> ConditionVariables;
 	
 	
@@ -121,5 +122,12 @@ public class PCB {
 		System.out.println(this.getCounter()+"\t"+this.getTimer()+"\t"+this.getState()+"\t"+this.getName());
 	}
 	//Gettery i Settery dla p�l wiadomo�ci, interpretera oraz cpu
-	
+
+	public ArrayList<Sms> getSmsList() {
+		return SmsList;
+	}
+
+	public void setSmsList(ArrayList<Sms> smsList) {
+		SmsList = smsList;
+	}
 }
