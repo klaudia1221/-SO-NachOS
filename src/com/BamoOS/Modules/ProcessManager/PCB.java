@@ -10,7 +10,6 @@ public class PCB {
         ACTIVE,
         WAITING,
     	READY,
-    	NEW,
     	FINISHED
     }
 
@@ -50,7 +49,7 @@ public class PCB {
 		this.C = 0;
 		this.Counter = 0;
 		this.Timer = 0;
-		this.ProcessState = State.NEW;
+		this.ProcessState = State.READY;
 	}
 	
 	public int getPID() {
@@ -118,6 +117,8 @@ public class PCB {
 		System.out.print(this.getPID()+"\t"+this.getPGID()+"\t");
 		System.out.print(this.getRegister(Register.A)+"\t"+this.getRegister(Register.B)+"\t"+this.getRegister(Register.C)+"\t");
 		System.out.println(this.getCounter()+"\t"+this.getTimer()+"\t"+this.getState()+"\t"+this.getName());
+		//TODO wywolaj Condition variable z danej grupy
+		//printInfo
 	}
 	//Gettery i Settery dla p�l wiadomo�ci, interpretera oraz cpu
 

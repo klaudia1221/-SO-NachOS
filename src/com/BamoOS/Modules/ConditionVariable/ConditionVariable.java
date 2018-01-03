@@ -50,13 +50,15 @@ public class ConditionVariable implements IConditionVariable {
     /**
      * Zmienia stan aktualnie aktywnego procesu na `WAITING` i dodaje do kolejki procesów oczekujących.
      * Wywołanie planisty następuje w metodzie SetState.
+     *
+     * @param forceLock jezeli `true` powoduje bezwarunkowe zablokowanie procesu bez sprawdzania czy zasób jest zajęty
+     *                  i nie powoduje ustawienia pola `busy` na `true`
      */
-    public void await() {
-        if(this.busy) {
+    public void await(boolean forceLock) {
+        if (this.busy || forceLock) {
             processManager.getActivePCB().setState(PCB.State.WAITING); // zmien stan procesu i wywołaj planis // zmien stan procesu i wywołaj planiste
             this.waiting.addLast(this.processManager.getActivePCB()); // dodaj do kolejki
-        }
-        else {
+        } else {
             this.busy = true;
         }
     }
@@ -72,11 +74,8 @@ public class ConditionVariable implements IConditionVariable {
             PCB pcb = this.waiting.getFirst(); // weź pierwszy z kolejki (bufora)
             pcb.setState(PCB.State.READY); // zmien stan procesu na READY i wywolaj planiste
             this.waiting.removeFirst(); // usuń z początku kolejki oczekujących (ten ktorego stan zmienilismy)
-
         }
-        else {
-            this.busy = false; // "uwolnij" zasób jezeli lista byla pusta
-        }
+        this.busy = false; // "uwolnij" zasób
     }
 
     /**
