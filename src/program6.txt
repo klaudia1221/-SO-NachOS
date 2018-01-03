@@ -1,0 +1,8 @@
+MO A 10
+MO B 2
+SB A B
+MV D A
+PE
+JZ A 7
+JP 2
+EX
