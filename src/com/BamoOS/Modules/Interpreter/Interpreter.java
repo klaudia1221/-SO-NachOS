@@ -836,7 +836,7 @@ public class Interpreter implements IInterpreter{
             String state = order[2];
             if (state == "ACTIVE") {
 //                PCB.setState(PID, IPCB.State.ACTIVE);
-                processManager.g
+                processManager.getActivePCB();
             } else if (state == "WAITING") {
                 PCB.SetState(PID, IPCB.State.WAITING);
             } else if (state == "READY") {

@@ -13,7 +13,7 @@ import com.BamoOS.Modules.ProcessManager.PCB;
 
 
 // do zmiany argumenty wszedzie tam gdzie jest PID jak zobacze jak to wyglada u Bartka
-public class Processor implements Processor.ProcessorInterface {
+public class Processor implements IProcessor {
 	private ArrayList<PCB> lista_procesow_gotowych = new ArrayList<PCB>();
 //	private ArrayList<PCB> lista_procesow_gotowych2 = new ArrayList<PCB>();
 
