@@ -1,4 +1,4 @@
-package com.BamoOS.Modules.MemoryManagment;
+package memoryManagement;
 
 
 import javafx.util.Pair;
@@ -32,7 +32,7 @@ public class RAM {
                 this.ram[i * j] = ' ';
         }
     }
-    //Need some
+
     // metoda dla interpretera, zwraca znak o ktory prosi interpreter
     public char getCommand(int programCounter, int processID, PageTable pt) {
         try {

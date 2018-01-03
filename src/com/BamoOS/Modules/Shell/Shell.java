@@ -6,11 +6,14 @@ import com.BamoOS.Modules.ACL.Interfaces.ILoginService;
 import com.BamoOS.Modules.ACL.Interfaces.IUserController;
 import com.BamoOS.Modules.ACL.Mask;
 import com.BamoOS.Modules.ACL.User;
+import com.BamoOS.Modules.ConditionVariable.IConditionVariable;
 import com.BamoOS.Modules.FileSystem.Catalog;
+import com.BamoOS.Modules.FileSystem.File;
 import com.BamoOS.Modules.FileSystem.FileBase;
 import com.BamoOS.Modules.FileSystem.IFileSystem;
 import com.BamoOS.Modules.MemoryManagment.RAM;
 import com.BamoOS.Modules.ProcessManager.IProcessManager;
+import com.BamoOS.Modules.ProcessManager.ProcessManager;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -27,34 +30,32 @@ import static com.BamoOS.Modules.ACL.OperationType.READ;
 
 
 public class Shell {
-    private String testString;
     private ProcesorInterface processor;
-    private IProcessManager processManager;
+    private ProcessManager processManager;
     private RAM memory;
     private IFileSystem fileSystem;
     private ILoginService loginService;
     private IUserController userController;
-    //    private IPCB PCB; //Tutaj niewiadoma, bo Bartek powinien to w ProcessManagerze udostępniać.
     private IACLController ACLController;
+    private IConditionVariable conditionVariable;
     private Map<String, String> allCommands; //Mapa z wszystkimi komednami w shellu
 
     public Shell(IUserController userController,
                  IFileSystem fileSystem, RAM memory,
                  ProcesorInterface processor,
                  IACLController ACLController,
-                 IProcessManager processManager,
-                 ILoginService loginService) {
+                 ProcessManager processManager,
+                 ILoginService loginService, IConditionVariable conditionVariable) {
         this.userController = userController;
         this.fileSystem = fileSystem;
         this.memory = memory;
         this.processor = processor;
         this.ACLController = ACLController;
         this.processManager = processManager;
-//        this.PCB= PCB;
         this.loginService = loginService;
+        this.conditionVariable=conditionVariable;
         allCommands = new HashMap<>();
     }
-
     /**
      * Metoda, ktora wypelnia mape komendami, wyswietla logo, oraz dopoki nie zostanie przerwana przez uzytkownika wykonuje metode readCommend()
      */
@@ -66,7 +67,6 @@ public class Shell {
             readCommend();
         }
     }
-
     /**
      * Metoda, ktora laduje wszytskie metody do mapy
      */
@@ -91,6 +91,8 @@ public class Shell {
         allCommands.put("access", "Dodanie uprawnień do pliku dla konkretnego  użytkownika ");
         allCommands.put("whoami", "Wyswietla aktualnie zalogowanego uzytkownika ");
         allCommands.put("meminfo", "Wyswietlenie RAM");
+        allCommands.put("cv", "Wyswietlenie informacji o zmiennej warunkowej");
+        allCommands.put("sms", "Wyswietlenie wszytskich komunikatow wyslanych podczas komunikacji miedzyprocesorowej");
     }
 
     private void logo() {
@@ -213,6 +215,12 @@ public class Shell {
                                 break;
                             case "close":
                                 close(separateCommand);
+                                break;
+                            case "cv":
+                                conditionVariable(separateCommand);
+                                break;
+                            case "sms":
+                                sms(separateCommand);
                                 break;
                         }
                     } else if (!isCommandGood(separateCommand[0])) {
@@ -442,7 +450,7 @@ public class Shell {
                 if (ACLController.hasUserPremissionToOperation(catalog, loginService.getLoggedUser(), MODIFY)) { //sprawdzenie uprawnien
                     //tworzenie pliku
                     try {
-                        fileSystem.createFile(command[1], loginService.getLoggedUser());
+                        fileSystem.createFile(command[1], loginService.getLoggedUser(), processManager);
                     } catch (Exception e) {
                         System.out.println(e.getMessage());
                         readCommend();
@@ -722,20 +730,25 @@ public class Shell {
                         System.out.println( e.getMessage());
                         readCommend();
                     }
-                }else if(fileSystem.getFileBase(command[1]).getOwner().getName().equals(loginService.getLoggedUser().getName())){
-                    FileBase fileBase = null;
-                    try {
-                        fileBase = fileSystem.getFileBase(command[1]);
-                    } catch (Exception e) {
-                        System.out.println(e.getMessage());
-                        readCommend();
+                }else try {
+                    if(fileSystem.getFileBase(command[1]).getOwner().getName().equals(loginService.getLoggedUser().getName())){
+                        FileBase fileBase = null;
+                        try {
+                            fileBase = fileSystem.getFileBase(command[1]);
+                        } catch (Exception e) {
+                            System.out.println(e.getMessage());
+                            readCommend();
+                        }
+                        try {
+                            ACLController.addAceForUser(user, whichMask(command[4]),fileBase);
+                        } catch (Exception e) {
+                           System.out.println( e.getMessage());
+                            readCommend();
+                        }
                     }
-                    try {
-                        ACLController.addAceForUser(user, whichMask(command[4]),fileBase);
-                    } catch (Exception e) {
-                       System.out.println( e.getMessage());
-                        readCommend();
-                    }
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
+                    readCommend();
                 }
             }
             //access [file_name] --group [group_name] (R)(M)(E) 111/000 ...
@@ -774,35 +787,72 @@ public class Shell {
      * Wywoływane metodu procesManager
      * @param command
      */
+    //try-catch dodac
     private void process(String[] command){
         if(command.length>1){
             if(command.length==3){
                 //process --kill [PID]
                 if(command[1].equals("--kill")){
                     //zakonczenie pracy procesu
-                    processManager.killProcess(Integer.parseInt(command[2]));
+                    try {
+                        processManager.killProcess(Integer.parseInt(command[2]));
+                    } catch (Exception e) {
+                        System.out.println(e.getMessage());
+                        readCommend();
+                    }
                 }
                 //process --killall [PGID]
                else if(command[1].equals("--killall") ){
-                    processManager.killProcessGroup(Integer.parseInt(command[2]));
+                    try {
+                        processManager.killProcessGroup(Integer.parseInt(command[2]));
+                    } catch (Exception e) {
+                        System.out.println(e.getMessage());
+                        readCommend();
+                    }
+
                 }
-                //process --ps [PGID]
+                //process --ps [PGID] // info o danej grupie
                else if(command[1].equals("--ps")){
-                   // processManager.PrintGroupInfo(Integer.parseInt(command[2]));
+                    try {
+                        processManager.PrintGroupInfo(Integer.parseInt(command[2]));
+                    } catch (Exception e) {
+                        System.out.println(e.getMessage());
+                        readCommend();
+                    }
+
                 }
             }
            else if(command.length==2){
-                //process --ps
+                //process --ps //info o wszystkich
                 if(command[1].equals("--ps")){
-                    processManager.PrintProcesses();
+                    try {
+                        processManager.PrintProcesses();
+                    } catch (Exception e) {
+                        System.out.println(e.getMessage());
+                        readCommend();
+                    }
                 }
             }
             //process -–create [nazwaProcesu] [PGID]
             else if(command.length==4){
-                processManager.newProcess(command[2], Integer.parseInt(command[3]));
-            }//process –create [nazwaProcesu] [nazwaPliku] [PGID]
-            else if(command.length==5) {
-                processManager.newProcess(command[2],Integer.parseInt(command[4]), command[3]);
+               if(command[1].equals("--create")) {
+                   try {
+                       processManager.newProcess(command[2], Integer.parseInt(command[3]));
+                   } catch (Exception e) {
+                       System.out.println(e.getMessage());
+                       readCommend();
+                   }
+               }
+            }//process –-groupCreate [nazwaProcesu]  // nowa grupa
+            else if(command.length==4) {
+                if(command[1].equals("--groupCreate")) {
+                    try {
+                        processManager.newProcessGroup(command[2]);
+                    } catch (Exception e) {
+                        System.out.println(e.getMessage());
+                        readCommend();
+                    }
+                }
             }
         }else{
             System.out.println("Bledna komenda");
@@ -815,14 +865,30 @@ public class Shell {
      * Metody  PCB
      * @param command
      */
-    private void pcbinfo(String[] command){
-        if(command.length==1){
-//            // wyswietlanie bloku kontrolengo aktywnego procesu
-//            PCB.PrintInfo();
-            processManager.getActivePCB().printInfo();
-        }else{
-            System.out.println("Bledna komenda");
-            readCommend();
+    private void pcbinfo(String[] command) {
+        //pcbinfo --active
+        if (command.length == 2) {
+            if (command[1].equals("--active")) {
+                // wyswietlanie bloku kontrolengo aktywnego procesu
+                try {
+                    processManager.getActivePCB().printInfo();
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
+                    readCommend();
+                }
+
+            }//pcbinfo --all
+            else if (command[1].equals("--all")) {
+                try {
+                    processManager.PrintProcesses();
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
+                    readCommend();
+                }
+            } else {
+                System.out.println("Bledna komenda");
+                readCommend();
+            }
         }
     }
     /**
@@ -833,7 +899,7 @@ public class Shell {
     private void meminfo(String[] command){
         if(command.length==2){
             if(command[1].equals("--print")){
-               memory.printRAM();
+               memory.writeRAM();
             }
             else {
                 System.out.println("Bledna komenda");
@@ -982,9 +1048,33 @@ public class Shell {
                 }
             }
         } catch (Exception e) {
-            e.getMessage();
+           System.out.println( e.getMessage());
             readCommend();
         }
         return false;
     }
+
+    /**
+     * Metoda, ktora zostaje wywolana gdy uzytkownik poda komende 'cv'
+     * @param command
+     */
+    private void conditionVariable(String[] command){
+        //cv
+        if(command.length==1){
+            conditionVariable.printInfo();
+        }else {
+            System.out.println("Bledna komenda");
+            readCommend();
+        }
+
+    }
+
+    /**
+     * Metoda, ktora zostanie wywolana gdy uzytkownik poda komede 'sms'
+     * @param command
+     */
+    private void sms(String[] command){
+        //sms
+    }
+
 }

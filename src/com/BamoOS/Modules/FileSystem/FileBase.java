@@ -1,6 +1,7 @@
 package com.BamoOS.Modules.FileSystem;
 
 import com.BamoOS.Modules.ACL.User;
+import com.BamoOS.Modules.ConditionVariable.IConditionVariable;
 
 public class FileBase {
     private static int COUNTER = 0;
