@@ -87,7 +87,7 @@ public class ConditionVariable implements IConditionVariable {
     public void printInfo() {
         System.out.println("Procesy oczekujące w kolejce:");
         for(PCB pcb : this.waiting){
-            pcb.PrintInfo();
+            pcb.printInfo();
         }
         if(this.busy){
             System.out.println("Zasób jest `zajęty` (busy).");
