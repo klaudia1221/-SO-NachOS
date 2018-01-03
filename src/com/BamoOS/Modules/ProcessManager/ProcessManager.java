@@ -24,6 +24,9 @@ public class ProcessManager implements IProcessManager {
 	public PCB getActivePCB(){
 		return ActivePCB;
 	}
+	public void setActivePCB(PCB activePCB){
+	    this.ActivePCB = activePCB;
+    }
 	//Nowy proces o ile zosta�a wcze�niej utworzona grupa
 	public void newProcess(String ProcessName, int PGID) {
 		try {

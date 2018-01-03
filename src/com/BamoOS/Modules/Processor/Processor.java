@@ -60,10 +60,10 @@ public void Scheduler() {
 			for (int i = 0; i < lista_procesow_gotowych.size(); i++) {
 				PCB p = lista_procesow_gotowych.get(i);
 			if (time == 0) {
-					p.setThau(10);
+					p.setTau(10);
 			}
 					else{
-						p.setThau((int) alpha * time + (1 - alpha) * Running.getThau());
+						p.setTau((int) alpha * time + (1 - alpha) * Active.getTau());
 					}
 
 			}
@@ -73,15 +73,16 @@ public void Scheduler() {
 			for (int i = 0; i < lista_procesow_gotowych.size(); i++) {
 				PCB ptemp = lista_procesow_gotowych.get(i);
 				//System.out.println(ptemp.getThau());
-				if (ptemp.getThau() < nastepny.getThau()) {
+				if (ptemp.getTau() < nastepny.getTau()) {
 					nastepny = ptemp;
 					index_nastepnego = i;
 				}
 			}
 			lista_procesow_gotowych.remove(index_nastepnego);
-			Running = nastepny;
-			Running.setState(PCB.State.ACTIVE);// chodzi o to zeby ustawic stan na ACTIVE nie wiem jak sie do tego dobrac
-		}// konczy size>0
+			Active = nastepny;
+			Active.setState(PCB.State.ACTIVE);// chodzi o to zeby ustawic stan na ACTIVE nie wiem jak sie do tego dobrac
+            processManager.setActivePCB(Active);
+		}
 		else
 		{
 			System.out.println("Nie ma zadnego procesu na liscie procesow gotwych .");
@@ -91,7 +92,7 @@ public void Scheduler() {
 
 public void wykonaj(String order[]) {   //
 	Scheduler();
-	if(Running != null&& Running.getPID() != 0) {
+	if(Active != null && Active.getPID() != 0) {
 		try{
 		interpreter.Exe(order);
 		}
