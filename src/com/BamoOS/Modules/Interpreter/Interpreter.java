@@ -19,25 +19,25 @@ public class Interpreter implements IInterpreter{
      Rozkazy:
      •AD reg1 reg2 - dodaje rejestr2 do rejestru1,
      •AX reg num – dodaje liczbę do rejestru, 
-     reg [address] - dodaje zawartość adresu do rejestru,
+     //reg [address] - dodaje zawartość adresu do rejestru -->>> nie robi tego zarządzanie pamięcią,
      •SB reg1 reg2 - odejmuje od rejestru1 zawartość rejestru2, 
      •SX reg num – odejmuje liczbę od rejestru, 
-     reg [address] - odejmuje zawartość adresu od rejestru,
+     //reg [address] - odejmuje zawartość adresu od rejestru -->>> nie robi tego zarządzanie pamięcią,
      •DC reg - zwiększa zawartość rejestru o 1,
      •IC reg - zmniejsza zawartość rejestru o 1,
      •MU reg1 reg2 – mnoży rejestr 1 przez rejestr 2, 
      •MX reg num – mnoży rejestr przez liczbę, 
-     reg [address] - mnoży zawartość adresu razy zawartość rejestru,
+     //reg [address] - mnoży zawartość adresu razy zawartość rejestru -->>> nie robi tego zarządzanie pamięcią,
      •DV reg1 reg2 - dzieli zawartość rejestru1 przez zawartość rejestru2, 
      •DX reg num – dzieli rejestr od rejestru, 
-     reg [address] - dzieli zawartość rejestru przez liczbę z danej komórki,
+     //reg [address] - dzieli zawartość rejestru przez liczbę z danej komórki -->>> nie robi tego zarządzanie pamięcią,
      •MD reg1 reg2 reg3 - reszta z dzielenia rejestru1 przez rejestr2 zapisywana 2 rejestrze3,
      •XM reg1 num reg2  - reszta z dzielenia rejestru1 przez liczbę zapisywana w rejestrze2,
-     reg1 [address] reg2 - reszta z dzielenia rejestru1 przez zawartość danej komórki zapisywana w rejestrze2,
+     //reg1 [address] reg2 - reszta z dzielenia rejestru1 przez zawartość danej komórki zapisywana w rejestrze2 -->>> nie robi tego zarządzanie pamięcią,
      •MV reg1 reg2 – kopiuje wartość rejestru 2 do rejestru 1,
-      •MZ address reg - zapisuje do pamięci zawartość rejestru pod wskazanym adresem,
+      •//MZ address reg - zapisuje do pamięci zawartość rejestru pod wskazanym adresem -->>> nie robi tego zarządzanie pamięcią,
      •MO reg n – umieszcza w rejestrze wartość n, 
-     •MY reg address - umieszcza w rejestrze zawartość pamiętaną pod wskazanym adresem,
+     •//MY reg address - umieszcza w rejestrze zawartość pamiętaną pod wskazanym adresem -->>> nie robi tego zarządzanie pamięcią,
       •CE file_name - tworzy pusty plik o podanej nazwie, 
       •CF file_name file_content - tworzy plik z zawartością,
      •AF file_name file_content - dodaje dane na końcu pliku,
@@ -199,7 +199,7 @@ public class Interpreter implements IInterpreter{
 
     private void AX(String[] order){
         String reg = order[1];
-        int len = order[2].length();
+        /*int len = order[2].length();
 
         if ((order[2].substring(0,1).equals("["))&&(order[2].substring(len-2,len-1)).equals("]")){
             String raw_address = order[2];
@@ -230,7 +230,7 @@ public class Interpreter implements IInterpreter{
         }else if ((order[2].substring(0,1).equals("["))&&(order[2].substring(1,2).equals("]"))) {
             System.out.println("Incorrect address.");
         }else if ((!order[2].substring(0,1).equals("["))&&(!order[2].substring(len-2,len-1).equals("]"))){
-            int val = Integer.parseInt(order[2]);
+           */ int val = Integer.parseInt(order[2]);
 
             if (reg.equals("A")) {
                 A += val;
@@ -242,7 +242,7 @@ public class Interpreter implements IInterpreter{
                 System.out.println("Incorrect register.");
             }
         }
-    }
+    //}
 
     private void SB(String[] order){
         String reg_1 = order[1];
@@ -275,7 +275,7 @@ public class Interpreter implements IInterpreter{
 
     private void SX(String[] order){
         String reg = order[1];
-        int len = order[2].length();
+        /*int len = order[2].length();
 
         if ((order[2].substring(0,1).equals("["))&&(order[2].substring(len-2,len-1).equals("]"))){
             String raw_address = order[2];
@@ -305,7 +305,7 @@ public class Interpreter implements IInterpreter{
         }else if ((order[2].substring(0,1).equals("["))&&(order[2].substring(1,2).equals("]"))) {
             System.out.println("Incorrect address.");
         }else if ((!order[2].substring(0,1).equals("["))&&(!order[2].substring(len-2,len-1).equals("]")){
-            int val = Integer.parseInt(order[2]);
+            */int val = Integer.parseInt(order[2]);
 
             if (reg.equals("A")) {
                 A -= val;
@@ -317,7 +317,7 @@ public class Interpreter implements IInterpreter{
                 System.out.println("Incorrect register.");
             }
         }
-    }
+    //}
 
     private void DC(String[] order){
         String reg = order[1];
@@ -379,7 +379,7 @@ public class Interpreter implements IInterpreter{
 
     private void MX(String[] order) {
         String reg = order[1];
-        int len = order[2].length();
+        /*int len = order[2].length();
 
         if ((order[2].substring(0,1).equals("["))&&(order[2].substring(len-2,len-1).equals("]"))){
             String raw_address = order[2];
@@ -410,7 +410,7 @@ public class Interpreter implements IInterpreter{
         }else if ((order[2].substring(0,1).equals("["))&&(order[2].substring(1,2).equals("]"))) {
             System.out.println("Incorrect address.");
         }else if ((!order[2].substring(0,1).equals("["))&&(!order[2].substring(len-2,len-1).equals("]"))){
-            int val = Integer.parseInt(order[2]);
+          */  int val = Integer.parseInt(order[2]);
 
             if (reg.equals("A")) {
                 A *= val;
@@ -422,7 +422,7 @@ public class Interpreter implements IInterpreter{
                 System.out.println("Incorrect register.");
             }
         }
-    }
+    //}
 
     private void DV(String[] order) {
         String reg_1 = order[1];
