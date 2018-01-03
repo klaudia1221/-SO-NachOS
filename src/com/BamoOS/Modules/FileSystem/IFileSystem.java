@@ -14,5 +14,6 @@ public interface IFileSystem {
     void deleteFile(String fileName) throws Exception;
     void renameFile(String oldName, String newName) throws Exception;
     String list();
+    Catalog getCatalog();
 
 }

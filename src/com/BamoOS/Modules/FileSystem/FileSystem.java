@@ -164,6 +164,9 @@ public class FileSystem implements IFileSystem {
         build.deleteCharAt(0);
         return build.toString();
     }
+    public Catalog getCatalog(){
+        return this.dir;
+    }
 
     //Testowanie
 
