@@ -83,7 +83,7 @@ public class Processor implements IProcessor {
         }
     }
 
-    public void wyswietl_liste_procesow_gotowych() {
+    public void printProcesses() {
         System.out.println("Lista procesow gotowych");
         for (PCB proces : processManager.getReadyProcesses()) {
             System.out.println("-------------------------");

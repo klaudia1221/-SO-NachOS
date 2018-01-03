@@ -1,6 +1,13 @@
 package com.BamoOS.Modules.ProcessManager;
 
+import java.io.*;
+import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Scanner;
+import java.util.stream.Stream;
 
 import com.BamoOS.Modules.ConditionVariable.ConditionVariable;
 import com.BamoOS.Modules.MemoryManagment.PageTable;
@@ -54,7 +61,7 @@ public class ProcessManager implements IProcessManager {
 			if(temp != null) {
 				PCB pcb = new PCB(this.ProcessCounter, ProcessName, PGID);
 				temp.add(pcb);
-				//TODO odczyt z pliku
+				String textFileContent = readCommandFile("src/" + FileName + ".txt");
 				//TODO �adowanie programu z pliku do pami�ci
                 char[] code = new char[];
 				PageTable pt1 = new PageTable(this.ProcessCounter, code.length);
@@ -63,6 +70,15 @@ public class ProcessManager implements IProcessManager {
 				this.ProcessCounter++;
 			}
 			throw new Exception("Brak grupy o podanym PGID");
+	}
+	private String readCommandFile(String relativePathToFile){
+		StringBuilder contentBuilder = new StringBuilder();
+		try(Stream<String> stream = Files.lines(Paths.get(relativePathToFile), StandardCharsets.UTF_8)){
+			stream.forEach(s -> contentBuilder.append(s));
+		}catch(IOException e){
+			e.printStackTrace();
+		}
+		return contentBuilder.toString();
 	}
 	public PCB runNew() throws Exception {
 		return newProcess("P"+this.ProcessCounter, this.ActivePCB.getPGID());
