@@ -81,4 +81,17 @@ public class ConditionVariable implements IConditionVariable {
     public LinkedList<PCB> getWaiting() {
         return this.waiting;
     }
+
+    public void printInfo() {
+        System.out.println("Procesy oczekujące w kolejce:");
+        for(PCB pcb : this.waiting){
+            pcb.PrintInfo();
+        }
+        if(this.busy){
+            System.out.println("Zasób jest `zajęty` (busy).");
+        }
+        else {
+            System.out.println("Zasób jest `wolny` (not busy).");
+        }
+    }
 }

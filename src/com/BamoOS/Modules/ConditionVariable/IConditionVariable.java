@@ -9,4 +9,5 @@ public interface IConditionVariable {
     void signalAll(); // j.w. dla wszystkich w kolejce
     boolean getBusy(); // getter tajemniczej zmiennej boolowskiej
     LinkedList<PCB> getWaiting(); // getter listy oczekujących procesów
+    void printInfo(); // wypisywanie informacji dla uzytkownika - do sprawdzania
 }
