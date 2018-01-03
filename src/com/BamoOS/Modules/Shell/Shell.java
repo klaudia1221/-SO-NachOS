@@ -801,6 +801,15 @@ public class Shell {
                         readCommend();
                     }
                 }
+                //process –-groupCreate [nazwaProcesu]  // nowa grupa
+                else  if(command[1].equals("--groupCreate")) {
+                    try {
+                        processManager.newProcessGroup(command[2]);
+                    } catch (Exception e) {
+                        System.out.println(e.getMessage());
+                        readCommend();
+                    }
+                }
                 //process --killall [PGID]
                else if(command[1].equals("--killall") ){
                     try {
@@ -813,46 +822,18 @@ public class Shell {
                 }
                 //process --ps [PGID] // info o danej grupie
                else if(command[1].equals("--ps")){
-                    try {
-                        processManager.PrintGroupInfo(Integer.parseInt(command[2]));
-                    } catch (Exception e) {
-                        System.out.println(e.getMessage());
-                        readCommend();
-                    }
 
-                }
             }
-           else if(command.length==2){
-                //process --ps //info o wszystkich
-                if(command[1].equals("--ps")){
-                    try {
-                        processManager.PrintProcesses();
-                    } catch (Exception e) {
-                        System.out.println(e.getMessage());
-                        readCommend();
-                    }
-                }
-            }
-            //process -–create [nazwaProcesu] [PGID]
-            else if(command.length==4){
+            //process -–create [nazwaProcesu] [nazwaPliku][PGID]
+            else if(command.length==5){
                if(command[1].equals("--create")) {
                    try {
-                       processManager.newProcess(command[2], Integer.parseInt(command[3]));
+                       processManager.newProcess(command[2],  Integer.parseInt(command[4]), command[3]);
                    } catch (Exception e) {
                        System.out.println(e.getMessage());
                        readCommend();
                    }
                }
-            }//process –-groupCreate [nazwaProcesu]  // nowa grupa
-            else if(command.length==4) {
-                if(command[1].equals("--groupCreate")) {
-                    try {
-                        processManager.newProcessGroup(command[2]);
-                    } catch (Exception e) {
-                        System.out.println(e.getMessage());
-                        readCommend();
-                    }
-                }
             }
         }else{
             System.out.println("Bledna komenda");
@@ -890,7 +871,21 @@ public class Shell {
                 readCommend();
             }
         }
-    }
+        //pcbinfo --all [PGID]
+        else if(command.length==3){
+            try {
+                processManager.PrintGroupInfo(Integer.parseInt(command[2]));
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+                readCommend();
+            }
+        }
+        else {
+            System.out.println("Bledna komenda");
+            readCommend();
+        }
+        }
+
     /**
      * Metdoa, ktora zostanie wywwoalan gdy uzytwkonik poda komende 'meminfo'
      * Metody modułu memory
@@ -1059,9 +1054,17 @@ public class Shell {
      * @param command
      */
     private void conditionVariable(String[] command){
-        //cv
-        if(command.length==1){
-            conditionVariable.printInfo();
+        //cv [nazwaPliku]
+        if(command.length==2){
+            File file=null;
+
+            try {
+               file= fileSystem.getFile(command[2]);
+            }catch(Exception e){
+                System.out.println(e.getMessage());
+                readCommend();
+            }
+            file.cv.printInfo();
         }else {
             System.out.println("Bledna komenda");
             readCommend();
@@ -1074,7 +1077,7 @@ public class Shell {
      * @param command
      */
     private void sms(String[] command){
-        //sms
+
     }
 
 }
