@@ -1,12 +1,15 @@
 package com.BamoOS.Modules.ACL;
 
 public class User {
+    private static int counter = 0;
     private int id;
     private String name;
     private boolean isLogged;
 
     public User(String name){
         this.name = name;
+        id = counter;
+        counter++;
     }
 
     public String getName(){
