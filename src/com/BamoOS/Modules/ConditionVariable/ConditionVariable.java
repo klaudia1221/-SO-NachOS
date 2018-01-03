@@ -33,9 +33,13 @@ public class ConditionVariable implements IConditionVariable {
      * Wywołanie planisty następuje w metodzie SetState.
      */
     public void await() {
-        processManager.getActivePCB().setState(PCB.State.WAITING); // zmien stan procesu i wywołaj planiste
-        this.waiting.addLast(this.processManager.getActivePCB()); // dodaj do kolejki
-        this.busy = true;
+        if(this.busy) {
+            processManager.getActivePCB().setState(PCB.State.WAITING); // zmien stan procesu i wywołaj planis // zmien stan procesu i wywołaj planiste
+            this.waiting.addLast(this.processManager.getActivePCB()); // dodaj do kolejki
+        }
+        else {
+            this.busy = true;
+        }
     }
 
     /**
@@ -45,13 +49,14 @@ public class ConditionVariable implements IConditionVariable {
      * Brak efektu, gdy w kolejce nie ma oczekujących procesów.
      */
     public void signal() {
-        if(!this.waiting.isEmpty()) { // jezeli sa oczekujace procesy
+        if(!this.waiting.isEmpty()) { // jezeli są procesy oczeujace to wyrzuć pierwszy i zmien na `ready`
             PCB pcb = this.waiting.getFirst(); // weź pierwszy z kolejki (bufora)
             pcb.setState(PCB.State.READY); // zmien stan procesu na READY i wywolaj planiste
             this.waiting.removeFirst(); // usuń z początku kolejki oczekujących (ten ktorego stan zmienilismy)
-            if(this.waiting.isEmpty()){
-                this.busy = false;
-            }
+
+        }
+        else {
+            this.busy = false; // "uwolnij" zasób jezeli lista byla pusta
         }
     }
 
@@ -59,8 +64,8 @@ public class ConditionVariable implements IConditionVariable {
      * Wywołuje metodę `signal` dla wszystkich procesów w kolejce oczekująych
      */
     public void signalAll() {
-        for (int i=0; i < this.waiting.size(); i++) { // dla wszystkich procesow oczekujacych
-            this.signal(); // wywolaj funkcje signal()
+        for (int i=0; i < this.waiting.size(); i++) { // wywołaj signal() tyle razy ile jest procesów oczekujaych
+            this.signal();
         }
     }
 
@@ -77,5 +82,18 @@ public class ConditionVariable implements IConditionVariable {
      */
     public LinkedList<PCB> getWaiting() {
         return this.waiting;
+    }
+
+    public void printInfo() {
+        System.out.println("Procesy oczekujące w kolejce:");
+        for(PCB pcb : this.waiting){
+            pcb.PrintInfo();
+        }
+        if(this.busy){
+            System.out.println("Zasób jest `zajęty` (busy).");
+        }
+        else {
+            System.out.println("Zasób jest `wolny` (not busy).");
+        }
     }
 }
