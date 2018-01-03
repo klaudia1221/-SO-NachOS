@@ -42,6 +42,7 @@ public class Main{
         public static void main(String[] args) {
             ram = new RAM();
             processManager = new ProcessManager(ram);
+            processManager.setStartingActivePCB();
             ipc = new IPC(processManager);
 
             userController = new UserController();

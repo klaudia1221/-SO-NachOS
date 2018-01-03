@@ -25,18 +25,20 @@ public class ProcessManager implements IProcessManager {
 	private int GroupsCounter;
 	private ArrayList<ConditionVariable> ConditionVariables;
 	private RAM ram;
-	
+
 	public ProcessManager(RAM ram) {
 	    this.ram = ram;
 		this.ProcessGroups = new ArrayList<ArrayList<PCB>>();
 		this.ProcessCounter = 0;
 		this.GroupsCounter = 0;
+		ConditionVariables = new ArrayList<>();
+	}
+	public void setStartingActivePCB(){
 		try {
 			ActivePCB = newProcessGroup("Proces bezczynności");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		ConditionVariables = new ArrayList<>();
 	}
 
 	public PCB getActivePCB(){
@@ -138,7 +140,11 @@ public class ProcessManager implements IProcessManager {
 		ArrayList<PCB> al = new ArrayList<PCB>();
 		al.add(pcb);
 		ProcessGroups.add(al);
-		ConditionVariables.add(new ConditionVariable(this, this.GroupsCounter));
+		try{
+			ConditionVariables.add(new ConditionVariable(this, this.GroupsCounter));
+		}catch (Exception e){
+			e.printStackTrace();
+		}
 		this.ProcessCounter++;
 		this.GroupsCounter++;
 		return pcb;
