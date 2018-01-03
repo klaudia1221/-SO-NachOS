@@ -239,7 +239,6 @@ public class Shell {
 
     /**
      * Metoda, ktora sprawdza, czy komenda podana przez uzytkownika, znajduje sie wsrod komend zapisanych w mapie shella
-     *
      * @param command
      * @return zwraca ture, gdy jest, false gdy nie ma
      */
@@ -440,14 +439,7 @@ public class Shell {
         if (command.length > 1) {
             //cr [nazwa_pliku]
             if (command.length == 3) {
-                Catalog catalog = null;
-                try {
-                    catalog = fileSystem.getCatalog();
-                } catch (Exception e) {
-                    System.out.println(e.getMessage());
-                    readCommend();
-                }
-                if (ACLController.hasUserPremissionToOperation(catalog, loginService.getLoggedUser(), MODIFY)) { //sprawdzenie uprawnien
+                if (ACLController.hasUserPremissionToOperation(fileSystem.getCatalog(), loginService.getLoggedUser(), MODIFY)) { //sprawdzenie uprawnien
                     //tworzenie pliku
                     try {
                         fileSystem.createFile(command[1], loginService.getLoggedUser(), processManager);
@@ -514,6 +506,7 @@ public class Shell {
                             matcher = pattern.matcher(line);
                             if (!matcher.lookingAt()) { // jesli nie zawiera linijka ^D to :
                                 out.append(line);
+                                out.append('\n');
                             } else {
                                 //dodanie bez ^D // jesli dana linijka zawiera ^D
                                 int size = line.length();
@@ -1059,12 +1052,13 @@ public class Shell {
             File file=null;
 
             try {
-               file= fileSystem.getFile(command[2]);
+               file=fileSystem.getFile(command[1]);
+               file.cv.printInfo();
             }catch(Exception e){
                 System.out.println(e.getMessage());
                 readCommend();
             }
-            file.cv.printInfo();
+
         }else {
             System.out.println("Bledna komenda");
             readCommend();
