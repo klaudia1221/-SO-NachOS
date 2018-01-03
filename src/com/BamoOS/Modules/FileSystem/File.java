@@ -47,8 +47,6 @@ public class File extends FileBase{
         this.LAST_BLOCK=first;
         this.BLOCK_NUM = 1;
         this.cv = new ConditionVariable(processManager);
-        //Pytanie do michała, dlaczego to jest kalasa String,
-        // a nie sam string
         this.opened_file=new String();
     }
 

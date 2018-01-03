@@ -24,7 +24,7 @@ public class FileSystem implements IFileSystem {
     public void openFile(String fileName) throws Exception {
         if (!nameExists(fileName)) { throw new Exception("Plik o takiej nazwie nie istnieje."); }
         else {
-
+            dir.getFileByName(fileName).cv.await(false);
             String tmp = new String();
             int block = dir.getFirstBlock(fileName), i=0;
             while (tmp.length()<=dir.getSize(fileName)) {
@@ -42,7 +42,10 @@ public class FileSystem implements IFileSystem {
     public void closeFile(String fileName) throws Exception {
         if (!nameExists(fileName)) { throw new Exception("Plik o takiej nazwie nie istnieje."); }
         else if (!dir.open_check(fileName)) { throw new Exception("Plik o takiej nazwie nie jest otwarty."); }
-        else { dir.close_file(fileName);  }
+        else {
+            dir.close_file(fileName);
+            dir.getFileByName(fileName).cv.signal();
+        }
     }
 
     public void createFile(String fileName, User user, IProcessManager processManager) throws Exception{
