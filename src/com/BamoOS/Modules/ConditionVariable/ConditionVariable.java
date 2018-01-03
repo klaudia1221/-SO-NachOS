@@ -13,9 +13,10 @@ public class ConditionVariable implements IConditionVariable {
     private LinkedList<PCB> waiting; // kolejka FIFO (bufor)
     private boolean busy; // czy zasób jest zajęty (używany)
     private IProcessManager processManager;
+    private int pgid;
 
     /**
-     * Tworzy obiekt nowy zmiennej warunkowej.
+     * Tworzy obiekt nowy zmiennej warunkowej do synchronizacji plików.
      * Inicjalizuje pustą kolejkę procesów oczekujących (PCB) oraz zmienną busy wskazującą czy zasób jest zajęty.
      *
      * @param processManager obiekt klasy ProcessManager. Potrzebna metoda SetState oraz zmienna ActivePCB.
@@ -26,6 +27,23 @@ public class ConditionVariable implements IConditionVariable {
         this.waiting = new LinkedList<>();
         this.busy = false;
         this.processManager = processManager;
+        this.pgid = 0;
+    }
+
+    /**
+     * Tworzy obiekt nowy zmiennej warunkowej do sychronizacji komunikatów (synchronizacja w grupie procesów)
+     * Inicjalizuje pustą kolejkę procesów oczekujących (PCB) oraz zmienną busy wskazującą czy zasób jest zajęty.
+     *
+     * @param processManager obiekt klasy ProcessManager. Potrzebna metoda SetState oraz zmienna ActivePCB.
+     * @param pgid id grupy do ktorej nalezy dana zmienna warunkowa.
+     * @see ProcessManager
+     * @see PCB
+     */
+    public ConditionVariable(IProcessManager processManager, int pgid) {
+        this.waiting = new LinkedList<>();
+        this.busy = false;
+        this.processManager = processManager;
+        this.pgid = pgid;
     }
 
     /**
