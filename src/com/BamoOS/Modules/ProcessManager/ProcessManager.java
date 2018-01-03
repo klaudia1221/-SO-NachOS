@@ -3,6 +3,7 @@ package com.BamoOS.Modules.ProcessManager;
 import java.util.ArrayList;
 
 import com.BamoOS.Modules.ConditionVariable.ConditionVariable;
+import com.BamoOS.Modules.MemoryManagment.RAM;
 import com.BamoOS.Modules.ProcessManager.PCB.Register;
 import com.BamoOS.Modules.Processor.IProcessor;
 
@@ -13,8 +14,10 @@ public class ProcessManager implements IProcessManager {
 	private PCB ActivePCB;
 	private int GroupsCounter;
 	private ArrayList<ConditionVariable> ConditionVariables;
+	private RAM ram;
 	
-	public ProcessManager() {
+	public ProcessManager(RAM ram) {
+	    this.ram = ram;
 		this.ProcessGroups = new ArrayList<ArrayList<PCB>>();
 		this.ProcessCounter = 0;
 		this.GroupsCounter = 0;
@@ -31,7 +34,8 @@ public class ProcessManager implements IProcessManager {
 	public void setActivePCB(PCB activePCB){
 	    this.ActivePCB = activePCB;
     }
-	//Nowy proces o ile zosta�a wcze�niej utworzona grupa
+
+    //Nowy proces o ile zosta�a wcze�niej utworzona grupa
 	public PCB newProcess(String ProcessName, int PGID) throws Exception {
 			if(PGID == 0) throw new Exception("Brak dost�pu do grupy procesu bezczynno�ci");
 			ArrayList<PCB> temp = checkIfGroupExists(PGID);
@@ -190,7 +194,7 @@ public class ProcessManager implements IProcessManager {
 		throw new Exception("Brak procesu o podanym PID");
 	}
 
-	public ArrayList<PCB> getProcesses() {
+	public ArrayList<PCB> getReadyProcesses() {
 		ArrayList<PCB> Processes = new ArrayList<PCB>();
 		for (ArrayList<PCB> arr : this.ProcessGroups){
 			for (PCB pcb : arr){
