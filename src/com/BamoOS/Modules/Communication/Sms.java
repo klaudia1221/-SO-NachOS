@@ -1,5 +1,8 @@
 package com.BamoOS.Modules.Communication;
 
+
+
+
 public class Sms
 {
     private int senID; //ID nadawcy
@@ -7,12 +10,17 @@ public class Sms
     private String mes; //tresc wiadomosci
     private int mesSize; //rozmiar wiadomosci
 
-    public Sms(int senID, String mes)
+    public Sms(String mes)
     {
-        this.senID = senID;
+        //this.senID = senID;
         //this.recID = recID;
         this.mes = mes;
         this.mesSize = mes.length();
+    }
+
+    public void set_senID(int senID)
+    {
+        this.senID=senID;
     }
 
     public void set_recID(int recID)

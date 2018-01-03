@@ -36,15 +36,13 @@ public class Main{
             CreateDefaultUsers();
 
             CreateCatalog();
-            fileSystem = new FileSystem(catalog);;
+            fileSystem = new FileSystem(catalog, processManager);;
 
             conditionVariable = new ConditionVariable(processManager);
 
 
             ProcesorInterface processor = new ProcesorInterface();
             RAM memory = new RAM();
-            PCB PCB = new PCB();
-
 
             Shell shell = new Shell( userController,  fileSystem,  memory,  processor, aclController,  processManager, loginService, conditionVariable );
             shell.start();

@@ -43,7 +43,7 @@ public class PCB {
 	public PCB(int ProcessID, String ProcessName, int ProcessGroup) {
 		this.PID = ProcessID;
 		this.PGID = ProcessGroup;
-		this.ProcessName = ProcessName;
+	 	this.ProcessName = ProcessName;
 		this.A = 0;
 		this.B = 0;
 		this.C = 0;

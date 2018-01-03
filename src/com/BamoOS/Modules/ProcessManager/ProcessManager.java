@@ -27,6 +27,9 @@ public class ProcessManager implements IProcessManager {
 	public PCB getActivePCB(){
 		return ActivePCB;
 	}
+	public void setActivePCB(PCB activePCB){
+	    this.ActivePCB = activePCB;
+    }
 	//Nowy proces o ile zosta�a wcze�niej utworzona grupa
 	public PCB newProcess(String ProcessName, int PGID) throws Exception {
 			if(PGID == 0) throw new Exception("Brak dost�pu do grupy procesu bezczynno�ci");
