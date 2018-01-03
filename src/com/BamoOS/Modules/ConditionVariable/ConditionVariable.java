@@ -28,7 +28,7 @@ public class ConditionVariable implements IConditionVariable {
         this.waiting = new LinkedList<>();
         this.busy = false;
         this.processManager = processManager;
-        this.pgid = 0;
+        this.pgid = -1;
     }
 
     /**
