@@ -79,15 +79,6 @@ public class ConditionVariable implements IConditionVariable {
     }
 
     /**
-     * Wywołuje metodę `signal` dla wszystkich procesów w kolejce oczekująych
-     */
-    public void signalAll() {
-        for (int i=0; i < this.waiting.size(); i++) { // wywołaj signal() tyle razy ile jest procesów oczekujaych
-            this.signal();
-        }
-    }
-
-    /**
      * Wyswietla informacje o zmiennej warunkowej dla uzytkownika
      */
     public void printInfo() {
