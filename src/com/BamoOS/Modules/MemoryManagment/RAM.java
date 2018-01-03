@@ -32,7 +32,12 @@ public class RAM {
                 this.ram[i * j] = ' ';
         }
     }
-
+    //Need some fixes
+    public void printRAM(){
+        for(char c : ram){
+            System.out.print(c);
+        }
+    }
     // metoda dla interpretera, zwraca znak o ktory prosi interpreter
     public char getCommand(int programCounter, int processID, PageTable pt) {
         try {
