@@ -68,7 +68,7 @@ public class IPC
         {
             //przechodzi w stan waiting
             try {
-                pm.getConditionVariable(pm.getActivePCB().getPID()).await();
+                pm.getConditionVariable(pm.getActivePCB().getPID()).await(true); //zawsze true dla komunikacji
             } catch (Exception e) {
                 e.printStackTrace();
             }
