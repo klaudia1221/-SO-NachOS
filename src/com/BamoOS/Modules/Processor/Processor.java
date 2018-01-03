@@ -1,6 +1,8 @@
 
 package com.BamoOS.Modules.Processor;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 import Interpreter.Interpreter;
 import ProcessMenager.PCB;
@@ -14,7 +16,6 @@ import com.BamoOS.Modules.ProcessManager.PCB;
 
 // do zmiany argumenty wszedzie tam gdzie jest PID jak zobacze jak to wyglada u Bartka
 public class Processor implements IProcessor {
-	private ArrayList<PCB> lista_procesow_gotowych = new ArrayList<PCB>();
 //	private ArrayList<PCB> lista_procesow_gotowych2 = new ArrayList<PCB>();
 
 	private PCB Active;
@@ -24,73 +25,60 @@ public class Processor implements IProcessor {
 	private IProcessManager processManager;
 	private Interpreter interpreter;
 	 //private IProcessManager ProcessManager;
-	ArrayList<ArrayList<PCB>> lista = processManager.getProcessList();
+//	ArrayList<ArrayList<PCB>> lista = processManager.getProcessList();
 public Processor(IProcessManager processManager,Interpreter interpreter) {
 	this.interpreter = interpreter;
 	this.processManager = processManager;
-	alpha = 0.5; // Weighting factor od 0 do 1 (postarzanie) okresla poziom istotnosci ostatnej fazy
+	alpha = 0.5d; // Weighting factor od 0 do 1 (postarzanie) okresla poziom istotnosci ostatnej fazy
 	//Running = processManager.getMain().pcb;
 	time = 0;
 }
-public void dodaj_proces() { // dodaje na liste procesow gotowych proces // nie mam pojecia czy tu moze tak byc ale tylko cos
-	// takiego przyszlo mi do glowy , ogolnie chodzi o to ze przejrzy liste procesow znajdzie te gotowe i doda na liste moja
-	for(ArrayList<PCB> processlist : this.lista) {
-		for(PCB pcb : processlist) {
-	proces = processManager.getPCB(pcb.getPID());
-	if(proces.getState() == State.READY) {
-	lista_procesow_gotowych.add(proces);
-
-	}
-		}
-	}
-}
-
 
 //jesli istnieje i ma stan zakonczony to go usuwa wedlug metody Bartka
 public void Scheduler() {
-	if (Active != null && Active.getState() == PCB.State.FINISHED) {
-		time = Active.getTimer();
-		processManager.killProcess(Active.getPID());
-		//Running = processManager.getMain().pcb;
-	}
-	if(Active != null && Active.getState() != PCB.State.ACTIVE)
-	{
-		if (lista_procesow_gotowych.size() > 0)
-		{
-			for (int i = 0; i < lista_procesow_gotowych.size(); i++) {
-				PCB p = lista_procesow_gotowych.get(i);
-			if (time == 0) {
-					p.setTau(10);
-			}
-					else{
-						p.setTau((int) alpha * time + (1 - alpha) * Active.getTau());
-					}
+    ArrayList<PCB> readyProcesses = processManager.getReadyProcesses();
 
-			}
-			int index_nastepnego = 0;
-			PCB nastepny = lista_procesow_gotowych.get(0);
-			//System.out.println();
-			for (int i = 0; i < lista_procesow_gotowych.size(); i++) {
-				PCB ptemp = lista_procesow_gotowych.get(i);
-				//System.out.println(ptemp.getThau());
-				if (ptemp.getTau() < nastepny.getTau()) {
-					nastepny = ptemp;
-					index_nastepnego = i;
-				}
-			}
-			lista_procesow_gotowych.remove(index_nastepnego);
-			Active = nastepny;
-			Active.setState(PCB.State.ACTIVE);// chodzi o to zeby ustawic stan na ACTIVE nie wiem jak sie do tego dobrac
-            processManager.setActivePCB(Active);
-		}
-		else
-		{
-			System.out.println("Nie ma zadnego procesu na liscie procesow gotwych .");
-		}
-	} // konczy jesli stan nie jest aktywny
+    if(Active != null && Active.getState() == PCB.State.FINISHED){
+        time = Active.getTimer();
+        processManager.killProcess(Active.getPID());
+    }
+    if(readyProcesses.size() < 0){
+        Active = processManager.getPCB(0);
+        Active.setState(PCB.State.ACTIVE);
+        processManager.setActivePCB(Active);
+    }else{
+        calculateThau(readyProcesses);
+        sortProcessReadyByThau(readyProcesses);
+        for(PCB pcb : readyProcesses){
+            if(!(pcb.getState() == PCB.State.WAITING)){
+                Active = pcb;
+                pcb.setState(PCB.State.ACTIVE);
+                processManager.setActivePCB(Active);
+                return;
+            }
+        }
+        processManager.getPCB(Active.getPID()).setState();
+        Active.
+
+    }
 } // konczy shedulera
-
-public void wykonaj(String order[]) {   //
+private void calculateThau(ArrayList<PCB> readyProcesses){
+    for(PCB pcb : readyProcesses){
+        if(time == 0){
+            pcb.setTau(10.0d);
+        }else{
+            pcb.setTau(alpha * time + (1.0d - alpha) * Active.getTau());
+        }
+    }
+}
+private void sortProcessReadyByThau(ArrayList<PCB> readyProcesses){
+    readyProcesses.sort((PCB pcb1, PCB pcb2)-> {
+        if(pcb1.getTau() < pcb2.getTau()) return -1;
+        if(pcb1.getTau() > pcb2.getTau()) return 1;
+        return 0;
+    });
+}
+public void wykonaj() {   //
 	Scheduler();
 	if(Active != null && Active.getPID() != 0) {
 		try{
