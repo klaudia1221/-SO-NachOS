@@ -305,7 +305,8 @@ public class Interpreter implements IInterpreter{
         }else if ((order[2].substring(0,1).equals("["))&&(order[2].substring(1,2).equals("]"))) {
             System.out.println("Incorrect address.");
         }else if ((!order[2].substring(0,1).equals("["))&&(!order[2].substring(len-2,len-1).equals("]")){
-            */int val = Integer.parseInt(order[2]);
+            */
+        int val = Integer.parseInt(order[2]);
 
             if (reg.equals("A")) {
                 A -= val;
@@ -565,7 +566,7 @@ public class Interpreter implements IInterpreter{
         String reg_1 = order[1];
         String reg_3 = order[3];
 
-        int len = order[2].length();
+        /*int len = order[2].length();
 
         if ((order[2].substring(0,1).equals("["))&&(order[2].substring(len-2,len-1).equals("]"))){
             String raw_address = order[2];
@@ -649,7 +650,7 @@ public class Interpreter implements IInterpreter{
             }
         }
 
-    }
+    //}
 
     private void MV(String[] order) {
         String reg_1 = order[1];
@@ -685,7 +686,7 @@ public class Interpreter implements IInterpreter{
 
     }
 
-    private void MZ(String[] order) {
+    /*private void MZ(String[] order) {
         String raw_address = order[1];
         String register = order[2];
         String[] split_address = raw_address.split("");
@@ -706,6 +707,7 @@ public class Interpreter implements IInterpreter{
             }
         }
     }
+    */
 
     private void MO(String[] order) {
         String reg = order[1];
@@ -722,7 +724,7 @@ public class Interpreter implements IInterpreter{
         }
     }
 
-    private void MY(String[] order) {
+   /* private void MY(String[] order) {
         String register = order[1];
         String raw_address = order[2];
         String[] split_address = raw_address.split("");
@@ -749,21 +751,18 @@ public class Interpreter implements IInterpreter{
             }
         }
     }
+    */
 
     private void CE(String[] order) {
-        try {
             String filename = order[1];
-            fileSystem.createFile(filename, loginService.getLoggedUser());
-        } catch (Exception e) {
-            System.out.println(e);
-        }
+            fileSystem.createFile(filename, loginService.getLoggedUser(),processManager);
     }
 
     private void CF(String[] order) {
         try {
             String filename = order[1];
             String fileContent = order[2];
-            fileSystem.createFile(filename, loginService.getLoggedUser());
+            fileSystem.createFile(filename, loginService.getLoggedUser(), processManager);
             fileSystem.openFile(filename);
             fileSystem.appendFile(filename,fileContent);
             fileSystem.closeFile(filename);
@@ -976,9 +975,9 @@ public class Interpreter implements IInterpreter{
                 XM(order);
             } else if (operation.equals("MV")) {
                 MV(order);
-            } else if (operation.equals("MZ")) {
+            /*} else if (operation.equals("MZ")) {
                 MZ(order);
-            } else if (operation.equals("MO")) {
+            */} else if (operation.equals("MO")) {
                 MO(order);
             } else if (operation.equals("MY")) {
                 MY(order);
@@ -1024,9 +1023,7 @@ public class Interpreter implements IInterpreter{
             } else {
                 System.out.println("Undefined order.");
             }
-        }catch (ArrayIndexOutOfBoundsException e) {
-            System.out.println(e);
-            System.out.println("Incorrect order");
+        }catch (Exception e) {
             SaveRegister();
             throw;
         }
