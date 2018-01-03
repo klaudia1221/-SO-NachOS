@@ -1,19 +1,26 @@
 package com.BamoOS.Modules.Communication;
 
+import com.BamoOS.Modules.ProcessManager.ProcessManager;
+
 import java.util.ArrayList;
 
 public class IPC
 {
-    private Process
+    private ProcessManager pm;
 
     private int maxSmsSize = 8;
 
     private ArrayList<Sms> allMessages;
 
+    public IPC(ProcessManager pm)
+    {
+        this.pm=pm;
+    }
+
     public void SM(int recID, Sms sms)
     {
         sms.set_recID(recID);
-        if(senID==recID) //senID==ID procesu wywolujacego SM();
+        if(pm.getActivePCB().getPID()==recID) //senID==ID procesu wywolujacego SM();
         {
             System.out.println("Nadawca nie moze byc jednoczesnie odbiorca");
             return;
@@ -24,8 +31,7 @@ public class IPC
             return;
         }
 
-        //A.getPGID() == ProcessManager.getPCB(PID procesu).getPGID()   ŹLE
-        if() //jesli ID procesu o indeksie i == recID
+        if(pm.checkIfProcessExists(recID)==null) //jesli ID procesu o indeksie i == recID
         {
             //zapisz w odpowiednim polu PCB danego procesu wiadomość
             //zapisz wiadomosc w globalnym kontenerze wszystich wiadomości
