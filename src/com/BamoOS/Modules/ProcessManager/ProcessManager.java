@@ -1,7 +1,9 @@
 package com.BamoOS.Modules.ProcessManager;
 
 import java.util.ArrayList;
+import java.util.Map;
 
+import com.BamoOS.Modules.ConditionVariable.ConditionVariable;
 import com.BamoOS.Modules.ProcessManager.PCB.Register;
 
 public class ProcessManager implements IProcessManager {
@@ -9,6 +11,7 @@ public class ProcessManager implements IProcessManager {
 	private int ProcessCounter;
 	public PCB ActivePCB;
 	private int GroupsCounter;
+	private ArrayList<Map<Integer, ConditionVariable>> ConditionVariables;
 	
 	public ProcessManager() {
 		this.ProcessGroups = new ArrayList<ArrayList<PCB>>();
