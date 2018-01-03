@@ -19,10 +19,13 @@ public class ExchangeFile {
 
     public void writeToExchangeFile(int processID, char[] data) {
 
-        int howManyPages = Calc.howManyPages(data.length, pageSize);
+        int howManyPages = Calc.howManyPages(data.length, pageSize)+1;
         map.put(processID, startIndex);
         System.out.println("do mapy wlozono: " + processID + " z ind " + startIndex);
         List<Character> cList = new ArrayList<Character>();
+        for(int i=0;i<16;i++){ //pierwsze 16 miejsc wolnych, przeznaczone dla interpretera
+            cList.add('@');
+        }
         for (char c : data) {
             cList.add(c);
         }
