@@ -20,12 +20,12 @@ public class IPC
     public void SM(int recID, Sms sms)
     {
         sms.set_recID(recID);
-        if(pm.getActivePCB().getPID()==recID) //senID==ID procesu wywolujacego SM();
+        if(pm.getActivePCB().getPID()==recID) //sprawdza czy nadawca nie jest odbiorca
         {
             System.out.println("Nadawca nie moze byc jednoczesnie odbiorca");
             return;
         }
-        if(sms.get_mesSize()>maxSmsSize)
+        if(sms.get_mesSize()>maxSmsSize) //sprawdza czy wiadomosc nie przekracza max rozmiaru
         {
             System.out.println("Wiadomosc jest zbyt dluga");
             return;
@@ -47,7 +47,11 @@ public class IPC
             allMessages.add(sms);
 
             //powiadom proces-odbiorcę o wiadomości metodą signal()
-            pm.getConditionVariable(recID).signal();
+            try {
+                pm.getConditionVariable(recID).signal();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
             System.out.println("Wyslano wiadomosc o tresci "+sms.get_mes()+" do procesu o ID "+recID);
             return;
@@ -63,7 +67,11 @@ public class IPC
         if(temp_list.size()==0)//kontener wiadomości z PCB jest pusty
         {
             //przechodzi w stan waiting
-            pm.getConditionVariable(pm.getActivePCB().getPID()).await();
+            try {
+                pm.getConditionVariable(pm.getActivePCB().getPID()).await();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
         }else
         {
