@@ -787,11 +787,11 @@ public class Shell {
      * @param command
      */
     //try-catch dodac
-    private void process(String[] command){
-        if(command.length>1){
-            if(command.length==3){
+    private void process(String[] command) {
+        if (command.length > 1) {
+            if (command.length == 3) {
                 //process --kill [PID]
-                if(command[1].equals("--kill")){
+                if (command[1].equals("--kill")) {
                     //zakonczenie pracy procesu
                     try {
                         processManager.killProcess(Integer.parseInt(command[2]));
@@ -801,7 +801,7 @@ public class Shell {
                     }
                 }
                 //process –-groupCreate [nazwaProcesu]  // nowa grupa
-                else  if(command[1].equals("--groupCreate")) {
+                else if (command[1].equals("--groupCreate")) {
                     try {
                         processManager.newProcessGroup(command[2]);
                     } catch (Exception e) {
@@ -810,7 +810,7 @@ public class Shell {
                     }
                 }
                 //process --killall [PGID]
-               else if(command[1].equals("--killall") ){
+                else if (command[1].equals("--killall")) {
                     try {
                         processManager.killProcessGroup(Integer.parseInt(command[2]));
                     } catch (Exception e) {
@@ -820,23 +820,24 @@ public class Shell {
 
                 }
                 //process --ps [PGID] // info o danej grupie
-               else if(command[1].equals("--ps")){
+                else if (command[1].equals("--ps")) {
 
+                }
+                //process -–create [nazwaProcesu] [nazwaPliku][PGID]
+                else if (command.length == 5) {
+                    if (command[1].equals("--create")) {
+                        try {
+                            processManager.newProcess(command[2], Integer.parseInt(command[4]), command[3]);
+                        } catch (Exception e) {
+                            System.out.println(e.getMessage());
+                            readCommend();
+                        }
+                    }
+                }
+            } else {
+                System.out.println("Bledna komenda");
+                readCommend();
             }
-            //process -–create [nazwaProcesu] [nazwaPliku][PGID]
-            else if(command.length==5){
-               if(command[1].equals("--create")) {
-                   try {
-                       processManager.newProcess(command[2],  Integer.parseInt(command[4]), command[3]);
-                   } catch (Exception e) {
-                       System.out.println(e.getMessage());
-                       readCommend();
-                   }
-               }
-            }
-        }else{
-            System.out.println("Bledna komenda");
-            readCommend();
         }
     }
     /**
