@@ -13,6 +13,7 @@ public interface IFileSystem {
     String readFile(String fileName) throws Exception;
     void deleteFile(String fileName) throws Exception;
     void renameFile(String oldName, String newName) throws Exception;
+    File getFile(String fileName) throws Exception;
     String list();
     Catalog getCatalog();
 

@@ -134,6 +134,14 @@ public class FileSystem implements IFileSystem {
         return dir_list;
     }
 
+    public File getFile(String fileName)throws Exception{
+        if(!nameExists(fileName)){
+            throw new Exception("Plik o takiej nazwie nie istnieje.");
+        }else {
+            return dir.getFileByName(fileName);
+        }
+    }
+
     //Metody pomocnicze
 
     private boolean nameExists(String name){

@@ -91,6 +91,8 @@ public class Shell {
         allCommands.put("access", "Dodanie uprawnień do pliku dla konkretnego  użytkownika ");
         allCommands.put("whoami", "Wyswietla aktualnie zalogowanego uzytkownika ");
         allCommands.put("meminfo", "Wyswietlenie RAM");
+        allCommands.put("cv", "Wyswietlenie informacji o zmiennej warunkowej");
+        allCommands.put("sms", "Wyswietlenie wszytskich komunikatow wyslanych podczas komunikacji miedzyprocesorowej");
     }
 
     private void logo() {
@@ -217,6 +219,9 @@ public class Shell {
                             case "cv":
                                 conditionVariable(separateCommand);
                                 break;
+                            case "sms":
+                                sms(separateCommand);
+                                break;
                         }
                     } else if (!isCommandGood(separateCommand[0])) {
                         System.out.println("Bledna komenda");
@@ -234,7 +239,6 @@ public class Shell {
 
     /**
      * Metoda, ktora sprawdza, czy komenda podana przez uzytkownika, znajduje sie wsrod komend zapisanych w mapie shella
-     *
      * @param command
      * @return zwraca ture, gdy jest, false gdy nie ma
      */
@@ -435,14 +439,7 @@ public class Shell {
         if (command.length > 1) {
             //cr [nazwa_pliku]
             if (command.length == 3) {
-                Catalog catalog = null;
-                try {
-                    catalog = fileSystem.getCatalog();
-                } catch (Exception e) {
-                    System.out.println(e.getMessage());
-                    readCommend();
-                }
-                if (ACLController.hasUserPremissionToOperation(catalog, loginService.getLoggedUser(), MODIFY)) { //sprawdzenie uprawnien
+                if (ACLController.hasUserPremissionToOperation(fileSystem.getCatalog(), loginService.getLoggedUser(), MODIFY)) { //sprawdzenie uprawnien
                     //tworzenie pliku
                     try {
                         fileSystem.createFile(command[1], loginService.getLoggedUser(), processManager);
@@ -509,6 +506,7 @@ public class Shell {
                             matcher = pattern.matcher(line);
                             if (!matcher.lookingAt()) { // jesli nie zawiera linijka ^D to :
                                 out.append(line);
+                                out.append('\n');
                             } else {
                                 //dodanie bez ^D // jesli dana linijka zawiera ^D
                                 int size = line.length();
@@ -725,20 +723,25 @@ public class Shell {
                         System.out.println( e.getMessage());
                         readCommend();
                     }
-                }else if(fileSystem.getFileBase(command[1]).getOwner().getName().equals(loginService.getLoggedUser().getName())){
-                    FileBase fileBase = null;
-                    try {
-                        fileBase = fileSystem.getFileBase(command[1]);
-                    } catch (Exception e) {
-                        System.out.println(e.getMessage());
-                        readCommend();
+                }else try {
+                    if(fileSystem.getFileBase(command[1]).getOwner().getName().equals(loginService.getLoggedUser().getName())){
+                        FileBase fileBase = null;
+                        try {
+                            fileBase = fileSystem.getFileBase(command[1]);
+                        } catch (Exception e) {
+                            System.out.println(e.getMessage());
+                            readCommend();
+                        }
+                        try {
+                            ACLController.addAceForUser(user, whichMask(command[4]),fileBase);
+                        } catch (Exception e) {
+                           System.out.println( e.getMessage());
+                            readCommend();
+                        }
                     }
-                    try {
-                        ACLController.addAceForUser(user, whichMask(command[4]),fileBase);
-                    } catch (Exception e) {
-                       System.out.println( e.getMessage());
-                        readCommend();
-                    }
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
+                    readCommend();
                 }
             }
             //access [file_name] --group [group_name] (R)(M)(E) 111/000 ...
@@ -791,6 +794,15 @@ public class Shell {
                         readCommend();
                     }
                 }
+                //process –-groupCreate [nazwaProcesu]  // nowa grupa
+                else  if(command[1].equals("--groupCreate")) {
+                    try {
+                        processManager.newProcessGroup(command[2]);
+                    } catch (Exception e) {
+                        System.out.println(e.getMessage());
+                        readCommend();
+                    }
+                }
                 //process --killall [PGID]
                else if(command[1].equals("--killall") ){
                     try {
@@ -803,46 +815,18 @@ public class Shell {
                 }
                 //process --ps [PGID] // info o danej grupie
                else if(command[1].equals("--ps")){
-                    try {
-                        processManager.PrintGroupInfo(Integer.parseInt(command[2]));
-                    } catch (Exception e) {
-                        System.out.println(e.getMessage());
-                        readCommend();
-                    }
 
-                }
             }
-           else if(command.length==2){
-                //process --ps //info o wszystkich
-                if(command[1].equals("--ps")){
-                    try {
-                        processManager.PrintProcesses();
-                    } catch (Exception e) {
-                        System.out.println(e.getMessage());
-                        readCommend();
-                    }
-                }
-            }
-            //process -–create [nazwaProcesu] [PGID]
-            else if(command.length==4){
+            //process -–create [nazwaProcesu] [nazwaPliku][PGID]
+            else if(command.length==5){
                if(command[1].equals("--create")) {
                    try {
-                       processManager.newProcess(command[2], Integer.parseInt(command[3]));
+                       processManager.newProcess(command[2],  Integer.parseInt(command[4]), command[3]);
                    } catch (Exception e) {
                        System.out.println(e.getMessage());
                        readCommend();
                    }
                }
-            }//process –-groupCreate [nazwaProcesu]  // nowa grupa
-            else if(command.length==4) {
-                if(command[1].equals("--groupCreate")) {
-                    try {
-                        processManager.newProcessGroup(command[2]);
-                    } catch (Exception e) {
-                        System.out.println(e.getMessage());
-                        readCommend();
-                    }
-                }
             }
         }else{
             System.out.println("Bledna komenda");
@@ -880,7 +864,21 @@ public class Shell {
                 readCommend();
             }
         }
-    }
+        //pcbinfo --all [PGID]
+        else if(command.length==3){
+            try {
+                processManager.PrintGroupInfo(Integer.parseInt(command[2]));
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+                readCommend();
+            }
+        }
+        else {
+            System.out.println("Bledna komenda");
+            readCommend();
+        }
+        }
+
     /**
      * Metdoa, ktora zostanie wywwoalan gdy uzytwkonik poda komende 'meminfo'
      * Metody modułu memory
@@ -1049,13 +1047,30 @@ public class Shell {
      * @param command
      */
     private void conditionVariable(String[] command){
-        //cv
-        if(command.length==1){
-            conditionVariable.printInfo();
+        //cv [nazwaPliku]
+        if(command.length==2){
+            File file=null;
+
+            try {
+               file=fileSystem.getFile(command[1]);
+               file.cv.printInfo();
+            }catch(Exception e){
+                System.out.println(e.getMessage());
+                readCommend();
+            }
+
         }else {
             System.out.println("Bledna komenda");
             readCommend();
         }
+
+    }
+
+    /**
+     * Metoda, ktora zostanie wywolana gdy uzytkownik poda komede 'sms'
+     * @param command
+     */
+    private void sms(String[] command){
 
     }
 

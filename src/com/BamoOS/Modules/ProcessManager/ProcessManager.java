@@ -1,14 +1,17 @@
 package com.BamoOS.Modules.ProcessManager;
 
 import java.util.ArrayList;
+import java.util.Map;
 
+import com.BamoOS.Modules.ConditionVariable.ConditionVariable;
 import com.BamoOS.Modules.ProcessManager.PCB.Register;
 
 public class ProcessManager implements IProcessManager {
-	ArrayList<ArrayList<PCB>> ProcessGroups;
+	private ArrayList<ArrayList<PCB>> ProcessGroups;
 	private int ProcessCounter;
-	private int GroupsCounter;
 	public PCB ActivePCB;
+	private int GroupsCounter;
+	private ArrayList<Map<Integer, ConditionVariable>> ConditionVariables;
 	
 	public ProcessManager() {
 		this.ProcessGroups = new ArrayList<ArrayList<PCB>>();
@@ -57,7 +60,7 @@ public class ProcessManager implements IProcessManager {
 	public void killProcess(int PID) {
 		//TODO powiadomi� inne modu�y ?pami��?
 		try {
-			if(PID == 0) throw new Exception("Nie mo�na zabi� procesu bezczynno�ci");
+			if(PID == 0) throw new Exception("Nie mo�lna zabi� procesu bezczynno�ci");
 			PCB temp = checkIfProcessExists(PID);
 			if(temp != null) {
 				checkIfGroupExists(temp.getPGID()).remove(temp);
@@ -151,5 +154,9 @@ public class ProcessManager implements IProcessManager {
 				System.out.println(pcb.getCounter()+"\t"+pcb.getTimer()+"\t"+pcb.getState()+"\t"+pcb.getName());
 			}
 		}
+	}
+
+	public ConditionVariable getConditionVariable(int PID){
+
 	}
 }
