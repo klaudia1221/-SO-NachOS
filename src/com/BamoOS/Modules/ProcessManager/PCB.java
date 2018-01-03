@@ -1,6 +1,7 @@
 package com.BamoOS.Modules.ProcessManager;
 
 import com.BamoOS.Modules.Communication.Sms;
+import com.BamoOS.Modules.Processor.IProcessor;
 
 import java.util.ArrayList;
 
@@ -41,7 +42,7 @@ public class PCB {
 	private ArrayList<Sms> SmsList;
 
 	private int LastSenderID;
-	
+
 	
 	public PCB(int ProcessID, String ProcessName, int ProcessGroup) {
 		this.PID = ProcessID;

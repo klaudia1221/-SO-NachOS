@@ -72,7 +72,7 @@ public class Interpreter implements IInterpreter{
     private IPC communication;
     private ILoginService loginService;
 
-    Interpreter(ProcesorInterface procesor, RAM memory, IProcessManager processManager, IFileSystem fileSystem, IPCB PCB, IPC communication, ILoginService loginService) {
+    Interpreter(ProcesorInterface procesor, RAM memory, IProcessManager processManager, IFileSystem fileSystem, IPC communication, ILoginService loginService) {
         this.procesor = procesor;
         this.memory = memory;
         this.processManager = processManager;
