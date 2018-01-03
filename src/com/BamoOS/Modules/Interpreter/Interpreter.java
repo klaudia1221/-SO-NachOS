@@ -8,7 +8,7 @@ import com.BamoOS.Modules.ProcessManager.IProcessManager;
 import com.BamoOS.Modules.ProcessManager.PCB;
 import com.BamoOS.Modules.Communication.IPC;
 import com.BamoOS.Modules.Communication.Sms;
-
+import com.BamoOS.Modules.Processor.IProcessor;
 
 import java.util.ArrayList;
 
@@ -55,29 +55,29 @@ public class Interpreter implements IInterpreter{
      •DM - czytanie komunikatów wysłanych procesów,
      •JP counter - skacze do innego rozkazu poprzez zmianę licznika, 
      •JZ reg n - skok przy zerowej zawartości rejestru będącego argumentem, 
+     •PE - wyświetla wynik programu,
      •EX - kończy program,
      **/
 
     private int A = 0;
     private int B = 0;
     private int C = 0;
+    private int D = 0;
     private int PC = 0;
     private int PID = 0;
 
-    private ProcesorInterface procesor;
+    private IProcessor procesor;
     private IProcessManager processManager;
     private RAM memory;
     private IFileSystem fileSystem;
-    //    private IPCB PCB;
     private IPC communication;
     private ILoginService loginService;
 
-    Interpreter(ProcesorInterface procesor, RAM memory, IProcessManager processManager, IFileSystem fileSystem, IPC communication, ILoginService loginService) {
+    Interpreter(IProcessor procesor, RAM memory, IProcessManager processManager, IFileSystem fileSystem, IPC communication, ILoginService loginService) {
         this.procesor = procesor;
         this.memory = memory;
         this.processManager = processManager;
         this.fileSystem = fileSystem;
-//        this.PCB = PCB;
         this.communication = communication;
         this.loginService = loginService;
     }
@@ -95,6 +95,10 @@ public class Interpreter implements IInterpreter{
     public void set_C(){
 //        this.C = PCB.GetRegister(IPCB.Register.C);
         this.C = processManager.getActivePCB().getRegister(PCB.Register.C);
+    }
+
+    public void set_D(){
+        this.D = processManager.getActivePCB().getRegister(PCB.Register.D);
     }
 
     public void set_PC(){
@@ -857,7 +861,7 @@ public class Interpreter implements IInterpreter{
     private void RP(String[] order) {
         try {
             int PID = Integer.parseInt(order[1]);
-            procesor.runProcess(PID);
+            processManager.runNew();
         } catch (Exception e) {
             System.out.println(e);
         }
@@ -931,7 +935,8 @@ public class Interpreter implements IInterpreter{
         }
     }
 
-    public void Exe(String raw_order) {
+    public void Exe() {
+        String raw_order;
         String[] order = raw_order.split(" ");
         DownloadRegisters();
         RegisterStatus();
@@ -1007,7 +1012,7 @@ public class Interpreter implements IInterpreter{
                 JZ(order);
             } else if (operation.equals("EX")) {
                 SaveRegister();
-                procesor.Scheduler();
+                processManager.getActivePCB().setState(PCB.State.FINISHED);
             } else {
                 System.out.println("Undefined order.");
             }
@@ -1018,6 +1023,5 @@ public class Interpreter implements IInterpreter{
             procesor.Scheduler();
         }
         PC++;
-        procesor.Scheduler();
     }
 }
