@@ -3,8 +3,8 @@ package com.BamoOS.Modules.ConditionVariable;
 import java.util.LinkedList;
 
 import com.BamoOS.Modules.ProcessManager.IProcessManager;
-import com.BamoOS.Modules.ProcessManager.PCB;
 import com.BamoOS.Modules.ProcessManager.ProcessManager;
+import com.BamoOS.Modules.ProcessManager.PCB;
 
 /**
  * Synchronizacja procesów w oparciu o zmienne warunkowe (ang. condition variable).
@@ -17,7 +17,7 @@ public class ConditionVariable implements IConditionVariable {
 
 
     /**
-     * Tworzy obiekt nowy zmiennej warunkowej do synchronizacji plików.
+     * Tworzy nowy obiekt zmiennej warunkowej do synchronizacji.
      * Inicjalizuje pustą kolejkę procesów oczekujących (PCB) oraz zmienną busy wskazującą czy zasób jest zajęty.
      *
      * @param processManager obiekt klasy ProcessManager. Potrzebna metoda SetState oraz zmienna ActivePCB.
@@ -91,10 +91,16 @@ public class ConditionVariable implements IConditionVariable {
      * Wyswietla informacje o zmiennej warunkowej dla uzytkownika
      */
     public void printInfo() {
-        System.out.println("Procesy oczekujące w kolejce:");
-        for(PCB pcb : this.waiting){
-            pcb.printInfo();
+        if(this.waiting.isEmpty()) {
+            System.out.println("Brak procesow oczekujących w zmiennej warunkowej.");
         }
+        else {
+            System.out.println("Procesy oczekujące w kolejce zmiennej warunkowej:");
+            for(PCB pcb : this.waiting){
+                pcb.printInfo();
+            }
+        }
+
         if(this.busy){
             System.out.println("Zasób jest `zajęty` (busy).");
         }
