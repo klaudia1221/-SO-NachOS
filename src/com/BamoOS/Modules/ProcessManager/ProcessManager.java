@@ -58,6 +58,7 @@ public class ProcessManager implements IProcessManager {
 			}
 			throw new Exception("Brak grupy o podanym PGID");
 	}
+
 	public PCB newProcess(String ProcessName, int PGID, String FileName) throws Exception {
 			if(PGID == 0 && checkIfProcessExists(0) != null) throw new Exception("Brak dost�pu do grupy procesu bezczynno�ci");
 			ArrayList<PCB> temp = checkIfGroupExists(PGID);
@@ -129,7 +130,11 @@ public class ProcessManager implements IProcessManager {
 	//Tworzenie nowej grupy oraz pierwszego procesu
 	public PCB newProcessGroup(String ProcessName) throws Exception {
 		//PCB pcb = new PCB(this.ProcessCounter, ProcessName, this.GroupsCounter);
-		PCB pcb = newProcess(ProcessName, this.GroupsCounter);
+		//PCB pcb = newProcess(ProcessName, this.GroupsCounter);
+
+
+		PCB pcb = new PCB(this.ProcessCounter, ProcessName, this.GroupsCounter);
+
 		ArrayList<PCB> al = new ArrayList<PCB>();
 		al.add(pcb);
 		ProcessGroups.add(al);
@@ -141,7 +146,20 @@ public class ProcessManager implements IProcessManager {
 
 	public PCB newProcessGroup(String ProcessName, String FileName) throws Exception {
 		//PCB pcb = new PCB(this.ProcessCounter, ProcessName, this.GroupsCounter);
-		PCB pcb = newProcess(ProcessName, this.GroupsCounter, FileName);
+		//PCB pcb = newProcess(ProcessName, this.GroupsCounter, FileName);
+		String textFileContent = readCommandFile("src/" + FileName + ".txt");
+		Map mapLine = new HashMap<Integer, Integer>();
+		for(int i = 0, j = 0; i != -1;j++){
+			i = textFileContent.indexOf(";", i);
+			mapLine.put(j,i-1);
+		}
+		char[] code = textFileContent.toCharArray();
+		PageTable pt1 = new PageTable(this.ProcessCounter, code.length);
+		PCB pcb = new PCB(this.ProcessCounter, ProcessName, this.GroupsCounter, pt1, mapLine);
+		ram.pageTables.put(this.ProcessCounter, pt1);
+		ram.exchangeFile.writeToExchangeFile(this.ProcessCounter, code);
+
+
 		ArrayList<PCB> al = new ArrayList<PCB>();
 		al.add(pcb);
 		ProcessGroups.add(al);
