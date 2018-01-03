@@ -4,6 +4,7 @@ import com.BamoOS.Modules.ACL.Interfaces.ILoginService;
 import com.BamoOS.Modules.ACL.Interfaces.IUserController;
 import com.BamoOS.Modules.ACL.LoginService;
 import com.BamoOS.Modules.ACL.UserController;
+import com.BamoOS.Modules.Communication.IPC;
 import com.BamoOS.Modules.ConditionVariable.ConditionVariable;
 import com.BamoOS.Modules.ConditionVariable.IConditionVariable;
 import com.BamoOS.Modules.FileSystem.Catalog;
@@ -30,8 +31,18 @@ public class Main{
 
     private static IConditionVariable conditionVariable;
     private static ProcessManager processManager;
+
+    private static IPC ipc;
+
+    private static RAM ram;
+
+    private static Interpreter interpreter;
+
+    private static IProcessor processor;
         public static void main(String[] args) {
-            processManager = new ProcessManager();
+            ram = new RAM();
+            processManager = new ProcessManager(ram);
+            ipc = new IPC(processManager);
 
             userController = new UserController();
             loginService = new LoginService(userController);
@@ -42,12 +53,10 @@ public class Main{
             fileSystem = new FileSystem(catalog, processManager);;
 
             conditionVariable = new ConditionVariable(processManager);
+            interpreter = new Interpreter(ram, processManager, fileSystem, ipc, loginService);
+            IProcessor processor = new Processor(processManager, interpreter);
 
-            Interpreter interpreter = new Interpreter(processManager)
-            IProcessor processor = new Processor(processManager);
-            RAM memory = new RAM();
-
-            Shell shell = new Shell( userController,  fileSystem,  memory,  processor, aclController,  processManager, loginService, conditionVariable );
+            Shell shell = new Shell(userController, fileSystem, ram, processor, aclController, processManager, loginService, ipc);
             shell.start();
         }
         private static void CreateDefaultUsers(){

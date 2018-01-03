@@ -7,7 +7,6 @@ import com.BamoOS.Modules.ACL.Interfaces.IUserController;
 import com.BamoOS.Modules.ACL.Mask;
 import com.BamoOS.Modules.ACL.User;
 import com.BamoOS.Modules.Communication.IPC;
-import com.BamoOS.Modules.ConditionVariable.IConditionVariable;
 import com.BamoOS.Modules.FileSystem.Catalog;
 import com.BamoOS.Modules.FileSystem.File;
 import com.BamoOS.Modules.FileSystem.FileBase;
@@ -40,7 +39,6 @@ public class Shell {
     private ILoginService loginService;
     private IUserController userController;
     private IACLController ACLController;
-    private IConditionVariable conditionVariable;
     private IPC ipc;
     private Map<String, String> allCommands; //Mapa z wszystkimi komednami w shellu
 
@@ -49,7 +47,7 @@ public class Shell {
                  IProcessor processor,
                  IACLController ACLController,
                  ProcessManager processManager,
-                 ILoginService loginService, IConditionVariable conditionVariable, IPC ipc) {
+                 ILoginService loginService, IPC ipc) {
         this.userController = userController;
         this.fileSystem = fileSystem;
         this.memory = memory;
@@ -57,7 +55,6 @@ public class Shell {
         this.ACLController = ACLController;
         this.processManager = processManager;
         this.loginService = loginService;
-        this.conditionVariable=conditionVariable;
         this.ipc=ipc;
 
         allCommands = new HashMap<>();
