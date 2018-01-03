@@ -16,7 +16,8 @@ public class PCB {
     public enum Register{
     	A,
     	B,
-    	C
+    	C,
+		D
     }
 	
 	//Id procesu
@@ -38,6 +39,8 @@ public class PCB {
 	//public PageTable pageTable;
 	//
 	private ArrayList<Sms> SmsList;
+
+	private int LastSenderID;
 	
 	
 	public PCB(int ProcessID, String ProcessName, int ProcessGroup) {
@@ -80,6 +83,8 @@ public class PCB {
 			return this.B;
 		case C:
 			return this.C;
+		case D:
+			return this.D;
 		}
 		return A;
 	}
@@ -92,6 +97,8 @@ public class PCB {
 			this.B = val;
 		case C:
 			this.C = val;
+			case D:
+
 		}
 	}
 	
@@ -136,5 +143,13 @@ public class PCB {
 
 	public void setTau(double tau) {
 		Tau = tau;
+	}
+
+	public int getLastSenderID() {
+		return LastSenderID;
+	}
+
+	public void setLastSenderID(int lastSenderID) {
+		LastSenderID = lastSenderID;
 	}
 }
