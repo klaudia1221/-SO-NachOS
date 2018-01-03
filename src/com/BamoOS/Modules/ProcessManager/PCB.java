@@ -1,5 +1,9 @@
 package com.BamoOS.Modules.ProcessManager;
 
+import com.BamoOS.Modules.ConditionVariable.ConditionVariable;
+
+import java.util.ArrayList;
+
 public class PCB {
 	
     public enum State{
@@ -9,7 +13,7 @@ public class PCB {
     	NEW,
     	FINISHED
     }
-    
+
     public enum Register{
     	A,
     	B,
@@ -32,6 +36,9 @@ public class PCB {
 	private int Counter;
 	private int Timer;
 	//public PageTable pageTable;
+	//
+	private ArrayList<Sms>
+	private ArrayList<ConditionVariable> ConditionVariables;
 	
 	
 	public PCB(int ProcessID, String ProcessName, int ProcessGroup) {
