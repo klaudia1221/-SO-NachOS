@@ -8,7 +8,7 @@ public class IPC
 {
     private ProcessManager pm;
 
-    private int maxSmsSize = 8;
+    private static final int maxSmsSize = 8;
 
     private ArrayList<Sms> allMessages;
 
@@ -31,8 +31,13 @@ public class IPC
             return;
         }
 
-        if(pm.checkIfProcessExists(recID)==null) //jesli ID procesu o indeksie i == recID
+        if(pm.checkIfProcessExists(recID)!=null) //sprawdza czy istnieje proces o ID==recID
         {
+            if(pm.getActivePCB().getPGID()!=pm.checkIfProcessExists(recID).getPGID()) //sprawdza czy procesy sa w tej samej grupie
+            {
+                System.out.println("Proces o ID "+recID+" znajduje sie w innej grupie");
+                return;
+            }
             //zapisz w odpowiednim polu PCB danego procesu wiadomość
             ArrayList<Sms> temp_list = pm.getActivePCB().getSmsList();
             temp_list.add(sms);
@@ -42,19 +47,24 @@ public class IPC
             allMessages.add(sms);
 
             //powiadom proces-odbiorcę o wiadomości metodą signal()
+            pm.getConditionVariable(recID).signal();
+
             System.out.println("Wyslano wiadomosc o tresci "+sms.get_mes()+" do procesu o ID "+recID);
             return;
         }
 
-        System.out.println("W tej grupie nie znaleziono procesu o ID "+recID);
+        System.out.println("Nie znaleziono procesu o ID "+recID);
     }
-
-    public void RM(int senID, Sms sms)
+    //ogarnąć te kontenery wiadomości czy dla grupy czy nie
+    public void RM(int senID, Sms sms) //wyjebać te bezsensowne parametry z dupy
     {
+
         ArrayList<Sms> temp_list = pm.getActivePCB().getSmsList();
         if(temp_list.size()==0)//kontener wiadomości z PCB jest pusty
         {
             //przechodzi w stan waiting
+            //pm.getConditionVariable().(); //gettować CV
+
         }else
         {
             //wyświetla pierwszą wiadomość, którą znajdzie w kontenerze wiadomości w PCB
@@ -67,11 +77,9 @@ public class IPC
 
     public void display_all()
     {
-        //Sms sms;
         for(Sms sms : allMessages)//przegląda cały kontener wiadomości z grupy procesow, historie
         {
             //wyświetla wiadomości
-            //sms = allMessages.get(i);
             System.out.println("ID nadawcy: "+sms.get_senID()+"; ID odbiorcy: "+sms.get_recID()+"; tresc: "+sms.get_mes());
         }
     }
