@@ -22,16 +22,6 @@ public class Catalog extends FileBase {
 
     public File get(int i) { return (File) root.get(i);}
 
-//    public FileBase getFileBase(String name) throws Exception {
-//        for(FileBase file : root){
-//            File tempFile = (File) file;
-//            if(tempFile.FILE_NAME.equals(name)){
-//                return file;
-//            }
-//        }
-//        throw new Exception("File dosen't exist.");
-//    }
-
     public File getFileByName(String name) {
         File tempFile = null;
         for (FileBase fileBase : root){
@@ -73,6 +63,12 @@ public class Catalog extends FileBase {
             if(tempFile.FILE_NAME.equals(fileName)){ size=tempFile.FILE_SIZE; }
         }
         return size;
+    }
+    void incBlocksNum(String fileName) {
+        for (FileBase file : root) {
+            File tempFile = (File) file;
+            if (tempFile.FILE_NAME.equals(fileName)) { tempFile.BLOCK_NUM++; }
+        }
     }
 
     public void changeName(String oldName, String newName){
