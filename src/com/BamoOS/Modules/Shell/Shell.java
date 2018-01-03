@@ -853,30 +853,30 @@ public class Shell {
      * Metody  PCB
      * @param command
      */
-    private void pcbinfo(String[] command){
+    private void pcbinfo(String[] command) {
         //pcbinfo --active
-        if(command.length==2){
-            if(command[1].equals("--active")){
-           // wyswietlanie bloku kontrolengo aktywnego procesu
-            try {
-                processManager.getActivePCB().printInfo();
-            } catch (Exception e) {
-                System.out.println(e.getMessage());
-                readCommend();
-            }
+        if (command.length == 2) {
+            if (command[1].equals("--active")) {
+                // wyswietlanie bloku kontrolengo aktywnego procesu
+                try {
+                    processManager.getActivePCB().printInfo();
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
+                    readCommend();
+                }
 
-        }//pcbinfo --all
-        else if(command[1].equals("--all")){
+            }//pcbinfo --all
+            else if (command[1].equals("--all")) {
                 try {
                     processManager.PrintProcesses();
                 } catch (Exception e) {
                     System.out.println(e.getMessage());
                     readCommend();
                 }
+            } else {
+                System.out.println("Bledna komenda");
+                readCommend();
             }
-        else{
-            System.out.println("Bledna komenda");
-            readCommend();
         }
     }
     /**
