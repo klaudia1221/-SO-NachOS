@@ -730,20 +730,25 @@ public class Shell {
                         System.out.println( e.getMessage());
                         readCommend();
                     }
-                }else if(fileSystem.getFileBase(command[1]).getOwner().getName().equals(loginService.getLoggedUser().getName())){
-                    FileBase fileBase = null;
-                    try {
-                        fileBase = fileSystem.getFileBase(command[1]);
-                    } catch (Exception e) {
-                        System.out.println(e.getMessage());
-                        readCommend();
+                }else try {
+                    if(fileSystem.getFileBase(command[1]).getOwner().getName().equals(loginService.getLoggedUser().getName())){
+                        FileBase fileBase = null;
+                        try {
+                            fileBase = fileSystem.getFileBase(command[1]);
+                        } catch (Exception e) {
+                            System.out.println(e.getMessage());
+                            readCommend();
+                        }
+                        try {
+                            ACLController.addAceForUser(user, whichMask(command[4]),fileBase);
+                        } catch (Exception e) {
+                           System.out.println( e.getMessage());
+                            readCommend();
+                        }
                     }
-                    try {
-                        ACLController.addAceForUser(user, whichMask(command[4]),fileBase);
-                    } catch (Exception e) {
-                       System.out.println( e.getMessage());
-                        readCommend();
-                    }
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
+                    readCommend();
                 }
             }
             //access [file_name] --group [group_name] (R)(M)(E) 111/000 ...
