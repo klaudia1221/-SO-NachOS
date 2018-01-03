@@ -1,9 +1,11 @@
 package com.BamoOS.Modules.ProcessManager;
 
 import com.BamoOS.Modules.Communication.Sms;
+import com.BamoOS.Modules.MemoryManagment.PageTable;
 import com.BamoOS.Modules.Processor.IProcessor;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 public class PCB {
 	
@@ -38,11 +40,10 @@ public class PCB {
 	private int Counter;
 	private int Timer;
 	private double Tau;
-	//public PageTable pageTable;
-	//
+	public PageTable pageTable;
 	private ArrayList<Sms> SmsList;
-
 	private int LastSenderID;
+	private Map<Integer,Integer> mapLine;
 
 	
 	public PCB(int ProcessID, String ProcessName, int ProcessGroup) {
@@ -55,6 +56,20 @@ public class PCB {
 		this.Counter = 0;
 		this.Timer = 0;
 		this.ProcessState = State.READY;
+	}
+
+	public PCB(int ProcessID, String ProcessName, int ProcessGroup, PageTable pt, Map ml) {
+		this.PID = ProcessID;
+		this.PGID = ProcessGroup;
+		this.ProcessName = ProcessName;
+		this.A = 0;
+		this.B = 0;
+		this.C = 0;
+		this.Counter = 0;
+		this.Timer = 0;
+		this.ProcessState = State.READY;
+		this.pageTable = pt;
+		this.mapLine = ml;
 	}
 	
 	public int getPID() {
@@ -153,5 +168,13 @@ public class PCB {
 
 	public void setLastSenderID(int lastSenderID) {
 		LastSenderID = lastSenderID;
+	}
+
+	public Map<Integer, Integer> getMapLine() {
+		return mapLine;
+	}
+
+	public void setMapLine(Map<Integer, Integer> mapLine) {
+		this.mapLine = mapLine;
 	}
 }
