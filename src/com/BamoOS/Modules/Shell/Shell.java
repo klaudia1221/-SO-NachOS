@@ -14,6 +14,7 @@ import com.BamoOS.Modules.FileSystem.FileBase;
 import com.BamoOS.Modules.FileSystem.IFileSystem;
 import com.BamoOS.Modules.MemoryManagment.RAM;
 import com.BamoOS.Modules.ProcessManager.IProcessManager;
+import com.BamoOS.Modules.ProcessManager.PCB;
 import com.BamoOS.Modules.ProcessManager.ProcessManager;
 import com.BamoOS.Modules.Processor.IProcessor;
 
@@ -58,6 +59,7 @@ public class Shell {
         this.loginService = loginService;
         this.conditionVariable=conditionVariable;
         this.ipc=ipc;
+
         allCommands = new HashMap<>();
     }
     /**
@@ -876,19 +878,28 @@ public class Shell {
         }
         //pcbinfo --all [PGID]
         else if(command.length==3){
-            try {
-                processManager.PrintGroupInfo(Integer.parseInt(command[2]));
-            } catch (Exception e) {
-                System.out.println(e.getMessage());
+            if(command[1].equals("--all")) {
+                try {
+                    processManager.PrintGroupInfo(Integer.parseInt(command[2]));
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
+                    readCommend();
+                }
+            }
+            //pcbinfo --process [PID]
+            else if(command[1].equals("--process")){
+                PCB pcb =processManager.getPCB(Integer.parseInt(command[2]));
+                pcb.printInfo();
+            }else{
+                System.out.println("Bledna komenda");
                 readCommend();
             }
         }
         else {
             System.out.println("Bledna komenda");
             readCommend();
-        }
-        }
-
+            }
+    }
     /**
      * Metdoa, ktora zostanie wywwoalan gdy uzytwkonik poda komende 'meminfo'
      * Metody modułu memory
@@ -917,7 +928,7 @@ public class Shell {
      */
     private void go(String[]command){
         if(command.length==1){
-            processor.wykonaj();
+           // processor.wykonaj();
         }else{
             System.out.println("Bledna komenda");
             readCommend();
@@ -1066,10 +1077,6 @@ public class Shell {
                     System.out.println(e.getMessage());
                     readCommend();
                 }
-            }
-            //cv --process [PID]
-            else if(command[2].equals("--process")){
-
             }
         }
         else {
