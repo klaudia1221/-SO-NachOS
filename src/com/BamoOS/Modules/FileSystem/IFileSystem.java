@@ -4,7 +4,7 @@ import com.BamoOS.Modules.ACL.User;
 import com.BamoOS.Modules.ProcessManager.IProcessManager;
 
 public interface IFileSystem {
-    FileBase getFileBase(String name);
+    FileBase getFileBase(String name) throws Exception;
     void openFile(String fileName) throws Exception;
     void closeFile(String name) throws Exception;
     void createFile(String fileName, User user, IProcessManager processManager) throws Exception;

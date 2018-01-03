@@ -1,7 +1,6 @@
 package com.BamoOS.Modules.FileSystem;
 
 import com.BamoOS.Modules.ACL.User;
-import com.BamoOS.Modules.ConditionVariable.IConditionVariable;
 import com.BamoOS.Modules.ProcessManager.IProcessManager;
 
 public class FileSystem implements IFileSystem {
@@ -15,7 +14,10 @@ public class FileSystem implements IFileSystem {
         this.processManager = processManager;
     }
 
-    public FileBase getFileBase(String name){
+    public FileBase getFileBase(String name) throws Exception{
+        if(!nameExists(name)){
+            throw new Exception("Name dosen't exist.");
+        }
         return dir.getFileByName(name);
     }
 
