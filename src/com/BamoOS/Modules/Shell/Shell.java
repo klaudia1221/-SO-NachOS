@@ -1,4 +1,4 @@
-package com.BambOS.com.BambOS.Modules;
+package com.BamoOS.Modules.Shell;
 
 import com.BamoOS.Modules.ACL.Group;
 import com.BamoOS.Modules.ACL.Interfaces.IACLController;
