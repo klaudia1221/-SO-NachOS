@@ -6,6 +6,7 @@ import com.BamoOS.Modules.ACL.Interfaces.ILoginService;
 import com.BamoOS.Modules.ACL.Interfaces.IUserController;
 import com.BamoOS.Modules.ACL.Mask;
 import com.BamoOS.Modules.ACL.User;
+import com.BamoOS.Modules.Communication.IPC;
 import com.BamoOS.Modules.ConditionVariable.IConditionVariable;
 import com.BamoOS.Modules.FileSystem.Catalog;
 import com.BamoOS.Modules.FileSystem.File;
@@ -13,6 +14,7 @@ import com.BamoOS.Modules.FileSystem.FileBase;
 import com.BamoOS.Modules.FileSystem.IFileSystem;
 import com.BamoOS.Modules.MemoryManagment.RAM;
 import com.BamoOS.Modules.ProcessManager.IProcessManager;
+import com.BamoOS.Modules.ProcessManager.PCB;
 import com.BamoOS.Modules.ProcessManager.ProcessManager;
 import com.BamoOS.Modules.Processor.IProcessor;
 
@@ -39,6 +41,7 @@ public class Shell {
     private IUserController userController;
     private IACLController ACLController;
     private IConditionVariable conditionVariable;
+    private IPC ipc;
     private Map<String, String> allCommands; //Mapa z wszystkimi komednami w shellu
 
     public Shell(IUserController userController,
@@ -46,7 +49,7 @@ public class Shell {
                  IProcessor processor,
                  IACLController ACLController,
                  ProcessManager processManager,
-                 ILoginService loginService, IConditionVariable conditionVariable) {
+                 ILoginService loginService, IConditionVariable conditionVariable, IPC ipc) {
         this.userController = userController;
         this.fileSystem = fileSystem;
         this.memory = memory;
@@ -55,6 +58,8 @@ public class Shell {
         this.processManager = processManager;
         this.loginService = loginService;
         this.conditionVariable=conditionVariable;
+        this.ipc=ipc;
+
         allCommands = new HashMap<>();
     }
     /**
@@ -109,10 +114,7 @@ public class Shell {
                 "       _\\/\\\\\\___\\//\\\\\\\\\\_        _\\/\\\\\\_______\\/\\\\\\_        ____\\////\\\\\\\\\\\\\\\\\\_        _\\/\\\\\\_______\\/\\\\\\_        ____\\///\\\\\\\\\\/_____        _\\///\\\\\\\\\\\\\\\\\\\\\\/___ \n" +
                 "        _\\///_____\\/////__        _\\///________\\///__        _______\\/////////__        _\\///________\\///__        ______\\/////_______        ___\\///////////_____\n" +
                 "                                                                                                                                                                  \n" +
-                "                                                                                                                                                                  \n" +
-                "                                                                                                                                                                  \n" +
-                "                                                                                                                                                                  \n" +
-                "                                                                                      ~ Operating System~                                                         \n");
+                "                                                                                                                                              \n");
     }
 
     /**
@@ -873,19 +875,28 @@ public class Shell {
         }
         //pcbinfo --all [PGID]
         else if(command.length==3){
-            try {
-                processManager.PrintGroupInfo(Integer.parseInt(command[2]));
-            } catch (Exception e) {
-                System.out.println(e.getMessage());
+            if(command[1].equals("--all")) {
+                try {
+                    processManager.PrintGroupInfo(Integer.parseInt(command[2]));
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
+                    readCommend();
+                }
+            }
+            //pcbinfo --process [PID]
+            else if(command[1].equals("--process")){
+                PCB pcb =processManager.getPCB(Integer.parseInt(command[2]));
+                pcb.printInfo();
+            }else{
+                System.out.println("Bledna komenda");
                 readCommend();
             }
         }
         else {
             System.out.println("Bledna komenda");
             readCommend();
-        }
-        }
-
+            }
+    }
     /**
      * Metdoa, ktora zostanie wywwoalan gdy uzytwkonik poda komende 'meminfo'
      * Metody modułu memory
@@ -914,7 +925,7 @@ public class Shell {
      */
     private void go(String[]command){
         if(command.length==1){
-            processor.wykonaj();
+           // processor.wykonaj();
         }else{
             System.out.println("Bledna komenda");
             readCommend();
@@ -1029,7 +1040,6 @@ public class Shell {
             readCommend();
         }
     }
-
     /**
      * Metoda, która sprawdza czy użytwkonik zalogoany jest adminem
      * @param user
@@ -1048,37 +1058,41 @@ public class Shell {
         }
         return false;
     }
-
     /**
      * Metoda, ktora zostaje wywolana gdy uzytkownik poda komende 'cv'
      * @param command
      */
     private void conditionVariable(String[] command){
-        //cv [nazwaPliku]
-        if(command.length==2){
-            File file=null;
-
-            try {
-               file=fileSystem.getFile(command[1]);
-               file.cv.printInfo();
-            }catch(Exception e){
-                System.out.println(e.getMessage());
-                readCommend();
+        //cv --file [nazwaPliku]
+        if(command.length==3){
+            if(command[2].equals("--file")) {
+                File file = null;
+                try {
+                    file = fileSystem.getFile(command[1]);
+                    file.cv.printInfo();
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
+                    readCommend();
+                }
             }
-
-        }else {
+        }
+        else {
             System.out.println("Bledna komenda");
             readCommend();
         }
-
     }
-
     /**
      * Metoda, ktora zostanie wywolana gdy uzytkownik poda komede 'sms'
      * @param command
      */
     private void sms(String[] command){
-
+        if(command.length==1) {
+            ipc.display_all();
+        }else{
+            System.out.println("Bledna komenda");
+            readCommend();
+        }
     }
+
 
 }

@@ -3,13 +3,13 @@ package com.BamoOS.Modules.ProcessManager;
 import java.util.ArrayList;
 
 public interface IProcessManager {
-    void newProcess(String ProcessName, int PGID);
-    void newProcess(String ProcessName, int PGID, String FileName);
-    void runNew();
-    void runNew(String FileName);
-    void killProcess(int PID);
+    PCB newProcess(String ProcessName, int PGID) throws Exception;
+    PCB newProcess(String ProcessName, int PGID, String FileName) throws Exception;
+    PCB runNew() throws Exception;
+    PCB runNew(String FileName) throws Exception;
+    void killProcess(int PID) throws Exception;
     void killProcessGroup(int PGID);
-    void newProcessGroup(String ProcessName);
+    PCB newProcessGroup(String ProcessName) throws Exception;
     ArrayList<PCB> checkIfGroupExists(int PGID);
     PCB checkIfProcessExists(int PID);
     PCB getPCB(int PID);
