@@ -6,6 +6,7 @@ import com.BamoOS.Modules.ACL.Interfaces.ILoginService;
 import com.BamoOS.Modules.ACL.Interfaces.IUserController;
 import com.BamoOS.Modules.ACL.Mask;
 import com.BamoOS.Modules.ACL.User;
+import com.BamoOS.Modules.Communication.IPC;
 import com.BamoOS.Modules.ConditionVariable.IConditionVariable;
 import com.BamoOS.Modules.FileSystem.Catalog;
 import com.BamoOS.Modules.FileSystem.File;
@@ -39,6 +40,7 @@ public class Shell {
     private IUserController userController;
     private IACLController ACLController;
     private IConditionVariable conditionVariable;
+    private IPC ipc;
     private Map<String, String> allCommands; //Mapa z wszystkimi komednami w shellu
 
     public Shell(IUserController userController,
@@ -46,7 +48,7 @@ public class Shell {
                  IProcessor processor,
                  IACLController ACLController,
                  ProcessManager processManager,
-                 ILoginService loginService, IConditionVariable conditionVariable) {
+                 ILoginService loginService, IConditionVariable conditionVariable, IPC ipc) {
         this.userController = userController;
         this.fileSystem = fileSystem;
         this.memory = memory;
@@ -55,6 +57,7 @@ public class Shell {
         this.processManager = processManager;
         this.loginService = loginService;
         this.conditionVariable=conditionVariable;
+        this.ipc=ipc;
         allCommands = new HashMap<>();
     }
     /**
@@ -1029,7 +1032,6 @@ public class Shell {
             readCommend();
         }
     }
-
     /**
      * Metoda, która sprawdza czy użytwkonik zalogoany jest adminem
      * @param user
@@ -1048,37 +1050,45 @@ public class Shell {
         }
         return false;
     }
-
     /**
      * Metoda, ktora zostaje wywolana gdy uzytkownik poda komende 'cv'
      * @param command
      */
     private void conditionVariable(String[] command){
-        //cv [nazwaPliku]
-        if(command.length==2){
-            File file=null;
-
-            try {
-               file=fileSystem.getFile(command[1]);
-               file.cv.printInfo();
-            }catch(Exception e){
-                System.out.println(e.getMessage());
-                readCommend();
+        //cv --file [nazwaPliku]
+        if(command.length==3){
+            if(command[2].equals("--file")) {
+                File file = null;
+                try {
+                    file = fileSystem.getFile(command[1]);
+                    file.cv.printInfo();
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
+                    readCommend();
+                }
             }
+            //cv --process [PID]
+            else if(command[2].equals("--process")){
 
-        }else {
+            }
+        }
+        else {
             System.out.println("Bledna komenda");
             readCommend();
         }
-
     }
-
     /**
      * Metoda, ktora zostanie wywolana gdy uzytkownik poda komede 'sms'
      * @param command
      */
     private void sms(String[] command){
-
+        if(command.length==1) {
+            ipc.display_all();
+        }else{
+            System.out.println("Bledna komenda");
+            readCommend();
+        }
     }
+
 
 }
