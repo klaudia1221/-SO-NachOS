@@ -21,7 +21,6 @@ public class ConditionVariable implements IConditionVariable {
      * @see PCB
      */
     public ConditionVariable(ProcessManager processManager) {
-        // TODO: processManager musi byc zainicjowany w main i ja odwoluje sie bezposrednio do tej zmiennej, wywalic argument z konstruktora
         this.waiting = new LinkedList<>();
         this.busy = false;
         this.processManager = processManager;
@@ -54,10 +53,9 @@ public class ConditionVariable implements IConditionVariable {
             this.waiting.removeFirst(); // usuń z początku kolejki oczekujących (ten ktorego stan zmienilismy)
 
         }
-        this.busy = false; // "uwolnij" zasób
-        // TODO: 1/3 ten wybudzony proces powiniem znowu wywołać wait() zeby zmienic `busy` na true
-        // TODO: 2/3 inaczej plik nie zostanie oznaczony jako zajęty
-        // TODO: 3/3 albo można zostawić na busy=true ale wtedy jest mozliwosc ze nigdy nie zostanie zmieniony na false
+        else {
+            this.busy = false; // "uwolnij" zasób jezeli lista byla pusta
+        }
     }
 
     /**
