@@ -773,35 +773,72 @@ public class Shell {
      * Wywoływane metodu procesManager
      * @param command
      */
+    //try-catch dodac
     private void process(String[] command){
         if(command.length>1){
             if(command.length==3){
                 //process --kill [PID]
                 if(command[1].equals("--kill")){
                     //zakonczenie pracy procesu
-                    processManager.killProcess(Integer.parseInt(command[2]));
+                    try {
+                        processManager.killProcess(Integer.parseInt(command[2]));
+                    } catch (Exception e) {
+                        System.out.println(e.getMessage());
+                        readCommend();
+                    }
                 }
                 //process --killall [PGID]
                else if(command[1].equals("--killall") ){
-                    processManager.killProcessGroup(Integer.parseInt(command[2]));
+                    try {
+                        processManager.killProcessGroup(Integer.parseInt(command[2]));
+                    } catch (Exception e) {
+                        System.out.println(e.getMessage());
+                        readCommend();
+                    }
+
                 }
-                //process --ps [PGID]
+                //process --ps [PGID] // info o danej grupie
                else if(command[1].equals("--ps")){
-                   // processManager.PrintGroupInfo(Integer.parseInt(command[2]));
+                    try {
+                        processManager.PrintGroupInfo(Integer.parseInt(command[2]));
+                    } catch (Exception e) {
+                        System.out.println(e.getMessage());
+                        readCommend();
+                    }
+
                 }
             }
            else if(command.length==2){
-                //process --ps
+                //process --ps //info o wszystkich
                 if(command[1].equals("--ps")){
-                    processManager.PrintProcesses();
+                    try {
+                        processManager.PrintProcesses();
+                    } catch (Exception e) {
+                        System.out.println(e.getMessage());
+                        readCommend();
+                    }
                 }
             }
             //process -–create [nazwaProcesu] [PGID]
             else if(command.length==4){
-                processManager.newProcess(command[2], Integer.parseInt(command[3]));
-            }//process –create [nazwaProcesu] [nazwaPliku] [PGID]
-            else if(command.length==5) {
-                processManager.newProcess(command[2],Integer.parseInt(command[4]), command[3]);
+               if(command[1].equals("--create")) {
+                   try {
+                       processManager.newProcess(command[2], Integer.parseInt(command[3]));
+                   } catch (Exception e) {
+                       System.out.println(e.getMessage());
+                       readCommend();
+                   }
+               }
+            }//process –-groupCreate [nazwaProcesu]  // nowa grupa
+            else if(command.length==4) {
+                if(command[1].equals("--groupCreate")) {
+                    try {
+                        processManager.newProcessGroup(command[2]);
+                    } catch (Exception e) {
+                        System.out.println(e.getMessage());
+                        readCommend();
+                    }
+                }
             }
         }else{
             System.out.println("Bledna komenda");
@@ -818,7 +855,13 @@ public class Shell {
         if(command.length==1){
 //            // wyswietlanie bloku kontrolengo aktywnego procesu
 //            PCB.PrintInfo();
-            processManager.getActivePCB().printInfo();
+            try {
+                processManager.getActivePCB().printInfo();
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+                readCommend();
+            }
+
         }else{
             System.out.println("Bledna komenda");
             readCommend();
