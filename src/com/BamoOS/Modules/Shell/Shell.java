@@ -1059,12 +1059,13 @@ public class Shell {
             File file=null;
 
             try {
-               file= fileSystem.getFile(command[2]);
+               file= fileSystem.getFile(command[1]);
+               file.cv.printInfo();
             }catch(Exception e){
                 System.out.println(e.getMessage());
                 readCommend();
             }
-            file.cv.printInfo();
+
         }else {
             System.out.println("Bledna komenda");
             readCommend();
