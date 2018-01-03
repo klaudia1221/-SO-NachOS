@@ -15,6 +15,7 @@ import java.util.ArrayList;
 public class Interpreter implements IInterpreter{
 
     /**
+     *
      Rozkazy:
      •AD reg1 reg2 - dodaje rejestr2 do rejestru1,
      •AX reg num – dodaje liczbę do rejestru, 
@@ -55,7 +56,7 @@ public class Interpreter implements IInterpreter{
      •DM - czytanie komunikatów wysłanych procesów,
      •JP counter - skacze do innego rozkazu poprzez zmianę licznika, 
      •JZ reg n - skok przy zerowej zawartości rejestru będącego argumentem, 
-     •PE - wyświetla wynik programu,
+     •PE - wyświetla wynik programu znajdujący się w rejestrze D,
      •EX - kończy program,
      **/
 
@@ -66,14 +67,13 @@ public class Interpreter implements IInterpreter{
     private int PC = 0;
     private int PID = 0;
 
-    private IProcessor procesor;
     private IProcessManager processManager;
     private RAM memory;
     private IFileSystem fileSystem;
     private IPC communication;
     private ILoginService loginService;
 
-    Interpreter(IProcessor procesor, RAM memory, IProcessManager processManager, IFileSystem fileSystem, IPC communication, ILoginService loginService) {
+    Interpreter(RAM memory, IProcessManager processManager, IFileSystem fileSystem, IPC communication, ILoginService loginService) {
         this.procesor = procesor;
         this.memory = memory;
         this.processManager = processManager;
@@ -122,6 +122,10 @@ public class Interpreter implements IInterpreter{
         return C;
     }
 
+    public int get_D(){
+        return D;
+    }
+
     public int get_PC(){
         return PC;
     }
@@ -134,6 +138,7 @@ public class Interpreter implements IInterpreter{
         set_A();
         set_B();
         set_C();
+        set_D();
         set_PC();
         set_PID();
     }
@@ -143,6 +148,7 @@ public class Interpreter implements IInterpreter{
         System.out.println("Register A: " + get_A());
         System.out.println("Register B: " + get_B());
         System.out.println("Register C: " + get_C());
+        System.out.println("Register D: " + get_D());
         System.out.println("Register PC: " + get_PC());
         System.out.println();
     }
@@ -783,7 +789,8 @@ public class Interpreter implements IInterpreter{
             String filename = order[1];
             fileSystem.deleteFile(filename);
         } catch (Exception e) {
-            System.out.println(e);
+            throw;
+
         }
     }
 
@@ -879,9 +886,7 @@ public class Interpreter implements IInterpreter{
     private void RM(String[] order) {
         try {
             int PID = Integer.parseInt(order[1]);
-            String message = communication.receiveMessage(PID);
-
-            System.out.println(message);
+            communication.receiveMessage();
         } catch (Exception e){
             System.out.println(e);
         }
@@ -894,6 +899,7 @@ public class Interpreter implements IInterpreter{
             communication.sendMessage(PID, sms);
         } catch (Exception e){
             System.out.println(e);
+
         }
     }
 
@@ -935,7 +941,7 @@ public class Interpreter implements IInterpreter{
         }
     }
 
-    public void Exe() {
+    public void Exe() throws Exception{
         String raw_order;
         String[] order = raw_order.split(" ");
         DownloadRegisters();
@@ -1010,6 +1016,8 @@ public class Interpreter implements IInterpreter{
                 JP(order);
             } else if (operation.equals("JZ")) {
                 JZ(order);
+            } else if (operation.equals("PE")){
+                System.out.println("Result: " + get_D());
             } else if (operation.equals("EX")) {
                 SaveRegister();
                 processManager.getActivePCB().setState(PCB.State.FINISHED);
@@ -1020,7 +1028,7 @@ public class Interpreter implements IInterpreter{
             System.out.println(e);
             System.out.println("Incorrect order");
             SaveRegister();
-            procesor.Scheduler();
+            throw;
         }
         PC++;
     }
