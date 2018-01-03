@@ -48,7 +48,7 @@ public class ProcessManager implements IProcessManager {
 
     //Nowy proces o ile zosta�a wcze�niej utworzona grupa
 	public PCB newProcess(String ProcessName, int PGID) throws Exception {
-			if(PGID == 0) throw new Exception("Brak dost�pu do grupy procesu bezczynno�ci");
+			if(PGID == 0 && checkIfProcessExists(0) != null) throw new Exception("Brak dost�pu do grupy procesu bezczynno�ci");
 			ArrayList<PCB> temp = checkIfGroupExists(PGID);
 			if(temp != null) {
 				PCB pcb = new PCB(this.ProcessCounter, ProcessName, PGID);
