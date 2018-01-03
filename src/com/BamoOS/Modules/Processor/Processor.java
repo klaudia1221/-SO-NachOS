@@ -75,7 +75,12 @@ public class Processor implements IProcessor {
 
     public void exe() {   //
         Scheduler();
-        interpreter.Exe();
+        try{
+            interpreter.Exe();
+        }catch(Exception e){
+            System.out.println(e.getMessage());
+            Active.setState(PCB.State.FINISHED);
+        }
     }
 
     public void wyswietl_liste_procesow_gotowych() {
