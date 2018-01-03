@@ -9,7 +9,9 @@ import com.BamoOS.Modules.ConditionVariable.IConditionVariable;
 import com.BamoOS.Modules.FileSystem.Catalog;
 import com.BamoOS.Modules.FileSystem.FileSystem;
 import com.BamoOS.Modules.FileSystem.IFileSystem;
+import com.BamoOS.Modules.MemoryManagment.RAM;
 import com.BamoOS.Modules.ProcessManager.IProcessManager;
+import com.BamoOS.Modules.ProcessManager.PCB;
 import com.BamoOS.Modules.ProcessManager.ProcessManager;
 import com.BamoOS.Modules.Shell.*;
 
@@ -24,7 +26,7 @@ public class Main{
     private static Catalog catalog;
 
     private static IConditionVariable conditionVariable;
-    private static IProcessManager processManager;
+    private static ProcessManager processManager;
         public static void main(String[] args) {
             processManager = new ProcessManager();
 
@@ -41,7 +43,7 @@ public class Main{
 
             ProcesorInterface processor = new ProcesorInterface();
             RAM memory = new RAM();
-            IPCB PCB = new PCB();
+            PCB PCB = new PCB();
 
 
             com.BambOS.com.BambOS.Modules.Shell shell = new Shell(userController, fileSystem, memory, processor, aclController, processManager,  loginService);
