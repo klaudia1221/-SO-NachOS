@@ -10,7 +10,9 @@ public class IPC
 
     private static final int maxSmsSize = 8;
 
-    private ArrayList<Sms> allMessages;
+    private ArrayList<Sms> allSent;
+    private ArrayList<Sms> allReceived;
+
 
     public IPC(ProcessManager pm)
     {
@@ -44,8 +46,8 @@ public class IPC
             temp_list.add(sms);
             pm.getActivePCB().setSmsList(temp_list);
 
-            //zapisz wiadomosc w globalnym kontenerze wszystich wiadomości
-            allMessages.add(sms);
+            //zapisz wiadomosc w kontenerze wyslanych
+            allSent.add(sms);
 
             //powiadom proces-odbiorcę o wiadomości metodą signal()
             try {
@@ -79,14 +81,26 @@ public class IPC
             //wyświetla pierwszą wiadomość, którą znajdzie w kontenerze wiadomości w PCB
             System.out.println(temp_list.get(0).get_mes());
 
+            //zapisuje wiadomosc w kontenerze odebranych
+            allReceived.add(temp_list.get(0));
+
             //usuwa z kontenera w PCB pierwszą wiadomość
             temp_list.remove(0);
         }
     }
 
-    public void display_all()
+    public void display_sent()
     {
-        for(Sms sms : allMessages)//przegląda cały kontener wiadomości z grupy procesow, historie
+        for(Sms sms : allSent)//przegląda historie wyslanych
+        {
+            //wyświetla wiadomości
+            System.out.println("ID nadawcy: "+sms.get_senID()+"; ID odbiorcy: "+sms.get_recID()+"; tresc: "+sms.get_mes());
+        }
+    }
+
+    public void display_received()
+    {
+        for(Sms sms : allReceived)//przegląda historie wyslanych
         {
             //wyświetla wiadomości
             System.out.println("ID nadawcy: "+sms.get_senID()+"; ID odbiorcy: "+sms.get_recID()+"; tresc: "+sms.get_mes());
