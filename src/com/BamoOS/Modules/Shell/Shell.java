@@ -887,7 +887,7 @@ public class Shell {
     private void meminfo(String[] command){
         if(command.length==2){
             if(command[1].equals("--print")){
-               memory.printRAM();
+               memory.writeRAM();
             }
             else {
                 System.out.println("Bledna komenda");
