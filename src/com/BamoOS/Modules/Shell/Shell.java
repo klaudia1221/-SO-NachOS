@@ -356,6 +356,23 @@ public class Shell {
                     System.out.println("Bledna komenda");
                     readCommend();
                 }
+            }else if(command[1].equals("--showgroups")){
+                //user --showgroups
+                if(command.length==2){
+                    try {
+                       System.out.println( userController.printUserGroups(loginService.getLoggedUser().getName()));
+                    } catch (Exception e) {
+                        System.out.println(e.getMessage());
+                        readCommend();
+                    }
+                }else{
+                    System.out.println("Bledna komenda");
+                    readCommend();
+                }
+            }
+            else {
+                System.out.println("Bledna komenda");
+                readCommend();
             }
         }
     }
@@ -423,6 +440,12 @@ public class Shell {
             readCommend();
         }
     }
+
+    /**
+     * Metoda, ktora zostaje wywolalan gdy uzytkownik poda komende 'groups'
+     * Wyswetla liste grup.
+     * @param command
+     */
     private void groups(String[] command){
         //groups
         if (command.length == 1) {
