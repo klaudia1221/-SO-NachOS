@@ -1,7 +1,6 @@
 package com.BamoOS.Modules.ProcessManager;
 
 import com.BamoOS.Modules.Communication.Sms;
-import com.BamoOS.Modules.ConditionVariable.ConditionVariable;
 
 import java.util.ArrayList;
 
@@ -36,10 +35,10 @@ public class PCB {
 	//Pola dla interpretera oraz cpu
 	private int Counter;
 	private int Timer;
+	private double Tau;
 	//public PageTable pageTable;
 	//
 	private ArrayList<Sms> SmsList;
-	private ArrayList<ConditionVariable> ConditionVariables;
 	
 	
 	public PCB(int ProcessID, String ProcessName, int ProcessGroup) {
@@ -105,7 +104,6 @@ public class PCB {
 		this.Counter = counter;
 	}
 
-	
 	public int getTimer() {
 		return Timer;
 	}
@@ -129,5 +127,13 @@ public class PCB {
 
 	public void setSmsList(ArrayList<Sms> smsList) {
 		SmsList = smsList;
+	}
+
+	public double getTau() {
+		return Tau;
+	}
+
+	public void setTau(double tau) {
+		Tau = tau;
 	}
 }
