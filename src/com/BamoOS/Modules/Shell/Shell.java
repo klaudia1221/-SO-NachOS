@@ -6,6 +6,7 @@ import com.BamoOS.Modules.ACL.Interfaces.ILoginService;
 import com.BamoOS.Modules.ACL.Interfaces.IUserController;
 import com.BamoOS.Modules.ACL.Mask;
 import com.BamoOS.Modules.ACL.User;
+import com.BamoOS.Modules.ConditionVariable.IConditionVariable;
 import com.BamoOS.Modules.FileSystem.Catalog;
 import com.BamoOS.Modules.FileSystem.File;
 import com.BamoOS.Modules.FileSystem.FileBase;
@@ -36,6 +37,7 @@ public class Shell {
     private ILoginService loginService;
     private IUserController userController;
     private IACLController ACLController;
+    private IConditionVariable conditionVariable;
     private Map<String, String> allCommands; //Mapa z wszystkimi komednami w shellu
 
     public Shell(IUserController userController,
@@ -43,7 +45,7 @@ public class Shell {
                  ProcesorInterface processor,
                  IACLController ACLController,
                  ProcessManager processManager,
-                 ILoginService loginService) {
+                 ILoginService loginService, IConditionVariable conditionVariable) {
         this.userController = userController;
         this.fileSystem = fileSystem;
         this.memory = memory;
@@ -51,6 +53,7 @@ public class Shell {
         this.ACLController = ACLController;
         this.processManager = processManager;
         this.loginService = loginService;
+        this.conditionVariable=conditionVariable;
         allCommands = new HashMap<>();
     }
     /**
@@ -210,6 +213,9 @@ public class Shell {
                                 break;
                             case "close":
                                 close(separateCommand);
+                                break;
+                            case "cv":
+                                conditionVariable(separateCommand);
                                 break;
                         }
                     } else if (!isCommandGood(separateCommand[0])) {
@@ -1032,9 +1038,25 @@ public class Shell {
                 }
             }
         } catch (Exception e) {
-            e.getMessage();
+           System.out.println( e.getMessage());
             readCommend();
         }
         return false;
     }
+
+    /**
+     * Metoda, ktora zostaje wywolana gdy uzytkownik poda komende 'cv'
+     * @param command
+     */
+    private void conditionVariable(String[] command){
+        //cv
+        if(command.length==1){
+            conditionVariable.printInfo();
+        }else {
+            System.out.println("Bledna komenda");
+            readCommend();
+        }
+
+    }
+
 }

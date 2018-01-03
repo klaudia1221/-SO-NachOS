@@ -46,7 +46,7 @@ public class Main{
             PCB PCB = new PCB();
 
 
-            Shell shell = new Shell( userController,  fileSystem,  memory,  procesor, ACLController,  processManager, PCB, loginService );
+            Shell shell = new Shell( userController,  fileSystem,  memory,  procesor, aclController,  processManager, loginService, conditionVariable );
             shell.start();
         }
         private static void CreateDefaultUsers(){
