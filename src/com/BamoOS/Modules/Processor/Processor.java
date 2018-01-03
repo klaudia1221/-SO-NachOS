@@ -2,8 +2,6 @@
 package com.BamoOS.Modules.Processor;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 
 import com.BamoOS.Modules.Interpreter.Interpreter;
 import com.BamoOS.Modules.ProcessManager.IProcessManager;
@@ -55,7 +53,7 @@ public class Processor implements IProcessor {
             Active = processManager.getPCB(0);
             Active.setState(PCB.State.ACTIVE);
         }
-    } // konczy shedulera
+    } 
 
     private void calculateThau(ArrayList<PCB> readyProcesses) {
         for (PCB pcb : readyProcesses) {

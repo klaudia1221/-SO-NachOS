@@ -9,10 +9,13 @@ import com.BamoOS.Modules.ConditionVariable.IConditionVariable;
 import com.BamoOS.Modules.FileSystem.Catalog;
 import com.BamoOS.Modules.FileSystem.FileSystem;
 import com.BamoOS.Modules.FileSystem.IFileSystem;
+import com.BamoOS.Modules.Interpreter.Interpreter;
 import com.BamoOS.Modules.MemoryManagment.RAM;
 import com.BamoOS.Modules.ProcessManager.IProcessManager;
 import com.BamoOS.Modules.ProcessManager.PCB;
 import com.BamoOS.Modules.ProcessManager.ProcessManager;
+import com.BamoOS.Modules.Processor.IProcessor;
+import com.BamoOS.Modules.Processor.Processor;
 import com.BamoOS.Modules.Shell.*;
 
 
@@ -40,8 +43,8 @@ public class Main{
 
             conditionVariable = new ConditionVariable(processManager);
 
-
-            ProcesorInterface processor = new ProcesorInterface();
+            Interpreter interpreter = new Interpreter(processManager)
+            IProcessor processor = new Processor(processManager);
             RAM memory = new RAM();
 
             Shell shell = new Shell( userController,  fileSystem,  memory,  processor, aclController,  processManager, loginService, conditionVariable );

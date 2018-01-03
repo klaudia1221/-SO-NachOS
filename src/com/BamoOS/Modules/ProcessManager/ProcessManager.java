@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import com.BamoOS.Modules.ConditionVariable.ConditionVariable;
 import com.BamoOS.Modules.ProcessManager.PCB.Register;
-
+import com.BamoOS.Modules.Processor.IProcessor;
 
 
 public class ProcessManager implements IProcessManager {
@@ -24,6 +24,7 @@ public class ProcessManager implements IProcessManager {
 			e.printStackTrace();
 		}
 	}
+
 	public PCB getActivePCB(){
 		return ActivePCB;
 	}
@@ -35,7 +36,7 @@ public class ProcessManager implements IProcessManager {
 			if(PGID == 0) throw new Exception("Brak dost�pu do grupy procesu bezczynno�ci");
 			ArrayList<PCB> temp = checkIfGroupExists(PGID);
 			if(temp != null) {
-				PCB pcb = new PCB(this.ProcessCounter, ProcessName, PGID);
+				PCB pcb = new PCB(this.ProcessCounter, ProcessName, PGID, processor);
 				temp.add(pcb);
 				this.ProcessCounter++;
 				return pcb;
