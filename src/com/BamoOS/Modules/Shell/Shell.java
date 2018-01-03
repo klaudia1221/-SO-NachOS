@@ -97,7 +97,6 @@ public class Shell {
         allCommands.put("cv", "Wyswietlenie informacji o zmiennej warunkowej");
         allCommands.put("sms", "Wyswietlenie wszytskich komunikatow wyslanych podczas komunikacji miedzyprocesorowej");
     }
-
     private void logo() {
 
         System.out.println( "\n" +
@@ -113,7 +112,6 @@ public class Shell {
                 "                                                                                                                                                                  \n" +
                 "                                                                                                                                              \n");
     }
-
     /**
      * Metoda ktora wywoluje sie dopoki uzytkownik nie poda prawidlowego loginu lub poda exit, wtedy kończy się praca systemu
      */
@@ -132,7 +130,6 @@ public class Shell {
             readCommend();
         }
     }
-
     /**
      * Metoda, ktora zostaje wywolana na poczatku uruchamiania sie shella, loguje użytkownika do systemu
      *
@@ -146,7 +143,6 @@ public class Shell {
             loginLoad();
         }
     }
-
     /**
      * Metoda, ktora czyta komende od uzytkownika z konsoli, pobiera stringa, ktory dzieli na czesci przedzielone spacja
      * i w zaleznosci od piewsego czlonu komendy wywoluje inne prywante metody shella
@@ -241,7 +237,6 @@ public class Shell {
             readCommend();
         }
     }
-
     /**
      * Metoda, ktora sprawdza, czy komenda podana przez uzytkownika, znajduje sie wsrod komend zapisanych w mapie shella
      * @param command
@@ -251,7 +246,6 @@ public class Shell {
         if (allCommands.containsKey(command)) return true;
         return false;
     }
-
     /**
      * Metoda, ktora zostaje wywolana, gdy uzytkownik poda komende 'man' : Wyswietla ona wszystkie komendy dostepne
      * dla uzytkownika i ich opis
@@ -276,7 +270,6 @@ public class Shell {
             }
         }
     }
-
     /**
      * Metoda, ktora zostaje wywolana, gdy uzytkownik poda komende 'exit'
      * Asekuracyjnie sprawdza czy uzytkownik chce zakonczyc prace,
@@ -301,7 +294,6 @@ public class Shell {
             e.printStackTrace();
         }
     }
-
     /**
      * Metoda, ktora zostaje wywolana, gdy uzytkownik poda komedne 'uname'
      * Wyswietla ona informacje dotyczace autorow systemu operacyjnego
@@ -319,11 +311,9 @@ public class Shell {
         System.out.println("Michal Wlodarczyk        Zarzadrzanie pliaki/katalogami");
         System.out.println("Jedrzej Wyzgala          Mechanizm synchronizacji");
     }
-
     /**
      * Metoda, ktora zostaje wywolana, gdy uzytkownik poda komedne 'user ...'
      * Wywolywane sa tutaj metody userControllera
-     *
      * @param command
      */
     private void user(String[] command) {
@@ -366,11 +356,9 @@ public class Shell {
             }
         }
     }
-
     /**
      * Metoda ktora zostaje wywolana gdy uzytkowniki poda komende users, wyswietla ona liste uzytkownikow
      * Wywolywane sa tutaj metody userControllera
-     *
      * @param command
      */
     private void users(String[] command) {
@@ -382,7 +370,6 @@ public class Shell {
             readCommend();
         }
     }
-
     /**
      * Metoda, ktora zostaje wywolana, gdy uzytkownik poda komedne 'group. ...'
      * Wywolywane sa tutaj metody userControllera
@@ -433,11 +420,9 @@ public class Shell {
             readCommend();
         }
     }
-
     /**
      * Metoda, ktora zostaje wywolalan gdy uzytkownik poda komende 'cr ...'
      * Wywoływane sa tutaj metody ACLControllera oraz filesystem oraz loginService
-     *
      * @param command
      */
     private void create(String[] command) {
@@ -478,7 +463,6 @@ public class Shell {
             readCommend();
         }
     }
-
     /**
      * Metoda, ktora zostanie wywolana gdy uzytkwonik poda komende 'cat ...'
      * Wywoływane sa tutaj metody ACLControllera oraz filesystem oraz loginService
@@ -567,12 +551,10 @@ public class Shell {
             readCommend();
         }
     }
-
     /**
      * Metoda, ktora zostaje wywoalana gdy uzytkownik poda komende 'ls'
      * Wywoływane sa tutaj metody ACLControllera oraz filesystem oraz loginService
      * Wyświetla  nazwy i rozmiar wpisów w katalogu domyślnym
-     *
      * @param command
      */
     private void ls(String[] command) {
@@ -605,7 +587,6 @@ public class Shell {
     /**
      * Metoda, ktora zostaje wywolana gdy uzytkownik poda komende 'mv' [stara_nazwa_pliku] [nowa_nazwa_pliku]'
      * Wywoływane sa tutaj metody ACLControllera oraz filesystem oraz loginService
-     *
      * @param command
      */
     private void mv(String[] command) {
@@ -785,7 +766,6 @@ public class Shell {
      * Wywoływane metodu procesManager
      * @param command
      */
-    //try-catch dodac
     private void process(String[] command) {
         if (command.length > 1) {
             if (command.length == 3) {
@@ -913,7 +893,6 @@ public class Shell {
             readCommend();
         }
     }
-
     /**
      * Metoda która zostanie wywyołana gdy użytkownik poda komende 'go'
      * Wykonuje jedna linijkę jakiegoś procesu
@@ -928,7 +907,6 @@ public class Shell {
             readCommend();
         }
     }
-
     /**
      * Metoda, ktora zostaje wywolanna gdy uzytkownik poda komende 'login '
      * Zmienia zalogowanego uzytkownika
@@ -1090,6 +1068,5 @@ public class Shell {
             readCommend();
         }
     }
-
 
 }
