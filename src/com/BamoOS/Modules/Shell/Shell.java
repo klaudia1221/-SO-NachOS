@@ -12,6 +12,7 @@ import com.BamoOS.Modules.FileSystem.FileBase;
 import com.BamoOS.Modules.FileSystem.IFileSystem;
 import com.BamoOS.Modules.MemoryManagment.RAM;
 import com.BamoOS.Modules.ProcessManager.IProcessManager;
+import com.BamoOS.Modules.ProcessManager.ProcessManager;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -28,14 +29,12 @@ import static com.BamoOS.Modules.ACL.OperationType.READ;
 
 
 public class Shell {
-    private String testString;
     private ProcesorInterface processor;
-    private IProcessManager processManager;
+    private ProcessManager processManager;
     private RAM memory;
     private IFileSystem fileSystem;
     private ILoginService loginService;
     private IUserController userController;
-    //    private IPCB PCB; //Tutaj niewiadoma, bo Bartek powinien to w ProcessManagerze udostępniać.
     private IACLController ACLController;
     private Map<String, String> allCommands; //Mapa z wszystkimi komednami w shellu
 
@@ -43,7 +42,7 @@ public class Shell {
                  IFileSystem fileSystem, RAM memory,
                  ProcesorInterface processor,
                  IACLController ACLController,
-                 IProcessManager processManager,
+                 ProcessManager processManager,
                  ILoginService loginService) {
         this.userController = userController;
         this.fileSystem = fileSystem;
@@ -51,11 +50,9 @@ public class Shell {
         this.processor = processor;
         this.ACLController = ACLController;
         this.processManager = processManager;
-//        this.PCB= PCB;
         this.loginService = loginService;
         allCommands = new HashMap<>();
     }
-
     /**
      * Metoda, ktora wypelnia mape komendami, wyswietla logo, oraz dopoki nie zostanie przerwana przez uzytkownika wykonuje metode readCommend()
      */
@@ -67,7 +64,6 @@ public class Shell {
             readCommend();
         }
     }
-
     /**
      * Metoda, ktora laduje wszytskie metody do mapy
      */
@@ -853,20 +849,30 @@ public class Shell {
      * Metody  PCB
      * @param command
      */
-    private void pcbinfo(String[] command){
-        if(command.length==1){
-//            // wyswietlanie bloku kontrolengo aktywnego procesu
-//            PCB.PrintInfo();
-            try {
-                processManager.getActivePCB().printInfo();
-            } catch (Exception e) {
-                System.out.println(e.getMessage());
+    private void pcbinfo(String[] command) {
+        //pcbinfo --active
+        if (command.length == 2) {
+            if (command[1].equals("--active")) {
+                // wyswietlanie bloku kontrolengo aktywnego procesu
+                try {
+                    processManager.getActivePCB().printInfo();
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
+                    readCommend();
+                }
+
+            }//pcbinfo --all
+            else if (command[1].equals("--all")) {
+                try {
+                    processManager.PrintProcesses();
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
+                    readCommend();
+                }
+            } else {
+                System.out.println("Bledna komenda");
                 readCommend();
             }
-
-        }else{
-            System.out.println("Bledna komenda");
-            readCommend();
         }
     }
     /**
@@ -877,7 +883,7 @@ public class Shell {
     private void meminfo(String[] command){
         if(command.length==2){
             if(command[1].equals("--print")){
-               memory.printRAM();
+               memory.writeRAM();
             }
             else {
                 System.out.println("Bledna komenda");
