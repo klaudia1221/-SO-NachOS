@@ -10,8 +10,8 @@ public class IPC
 
     private static final int maxSmsSize = 8;
 
-    private ArrayList<Sms> allSent;
-    private ArrayList<Sms> allReceived;
+    private ArrayList<Sms> allSent = new ArrayList<>();
+    private ArrayList<Sms> allReceived = new ArrayList<>();
 
     public IPC(ProcessManager pm)
     {
