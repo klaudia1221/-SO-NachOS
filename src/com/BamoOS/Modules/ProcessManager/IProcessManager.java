@@ -18,4 +18,5 @@ public interface IProcessManager {
     PCB getActivePCB();
     void setActivePCB(PCB activePCB);
     ArrayList<PCB> getReadyProcesses();
+    public String getCommand(int pointer);
 }

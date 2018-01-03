@@ -44,6 +44,7 @@ public class PCB {
 	private ArrayList<Sms> SmsList;
 	private int LastSenderID;
 	private Map<Integer,Integer> mapLine;
+	private ProcessManager PM;
 
 	
 	public PCB(int ProcessID, String ProcessName, int ProcessGroup) {
@@ -141,8 +142,11 @@ public class PCB {
 		System.out.print(this.getPID()+"\t"+this.getPGID()+"\t");
 		System.out.print(this.getRegister(Register.A)+"\t"+this.getRegister(Register.B)+"\t"+this.getRegister(Register.C)+"\t");
 		System.out.println(this.getCounter()+"\t"+this.getTimer()+"\t"+this.getState()+"\t"+this.getName());
-		//TODO wywolaj Condition variable z danej grupy
-		//printInfo
+		try {
+			PM.findConditionVariable(this.PGID).printInfo();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	//Gettery i Settery dla p�l wiadomo�ci, interpretera oraz cpu
 

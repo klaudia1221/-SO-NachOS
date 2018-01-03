@@ -28,7 +28,7 @@ public class ConditionVariable implements IConditionVariable {
         this.waiting = new LinkedList<>();
         this.busy = false;
         this.processManager = processManager;
-        this.pgid = 0;
+        this.pgid = -1;
     }
 
     /**
@@ -76,15 +76,6 @@ public class ConditionVariable implements IConditionVariable {
             this.waiting.removeFirst(); // usuń z początku kolejki oczekujących (ten ktorego stan zmienilismy)
         }
         this.busy = false; // "uwolnij" zasób
-    }
-
-    /**
-     * Wywołuje metodę `signal` dla wszystkich procesów w kolejce oczekująych
-     */
-    public void signalAll() {
-        for (int i=0; i < this.waiting.size(); i++) { // wywołaj signal() tyle razy ile jest procesów oczekujaych
-            this.signal();
-        }
     }
 
     /**
