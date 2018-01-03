@@ -7,6 +7,7 @@ import com.BamoOS.Modules.ACL.Interfaces.IUserController;
 import com.BamoOS.Modules.ACL.Mask;
 import com.BamoOS.Modules.ACL.User;
 import com.BamoOS.Modules.FileSystem.Catalog;
+import com.BamoOS.Modules.FileSystem.File;
 import com.BamoOS.Modules.FileSystem.FileBase;
 import com.BamoOS.Modules.FileSystem.IFileSystem;
 import com.BamoOS.Modules.MemoryManagment.RAM;

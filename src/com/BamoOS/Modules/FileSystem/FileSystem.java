@@ -1,15 +1,18 @@
 package com.BamoOS.Modules.FileSystem;
 
 import com.BamoOS.Modules.ACL.User;
+import com.BamoOS.Modules.ConditionVariable.IConditionVariable;
+import com.BamoOS.Modules.ProcessManager.IProcessManager;
 
 public class FileSystem implements IFileSystem {
     DiscDrive Drive = new DiscDrive();      //Dysk
     private Catalog dir;    //Katalog domyslny, w ktorym zapisywane sa wszystkie wpisy - obiekty File
-
     //Operacje na dysku
+    private IProcessManager processManager;
 
-    public FileSystem(Catalog catalog){
+    public FileSystem(Catalog catalog, IProcessManager processManager){
         this.dir = catalog;
+        this.processManager = processManager;
     }
 
     public FileBase getFileBase(String name){
@@ -39,7 +42,7 @@ public class FileSystem implements IFileSystem {
         else { dir.close_file(fileName);  }
     }
 
-    public void createFile(String fileName, User user) throws Exception{
+    public void createFile(String fileName, User user, IProcessManager processManager) throws Exception{
         if (nameExists(fileName)) { throw new Exception("Plik o takiej nazwie istnieje.");}
         else if (Drive.FREE_BLOCKS==0) { throw new Exception("Za mało miejsca na dysku."); }
         else {
@@ -47,7 +50,7 @@ public class FileSystem implements IFileSystem {
             Drive.bitVec[index] = false;
             Drive.FREE_BLOCKS--;
             Drive.putByte((char) 32 , (index+1) *32 - 1);
-            dir.add(new File(fileName, index, user));
+            dir.add(new File(fileName, index, user, processManager));
         }
     }
 

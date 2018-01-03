@@ -1,6 +1,10 @@
 package com.BamoOS.Modules.FileSystem;
 
 import com.BamoOS.Modules.ACL.User;
+import com.BamoOS.Modules.ConditionVariable.ConditionVariable;
+import com.BamoOS.Modules.ConditionVariable.IConditionVariable;
+import com.BamoOS.Modules.ProcessManager.IProcessManager;
+import com.BamoOS.Modules.ProcessManager.ProcessManager;
 
 public class File extends FileBase{
 
@@ -10,6 +14,7 @@ public class File extends FileBase{
     int LAST_BLOCK;
     String opened_file;
     boolean opened=false;
+    public IConditionVariable cv;
 
     public void setName(String fileName) { this.FILE_NAME = fileName; }
 
@@ -17,7 +22,9 @@ public class File extends FileBase{
 
     public void setLast(int block) { this.LAST_BLOCK = block; }
 
-    public void open(String fileContent) { this.opened_file+=fileContent; opened=true; }
+    public void open(String fileContent) {
+        this.opened_file+=fileContent; opened=true;
+    }
 
     public void close() { opened=false; this.opened_file = new String(); }
 
@@ -30,12 +37,13 @@ public class File extends FileBase{
         this.LAST_BLOCK=33;
     }*/
 
-    public File(String name, int first, User user){
+    public File(String name, int first, User user, IProcessManager processManager){
         super(user);
         this.FILE_NAME=name;
         this.FILE_SIZE=0;
         this.FIRST_BLOCK=first;
         this.LAST_BLOCK=first;
+        this.cv = new ConditionVariable(processManager);
         //Pytanie do michała, dlaczego to jest kalasa String,
         // a nie sam string
         this.opened_file=new String();

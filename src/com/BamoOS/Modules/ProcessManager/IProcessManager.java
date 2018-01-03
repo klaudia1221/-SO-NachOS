@@ -16,4 +16,5 @@ public interface IProcessManager {
     ArrayList<ArrayList<PCB>> getProcessList();
     void PrintProcesses();
     PCB getActivePCB();
+
 }
