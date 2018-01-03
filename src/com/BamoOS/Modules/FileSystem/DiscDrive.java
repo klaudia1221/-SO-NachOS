@@ -1,6 +1,7 @@
 package com.BamoOS.Modules.FileSystem;
 
 public class DiscDrive {
+
     final int DISC_SIZE = 1024;                     //Rozmiar dysku
     final int BLOCK_SIZE = 32;                      //Rozmiar bloku dyskowego
     final int BLOCKS_AMOUNT = DISC_SIZE/BLOCK_SIZE;                   //Ilosc blokow dyskowych
@@ -57,7 +58,6 @@ public class DiscDrive {
             System.out.print(']');
 
         }
-        System.out.println();
     }
 
     public void printBitVec(){
@@ -69,4 +69,5 @@ public class DiscDrive {
                 System.out.print(0);
             }
         }
-    }}
+    }
+}
