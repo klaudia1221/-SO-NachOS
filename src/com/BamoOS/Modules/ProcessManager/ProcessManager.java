@@ -36,6 +36,7 @@ public class ProcessManager implements IProcessManager {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		ConditionVariables = new ArrayList<>();
 	}
 
 	public PCB getActivePCB(){
@@ -102,6 +103,14 @@ public class ProcessManager implements IProcessManager {
 		}
 		throw new Exception("Brak procesu o podanym PID");
 	}
+	public ConditionVariable findConditionVariable(int PGID) throws Exception {
+		for(ConditionVariable cv : ConditionVariables){
+			if(cv.getPgid() == PGID){
+				return cv;
+			}
+		}
+		throw new Exception("Brak CV dla podanego PGID");
+	}
 	//Usuwanie grup
 	public void killProcessGroup(int PGID) throws Exception {
 			if(PGID == 0) throw new Exception("Brak dost�pu do grupy procesu bezczynno�ci");
@@ -109,6 +118,7 @@ public class ProcessManager implements IProcessManager {
 			if(temp != null) {
 				deleteDateForProcessesInGroup(temp);
 				ProcessGroups.remove(temp);
+                ConditionVariables.remove(findConditionVariable(PGID));
 			}else throw new Exception("Brak grupy o podanym PGID");
 	}
 	private void deleteDateForProcessesInGroup(ArrayList<PCB> listOfProcesses){
@@ -118,24 +128,24 @@ public class ProcessManager implements IProcessManager {
 	}
 	//Tworzenie nowej grupy oraz pierwszego procesu
 	public PCB newProcessGroup(String ProcessName) throws Exception {
-		//TODO dodać do listy condidtionvariable
 		//PCB pcb = new PCB(this.ProcessCounter, ProcessName, this.GroupsCounter);
 		PCB pcb = newProcess(ProcessName, this.GroupsCounter);
 		ArrayList<PCB> al = new ArrayList<PCB>();
 		al.add(pcb);
 		ProcessGroups.add(al);
+		ConditionVariables.add(new ConditionVariable(this, this.GroupsCounter));
 		this.ProcessCounter++;
 		this.GroupsCounter++;
 		return pcb;
 	}
 
 	public PCB newProcessGroup(String ProcessName, String FileName) throws Exception {
-		//TODO dodać do listy condidtionvariable
 		//PCB pcb = new PCB(this.ProcessCounter, ProcessName, this.GroupsCounter);
 		PCB pcb = newProcess(ProcessName, this.GroupsCounter, FileName);
 		ArrayList<PCB> al = new ArrayList<PCB>();
 		al.add(pcb);
 		ProcessGroups.add(al);
+		ConditionVariables.add(new ConditionVariable(this, this.GroupsCounter));
 		this.ProcessCounter++;
 		this.GroupsCounter++;
 		return pcb;
