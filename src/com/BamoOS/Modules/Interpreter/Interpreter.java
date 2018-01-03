@@ -568,7 +568,7 @@ public class Interpreter implements IInterpreter{
         String reg_1 = order[1];
         String reg_3 = order[3];
 
-        int len = order[2].length();
+        /*int len = order[2].length();
 
         if ((order[2].substring(0,1).equals("["))&&(order[2].substring(len-2,len-1).equals("]"))){
             String raw_address = order[2];
@@ -652,7 +652,7 @@ public class Interpreter implements IInterpreter{
             }
         }
 
-    }
+   // }
 
     private void MV(String[] order) {
         String reg_1 = order[1];
@@ -760,11 +760,11 @@ public class Interpreter implements IInterpreter{
             String filename = order[1];
             fileSystem.createFile(filename, loginService.getLoggedUser(), processManager);
         } catch (Exception e) {
-            throw;
+            throw e;
         }
     }
 
-    private void CF(String[] order) {
+    private void CF(String[] order) throws Exception {
         try {
             String filename = order[1];
             String fileContent = order[2];
@@ -773,7 +773,7 @@ public class Interpreter implements IInterpreter{
             fileSystem.appendFile(filename,fileContent);
             fileSystem.closeFile(filename);
         } catch (Exception e) {
-            System.out.println(e);
+            throw e;
         }
     }
 
