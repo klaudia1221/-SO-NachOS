@@ -455,7 +455,7 @@ public class Interpreter implements IInterpreter{
 
     private void DX(String[] order) {
         String reg = order[1];
-        int len = order[2].length();
+        /*int len = order[2].length();
 
         if ((order[2].substring(0,1).equals("["))&&(order[2].substring(len-2,len-1).equals("]"))){
             String raw_address = order[2];
@@ -487,7 +487,7 @@ public class Interpreter implements IInterpreter{
         }else if ((order[2].substring(0,1).equals("["))&&(order[2].substring(1,2).equals("]"))){
             System.out.println("Incorrect address.");
         }else if ((!order[2].substring(0,1).equals("["))&&(!order[2].substring(len-2,len-1).equals("]"))){
-            int val = Integer.parseInt(order[2]);
+            */int val = Integer.parseInt(order[2]);
 
             if (val != 0) {
                 if (reg.equals("A")) {
@@ -501,7 +501,7 @@ public class Interpreter implements IInterpreter{
                 }
             }
         }
-    }
+   // }
 
     private void MD(String[] order) {
         String reg_1 = order[1];
@@ -610,7 +610,7 @@ public class Interpreter implements IInterpreter{
         }else if ((order[2].substring(0,1).equals("["))&&(order[2].substring(1,2).equals("]"))) {
             System.out.println("Incorrect address.");
         }else if ((!order[2].substring(0,1).equals("["))&&(!order[2].substring(len-2,len-1).equals("]"))){
-            int val = Integer.parseInt(order[2]);
+            */int val = Integer.parseInt(order[2]);
 
             if(val != 0) {
                 if (reg_1.equals("A")) {
