@@ -95,10 +95,10 @@ public class ProcessManager implements IProcessManager {
 	}
 	//Usuwanie procesu
 	public void killProcess(int PID) throws Exception {
-		//TODO powiadomi� inne modu�y ?pami��?
 		if(PID == 0) throw new Exception("Nie mo�lna zabi� procesu bezczynno�ci");
 		PCB temp = checkIfProcessExists(PID);
 		if(temp != null) {
+			ram.deleteProcessData(temp.getPID());
 			checkIfGroupExists(temp.getPGID()).remove(temp);
 		}
 		throw new Exception("Brak procesu o podanym PID");
@@ -113,13 +113,18 @@ public class ProcessManager implements IProcessManager {
 	}
 	//Usuwanie grup
 	public void killProcessGroup(int PGID) throws Exception {
-		if(PGID == 0) throw new Exception("Brak dost�pu do grupy procesu bezczynno�ci");
-		ArrayList<PCB> temp = checkIfGroupExists(PGID);
-		if(temp != null) {
-			ProcessGroups.remove(temp);
-			ConditionVariables.remove(findConditionVariable(PGID));
+			if(PGID == 0) throw new Exception("Brak dost�pu do grupy procesu bezczynno�ci");
+			ArrayList<PCB> temp = checkIfGroupExists(PGID);
+			if(temp != null) {
+				deleteDateForProcessesInGroup(temp);
+				ProcessGroups.remove(temp);
+                ConditionVariables.remove(findConditionVariable(PGID));
+			}else throw new Exception("Brak grupy o podanym PGID");
+	}
+	private void deleteDateForProcessesInGroup(ArrayList<PCB> listOfProcesses){
+		for(PCB pcb : listOfProcesses){
+			ram.deleteProcessData(pcb.getPID());
 		}
-		throw new Exception("Brak grupy o podanym PGID");
 	}
 	//Tworzenie nowej grupy oraz pierwszego procesu
 	public PCB newProcessGroup(String ProcessName) throws Exception {

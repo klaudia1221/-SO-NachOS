@@ -568,7 +568,7 @@ public class Interpreter implements IInterpreter{
         String reg_1 = order[1];
         String reg_3 = order[3];
 
-        int len = order[2].length();
+        /*int len = order[2].length();
 
         if ((order[2].substring(0,1).equals("["))&&(order[2].substring(len-2,len-1).equals("]"))){
             String raw_address = order[2];
@@ -652,7 +652,7 @@ public class Interpreter implements IInterpreter{
             }
         }
 
-    }
+   // }
 
     private void MV(String[] order) {
         String reg_1 = order[1];
@@ -688,7 +688,7 @@ public class Interpreter implements IInterpreter{
 
     }
 
-    private void MZ(String[] order) {
+   /* private void MZ(String[] order) {
         String raw_address = order[1];
         String register = order[2];
         String[] split_address = raw_address.split("");
@@ -709,6 +709,7 @@ public class Interpreter implements IInterpreter{
             }
         }
     }
+    */
 
     private void MO(String[] order) {
         String reg = order[1];
@@ -725,7 +726,7 @@ public class Interpreter implements IInterpreter{
         }
     }
 
-    private void MY(String[] order) {
+  /*  private void MY(String[] order) {
         String register = order[1];
         String raw_address = order[2];
         String[] split_address = raw_address.split("");
@@ -752,17 +753,18 @@ public class Interpreter implements IInterpreter{
             }
         }
     }
+    */
 
     private void CE(String[] order) throws Exception {
         try {
             String filename = order[1];
             fileSystem.createFile(filename, loginService.getLoggedUser(), processManager);
         } catch (Exception e) {
-            throw;
+            throw e;
         }
     }
 
-    private void CF(String[] order) {
+    private void CF(String[] order) throws Exception {
         try {
             String filename = order[1];
             String fileContent = order[2];
@@ -771,7 +773,7 @@ public class Interpreter implements IInterpreter{
             fileSystem.appendFile(filename,fileContent);
             fileSystem.closeFile(filename);
         } catch (Exception e) {
-            System.out.println(e);
+            throw e;
         }
     }
 
@@ -793,11 +795,10 @@ public class Interpreter implements IInterpreter{
             fileSystem.deleteFile(filename);
         } catch (Exception e) {
             throw e;
-
         }
     }
 
-    private void RF(String[] order) {
+    private void RF(String[] order) throws Exception{
         try {
             String filename = order[1];
             fileSystem.openFile(filename);
@@ -806,53 +807,48 @@ public class Interpreter implements IInterpreter{
             System.out.println("File content:");
             System.out.println(fileContent);
         } catch (Exception e) {
-            System.out.println(e);
+            throw e;
         }
     }
 
-    private void RN(String[] order) {
+    private void RN(String[] order) throws Exception{
         try {
             String oldName = order[1];
             String newName = order[2];
             fileSystem.renameFile(oldName, newName);
         } catch (Exception e) {
-            System.out.println(e);
+            throw e;
         }
     }
 
-    private void NP(String[] order) {
+    private void NP(String[] order) throws Exception{
         try {
             String FileName = order[1];
             processManager.runNew(FileName);
         } catch (Exception e){
-            System.out.println(e);
+            throw e;
         }
     }
 
-    private void NG(String[] order) {
+    private void NG(String[] order) throws Exception{
         try {
             String ProcessName = order[1];
             processManager.newProcessGroup(ProcessName);
         } catch (Exception e){
-            System.out.println(e);
+            throw e;
         }
     }
 
-    private void KP(String[] order) {
+    private void KP(String[] order) throws Exception{
         try {
             int PID = Integer.parseInt(order[1]);
             processManager.killProcess(PID);
         }catch (Exception e) {
-            System.out.println(e);
+            throw e;
         }
     }
 
-    private void PP(String[] order){
-        processManager.PrintProcesses();
-    }
-
     private void SS(String[] order) {
-        try {
             int PID = Integer.parseInt(order[1]);
             String state = order[2];
             if (state.equals("ACTIVE")) {
@@ -863,47 +859,35 @@ public class Interpreter implements IInterpreter{
             } else if (state.equals("READY")) {
                 processManager.getActivePCB().setState(PCB.State.READY);
             }
-        } catch (Exception e){
-            System.out.println(e);
-        }
     }
 
-    private void RP(String[] order) {
+    private void RP(String[] order) throws Exception{
         try {
             int PID = Integer.parseInt(order[1]);
             processManager.runNew();
-        } catch (Exception e) {
-            System.out.println(e);
+        }catch (Exception e){
+            throw e;
         }
     }
 
-    private void KG(String[] order) {
+    private void KG(String[] order) throws Exception{ //Bartek musi rzucić wyjątek
         try {
             int PGID = Integer.parseInt(order[1]);
             processManager.killProcessGroup(PGID);
-        } catch (Exception e) {
-            System.out.println(e);
+        }catch (Exception e){
+            throw e;
         }
     }
 
     private void RM(String[] order) {
-        try {
             int PID = Integer.parseInt(order[1]);
             communication.receiveMessage();
-        } catch (Exception e){
-            throw e;
-        }
     }
 
     private void SM(String[] order) {
-        try {
             int PID = Integer.parseInt(order[1]);
             Sms sms = new Sms(order[2]);
             communication.sendMessage(PID, sms);
-        } catch (Exception e){
-            throw e;
-
-        }
     }
 
     private void LM(String[] order) {
@@ -911,12 +895,8 @@ public class Interpreter implements IInterpreter{
     }
 
     private void JP(String[] order) {
-        try {
             int counter = Integer.parseInt(order[1]);
             PC = counter;
-        } catch (Exception e) {
-            throw e;
-        }
     }
 
     private void JZ(String[] order) {
@@ -945,7 +925,7 @@ public class Interpreter implements IInterpreter{
     }
 
     public void Exe() throws Exception{
-        String raw_order;
+        String raw_order = processManager.getCommand(get_PC());
         String[] order = raw_order.split(" ");
         DownloadRegisters();
         RegisterStatus();
@@ -979,12 +959,12 @@ public class Interpreter implements IInterpreter{
                 XM(order);
             } else if (operation.equals("MV")) {
                 MV(order);
-            } else if (operation.equals("MZ")) {
-                MZ(order);
+            /*} else if (operation.equals("MZ")) {
+                MZ(order);*/
             } else if (operation.equals("MO")) {
                 MO(order);
-            } else if (operation.equals("MY")) {
-                MY(order);
+            /*} else if (operation.equals("MY")) {
+                MY(order);*/
             } else if (operation.equals("CE")) {
                 CE(order);
             } else if (operation.equals("CF")) {
@@ -1009,6 +989,8 @@ public class Interpreter implements IInterpreter{
                 RP(order);
             } else if (operation.equals("KG")) {
                 KG(order);
+            } else if (operation.equals("PP")){
+                processManager.PrintProcesses();
             } else if (operation.equals("RM")) {
                 RM(order);
             } else if (operation.equals("SM")) {
@@ -1034,5 +1016,6 @@ public class Interpreter implements IInterpreter{
             throw e;
         }
         PC++;
+        set_PC();
     }
 }
