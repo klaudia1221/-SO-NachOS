@@ -171,9 +171,9 @@ public class ProcessManager implements IProcessManager {
 		PCB pcb = new PCB(this.ProcessCounter, ProcessName, this.GroupsCounter, pt1, mapLine);
 		Map map = pcb.getMapLine();
 		System.out.println("Mapa konwersji");
-		for(Map.Entry<Integer, Integer> entry : map.entrySet()){
-			System.out.println(entry.getKey()+"\t"+entry.getValue());
-		}
+//		for(Map.Entry<Integer, Integer> entry : map.){
+//			System.out.println(entry.getKey()+"\t"+entry.getValue());
+//		}
 		ram.pageTables.put(this.ProcessCounter, pt1);
 		ram.exchangeFile.writeToExchangeFile(this.ProcessCounter, code);
 
@@ -271,7 +271,7 @@ public class ProcessManager implements IProcessManager {
 		ArrayList<PCB> Processes = new ArrayList<PCB>();
 		for (ArrayList<PCB> arr : this.ProcessGroups){
 			for (PCB pcb : arr){
-				if(pcb.getState() == PCB.State.READY){
+				if(pcb.getState() == PCB.State.READY && pcb.getPID() != 0){
 					Processes.add(pcb);
 				}
 			}
