@@ -137,11 +137,11 @@ public class PCB {
 	}
 	
 	public void printInfo() {
-		System.out.println("PID"+'\t'+"PGID"+'\t'+"A"+'\t'+"B"+'\t'+"C"+'\t'+"Licznik"+'\t'+"Timer"+'\t'+"Stan"+'\t'+"Nazwa");
-		System.out.println("------------------------------------------------------------------------");
+		System.out.println("PID"+'\t'+"PGID"+'\t'+"A"+'\t'+"B"+'\t'+"C"+'\t'+"Licznik"+'\t'+"Timer"+'\t'+"Tau"+'\t'+"Stan"+'\t'+"Nazwa");
+		System.out.println("--------------------------------------------------------------------------------");
 		System.out.print(this.getPID()+"\t"+this.getPGID()+"\t");
 		System.out.print(this.getRegister(Register.A)+"\t"+this.getRegister(Register.B)+"\t"+this.getRegister(Register.C)+"\t");
-		System.out.println(this.getCounter()+"\t"+this.getTimer()+"\t"+this.getState()+"\t"+this.getName());
+		System.out.println(this.getCounter()+"\t"+this.getTimer()+"\t"+this.getTau()+"\t"+this.getState()+"\t"+this.getName());
 		try {
 			PM.findConditionVariable(this.PGID).printInfo();
 		} catch (Exception e) {
