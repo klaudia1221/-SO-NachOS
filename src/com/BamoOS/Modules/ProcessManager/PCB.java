@@ -42,7 +42,7 @@ public class PCB {
 	private int Timer;
 	private double Tau;
 	public PageTable pageTable;
-	private ArrayList<Sms> SmsList;
+	private ArrayList<Sms> SmsList = new ArrayList<>();
 	private int LastSenderID;
 	private Map<Integer,Integer> mapLine = new HashMap<>();
 	private ProcessManager PM;
