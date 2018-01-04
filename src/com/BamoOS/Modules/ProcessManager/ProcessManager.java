@@ -284,6 +284,7 @@ public class ProcessManager implements IProcessManager {
 				break;
 			}
 			command += ch;
+			firstchar++;
 		}while(true);
 		return command;
     }
