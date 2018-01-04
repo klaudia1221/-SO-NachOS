@@ -19,19 +19,19 @@ public class Interpreter implements IInterpreter {
         AX reg num – dodaje liczbę do rejestru,
         SB reg1 reg2 - odejmuje od rejestru1 zawartość rejestru2,
         SX reg num – odejmuje liczbę od rejestru,
-        DC reg - zwiększa zawartość rejestru o 1,
-        IC reg - zmniejsza zawartość rejestru o 1,
+        DC reg - zmniejsza zawartość rejestru o 1,
+        IC reg - zwiększa zawartość rejestru o 1,
         MU reg1 reg2 – mnoży rejestr 1 przez rejestr 2,
         MX reg num – mnoży rejestr przez liczbę,
         DV reg1 reg2 - dzieli zawartość rejestru1 przez zawartość rejestru2,
         DX reg num – dzieli rejestr przez liczbę,
-        MV reg1 reg2 – kopiuje wartość rejestru 2 do rejestru 1,
+        MV reg1 reg2 – kopiuje zawartość rejestru 2 do rejestru 1,
         MZ address reg - zapisuje do pamięci zawartość rejestru pod wskazanym adresem,
         MO reg n – umieszcza w rejestrze wartość n,
         MY reg address - umieszcza w rejestrze zawartość pamiętaną pod wskazanym adresem,
-        PE reg - wyświetla wynik programu znajdujący się w podanym rejestrze rejestrze,
         JP counter - skacze do innego rozkazu poprzez zmianę licznika,
         JZ reg n - skok przy zerowej zawartości rejestru będącego argumentem,
+        PE reg - wyświetla wynik programu znajdujący się w podanym rejestrze,
 
         Procesy
         KP nazwa - usunięcie procesu o danej nazwie,
@@ -103,32 +103,49 @@ public class Interpreter implements IInterpreter {
         String reg_1 = order[1];
         String reg_2 = order[2];
 
-        if (reg_1.equals("A")) {
-            if (reg_2.equals("B")) {
-                A += B;
-            } else if (reg_2.equals("C")) {
-                A += C;
-            } else {
+        switch (reg_1) {
+            case "A":
+                switch (reg_2) {
+                    case "B":
+                        A += B;
+                        break;
+                    case "C":
+                        A += C;
+                        break;
+                    default:
+                        System.out.println("Incorrect register.");
+                        break;
+                }
+                break;
+            case "B":
+                switch (reg_2) {
+                    case "A":
+                        B += A;
+                        break;
+                    case "C":
+                        B += C;
+                        break;
+                    default:
+                        System.out.println("Incorrect register.");
+                        break;
+                }
+                break;
+            case "C":
+                switch (reg_2) {
+                    case "A":
+                        C += A;
+                        break;
+                    case "B":
+                        C += B;
+                        break;
+                    default:
+                        System.out.println("Incorrect register.");
+                        break;
+                }
+                break;
+            default:
                 System.out.println("Incorrect register.");
-            }
-        } else if (reg_1.equals("B")) {
-            if (reg_2.equals("A")) {
-                B += A;
-            } else if (reg_2.equals("C")) {
-                B += C;
-            } else {
-                System.out.println("Incorrect register.");
-            }
-        } else if (reg_1.equals("C")) {
-            if (reg_2.equals("A")) {
-                C += A;
-            } else if (reg_2.equals("B")) {
-                C += B;
-            } else {
-                System.out.println("Incorrect register.");
-            }
-        } else {
-            System.out.println("Incorrect register.");
+                break;
         }
     }
 
@@ -137,14 +154,19 @@ public class Interpreter implements IInterpreter {
         String reg = order[1];
         int val = Integer.parseInt(order[2]);
 
-        if (reg.equals("A")) {
-            A += val;
-        } else if (reg.equals("B")) {
-            B += val;
-        } else if (reg.equals("C")) {
-            C += val;
-        } else {
-            System.out.println("Incorrect register.");
+        switch (reg) {
+            case "A":
+                A += val;
+                break;
+            case "B":
+                B += val;
+                break;
+            case "C":
+                C += val;
+                break;
+            default:
+                System.out.println("Incorrect register.");
+                break;
         }
     }
 
@@ -153,28 +175,49 @@ public class Interpreter implements IInterpreter {
         String reg_1 = order[1];
         String reg_2 = order[2];
 
-        if (reg_1.equals("A")) {
-            if (reg_2.equals("B")) {
-                A -= B;
-            } else if (reg_2.equals("C")) {
-                A -= C;
-            } else System.out.println("Incorrect register.");
-
-        } else if (reg_1.equals("B")) {
-            if (reg_2.equals("A")) {
-                B -= A;
-            } else if (reg_2.equals("C")) {
-                B -= C;
-            } else System.out.println("Incorrect register.");
-
-        } else if (reg_1.equals("C")) {
-            if (reg_2.equals("A")) {
-                C -= A;
-            } else if (reg_2.equals("B")) {
-                C -= B;
-            } else System.out.println("Incorrect register.");
-        } else {
-            System.out.println("Incorrect register.");
+        switch (reg_1) {
+            case "A":
+                switch (reg_2) {
+                    case "B":
+                        A -= B;
+                        break;
+                    case "C":
+                        A -= C;
+                        break;
+                    default:
+                        System.out.println("Incorrect register.");
+                        break;
+                }
+                break;
+            case "B":
+                switch (reg_2) {
+                    case "A":
+                        B -= A;
+                        break;
+                    case "C":
+                        B -= C;
+                        break;
+                    default:
+                        System.out.println("Incorrect register.");
+                        break;
+                }
+                break;
+            case "C":
+                switch (reg_2) {
+                    case "A":
+                        C -= A;
+                        break;
+                    case "B":
+                        C -= B;
+                        break;
+                    default:
+                        System.out.println("Incorrect register.");
+                        break;
+                }
+                break;
+            default:
+                System.out.println("Incorrect register.");
+                break;
         }
     }
 
@@ -183,43 +226,59 @@ public class Interpreter implements IInterpreter {
         String reg = order[1];
         int val = Integer.parseInt(order[2]);
 
-        if (reg.equals("A")) {
-            A -= val;
-        } else if (reg.equals("B")) {
-            B -= val;
-        } else if (reg.equals("C")) {
-            C -= val;
-        } else {
-            System.out.println("Incorrect register.");
+        switch (reg) {
+            case "A":
+                A -= val;
+                break;
+            case "B":
+                B -= val;
+                break;
+            case "C":
+                C -= val;
+                break;
+            default:
+                System.out.println("Incorrect register.");
+                break;
         }
     }
 
-    //DC reg - zwiększa zawartość rejestru o 1
+    //DC reg - zmniejsza zawartość rejestru o 1
     private void DC(String[] order) {
         String reg = order[1];
 
-        if (reg.equals("A")) {
-            A -= 1;
-        } else if (reg.equals("B")) {
-            B -= 1;
-        } else if (reg.equals("C")) {
-            C -= 1;
-        } else {
-            System.out.println("Incorrect register.");
+        switch (reg) {
+            case "A":
+                A -= 1;
+                break;
+            case "B":
+                B -= 1;
+                break;
+            case "C":
+                C -= 1;
+                break;
+            default:
+                System.out.println("Incorrect register.");
+                break;
         }
     }
 
-    //IC reg - zmniejsza zawartość rejestru o 1
+    //IC reg - zwiększa zawartość rejestru o 1
     private void IC(String[] order) {
         String reg = order[1];
-        if (reg.equals("A")) {
-            A += 1;
-        } else if (reg.equals("B")) {
-            B += 1;
-        } else if (reg.equals("C")) {
-            C += 1;
-        } else {
-            System.out.println("Incorrect register.");
+
+        switch (reg) {
+            case "A":
+                A += 1;
+                break;
+            case "B":
+                B += 1;
+                break;
+            case "C":
+                C += 1;
+                break;
+            default:
+                System.out.println("Incorrect register.");
+                break;
         }
     }
 
@@ -228,30 +287,49 @@ public class Interpreter implements IInterpreter {
         String reg_1 = order[1];
         String reg_2 = order[2];
 
-        if (reg_1.equals("A")) {
-            if (reg_2.equals("B")) {
-                A *= B;
-            } else if (reg_2.equals("C")) {
-                A *= C;
-            } else System.out.println("Incorrect register.");
-
-        } else if (reg_1.equals("B")) {
-            if (reg_2.equals("A")) {
-                B *= A;
-            } else if (reg_2.equals("C")) {
-                B *= C;
-            } else System.out.println("Incorrect register.");
-
-        } else if (reg_1.equals("C")) {
-            if (reg_2.equals("A")) {
-                C *= A;
-            } else if (reg_2.equals("B")) {
-                C *= B;
-            } else {
+        switch (reg_1) {
+            case "A":
+                switch (reg_2) {
+                    case "B":
+                        A *= B;
+                        break;
+                    case "C":
+                        A *= C;
+                        break;
+                    default:
+                        System.out.println("Incorrect register.");
+                        break;
+                }
+                break;
+            case "B":
+                switch (reg_2) {
+                    case "A":
+                        B *= A;
+                        break;
+                    case "C":
+                        B *= C;
+                        break;
+                    default:
+                        System.out.println("Incorrect register.");
+                        break;
+                }
+                break;
+            case "C":
+                switch (reg_2) {
+                    case "A":
+                        C *= A;
+                        break;
+                    case "B":
+                        C *= B;
+                        break;
+                    default:
+                        System.out.println("Incorrect register.");
+                        break;
+                }
+                break;
+            default:
                 System.out.println("Incorrect register.");
-            }
-        } else {
-            System.out.println("Incorrect register.");
+                break;
         }
     }
 
@@ -260,44 +338,71 @@ public class Interpreter implements IInterpreter {
         String reg = order[1];
         int val = Integer.parseInt(order[2]);
 
-        if (reg.equals("A")) {
-            A *= val;
-        } else if (reg.equals("B")) {
-            B *= val;
-        } else if (reg.equals("C")) {
-            C *= val;
-        } else {
-            System.out.println("Incorrect register.");
+        switch (reg) {
+            case "A":
+                A *= val;
+                break;
+            case "B":
+                B *= val;
+                break;
+            case "C":
+                C *= val;
+                break;
+            default:
+                System.out.println("Incorrect register.");
+                break;
         }
     }
 
     //DV reg1 reg2 - dzieli zawartość rejestru1 przez zawartość rejestru2
+    //ogarnąć gdy rowne 0
     private void DV(String[] order) {
         String reg_1 = order[1];
         String reg_2 = order[2];
 
-        if (reg_1.equals("A")) {
-            if (reg_2.equals("B") && B != 0) {
-                A /= B;
-            } else if (reg_2.equals("C") && C != 0) {
-                A /= C;
-            } else System.out.println("Incorrect register.");
-
-        } else if (reg_1.equals("B")) {
-            if (reg_2.equals("A") && A != 0) {
-                B /= A;
-            } else if (reg_2.equals("C") && C != 0) {
-                B /= C;
-            } else System.out.println("Incorrect register.");
-
-        } else if (reg_1.equals("C")) {
-            if (reg_2.equals("A") && A != 0) {
-                C /= A;
-            } else if (reg_2.equals("B") && B != 0) {
-                C /= B;
-            } else System.out.println("Incorrect register.");
-        } else {
-            System.out.println("Incorrect register.");
+        switch (reg_1) {
+            case "A":
+                switch (reg_2) {
+                    case "B":
+                        A /= B;
+                        break;
+                    case "C":
+                        A /= C;
+                        break;
+                    default:
+                        System.out.println("Incorrect register.");
+                        break;
+                }
+                break;
+            case "B":
+                switch (reg_2) {
+                    case "A":
+                        B /= A;
+                        break;
+                    case "C":
+                        B /= C;
+                        break;
+                    default:
+                        System.out.println("Incorrect register.");
+                        break;
+                }
+                break;
+            case "C":
+                switch (reg_2) {
+                    case "A":
+                        C /= A;
+                        break;
+                    case "B":
+                        C /= B;
+                        break;
+                    default:
+                        System.out.println("Incorrect register.");
+                        break;
+                }
+                break;
+            default:
+                System.out.println("Incorrect register.");
+                break;
         }
     }
 
@@ -305,50 +410,75 @@ public class Interpreter implements IInterpreter {
     private void DX(String[] order) {
         String reg = order[1];
         int val = Integer.parseInt(order[2]);
+
         if (val != 0) {
-            if (reg.equals("A")) {
-                A /= val;
-            } else if (reg.equals("B")) {
-                B /= val;
-            } else if (reg.equals("C")) {
-                C /= val;
-            } else {
-                System.out.println("Incorrect register.");
+            switch (reg) {
+                case "A":
+                    A /= val;
+                    break;
+                case "B":
+                    B /= val;
+                    break;
+                case "C":
+                    C /= val;
+                    break;
+                default:
+                    System.out.println("Incorrect register.");
+                    break;
             }
+        }else{
+            System.out.println("Division by zero");
         }
     }
 
-    //MV reg1 reg2 – kopiuje wartość rejestru 2 do rejestru 1
+    //MV reg1 reg2 – kopiuje zawartość rejestru 2 do rejestru 1
     private void MV(String[] order) {
         String reg_1 = order[1];
         String reg_2 = order[2];
 
-        if (reg_1.equals("A")) {
-            if (reg_2.equals("B")) {
-                A = B;
-            } else if (reg_2.equals("C")) {
-                A = C;
-            } else System.out.println("Incorrect register.");
-
-        } else if (reg_1.equals("B")) {
-            if (reg_2.equals("A")) {
-                B = A;
-            } else if (reg_2.equals("C")) {
-                B = C;
-            } else {
+        switch (reg_1) {
+            case "A":
+                switch (reg_2) {
+                    case "B":
+                        A = B;
+                        break;
+                    case "C":
+                        A = C;
+                        break;
+                    default:
+                        System.out.println("Incorrect register.");
+                        break;
+                }
+                break;
+            case "B":
+                switch (reg_2) {
+                    case "A":
+                        B = A;
+                        break;
+                    case "C":
+                        B = C;
+                        break;
+                    default:
+                        System.out.println("Incorrect register.");
+                        break;
+                }
+                break;
+            case "C":
+                switch (reg_2) {
+                    case "A":
+                        C = A;
+                        break;
+                    case "B":
+                        C = B;
+                        break;
+                    default:
+                        System.out.println("Incorrect register.");
+                        break;
+                }
+                break;
+            default:
                 System.out.println("Incorrect register.");
-            }
-
-        } else if (reg_1.equals("C")) {
-            if (reg_2.equals("A")) {
-                C = A;
-            } else if (reg_2.equals("B")) {
-                C = B;
-            } else {
-                System.out.println("Incorrect register.");
-            }
-        } else {
-            System.out.println("Incorrect register.");
+                break;
         }
     }
 
@@ -381,16 +511,20 @@ public class Interpreter implements IInterpreter {
         String reg = order[1];
         int val = Integer.parseInt(order[2]);
 
-        if (reg.equals("A")) {
-            A = val;
-        } else if (reg.equals("B")) {
-            B = val;
-        } else if (reg.equals("C")) {
-            C = val;
-        } else {
-            System.out.println("Incorrect register.");
+        switch (reg) {
+            case "A":
+                A = val;
+                break;
+            case "B":
+                B = val;
+                break;
+            case "C":
+                C = val;
+                break;
+            default:
+                System.out.println("Incorrect register.");
+                break;
         }
-        SaveRegister();
     }
 
     //MY reg address - umieszcza w rejestrze zawartość pamiętaną pod wskazanym adresem,
@@ -431,44 +565,49 @@ public class Interpreter implements IInterpreter {
 
     //JZ reg n - skok przy zerowej zawartości rejestru będącego argumentem,
     private void JZ(String[] order) {
-        try {
-            String register = order[1];
+            String reg = order[1];
             int counter = Integer.parseInt(order[2]);
 
-            if (register.equals("A")) {
-                if (A == 0) {
-                    PC = counter - 1;
-                }
-            } else if (register.equals("B")) {
-                if (B == 0) {
-                    PC = counter - 1;
-                }
-            } else if (register.equals("C")) {
-                if (C == 0) {
-                    PC = counter - 1;
-                }
-            } else {
-                System.out.println("Incorrect register");
+            switch (reg){
+                case "A":
+                    if (A == 0) {
+                        PC = counter - 1;
+                    }
+                    break;
+                case "B":
+                    if (B == 0) {
+                        PC = counter - 1;
+                    }
+                    break;
+                case "C":
+                    if (C == 0) {
+                        PC = counter - 1;
+                    }
+                    break;
+                default:
+                    System.out.println("Incorrect register");
+                    break;
             }
-        } catch (Exception e) {
-            System.out.println();
-        }
-
     }
 
-    //PE reg - wyświetla wynik programu znajdujący się w podanym rejestrze rejestrze,
+    //PE reg - wyświetla wynik programu znajdujący się w podanym rejestrze,
     private void PE(String[] order) {
         String reg = order[1];
-        if (reg.equals("A")) {
-            System.out.println("Result: " + A);
-        } else if (reg.equals("B")) {
-            System.out.println("Result: " + B);
-        } else if (reg.equals("C")) {
-            System.out.println("Result: " + C);
-        } else {
-            System.out.println("Incorrect register.");
+        switch (reg) {
+            case "A":
+                    System.out.println("Result: " + A);
+                    break;
+            case "B":
+                    System.out.println("Result: " + B);
+                    break;
+            case "C":
+                    System.out.println("Result: " + C);
+                    break;
+            default:
+                    System.out.println("Incorrect register.");
+                    break;
+                }
         }
-    }
 
     //---------------------------------PROCESY---------------------------------------
 
@@ -529,7 +668,7 @@ public class Interpreter implements IInterpreter {
             }
             fileSystem.createFile(filename, loginService.getLoggedUser(), processManager);
             fileSystem.openFile(filename);
-            fileSystem.appendFile(filename, fileContent);
+            //fileSystem.appendFile(filename, fileContent);
             fileSystem.closeFile(filename);
         } catch (Exception e) {
             throw e;
@@ -596,16 +735,18 @@ public class Interpreter implements IInterpreter {
         communication.sendMessage(PID, sms);
     }
 
+    //------------------------------------------------------------------------------
 
     public void Exe() throws Exception {
         String raw_order = processManager.getCommand(PC);
+        System.out.println("Order: " + raw_order);
         DownloadRegisters();
         String[] order = raw_order.split(" ");
         String operation = order[0];
 
         try {
             switch (operation) {
-                //arytmetyczno-logiczne
+                //------------------------ARYTMETYCZNO-LOGICZNE----------------------------------
                 case "AD":
                     AD(order);
                     break;
@@ -658,7 +799,14 @@ public class Interpreter implements IInterpreter {
                 case "PE":
                     PE(order);
                     break;
-                //pliki
+                //---------------------------------PROCESY---------------------------------------
+                case "DP":
+                    DP(order);
+                    break;
+                case "RP":
+                    RP(order);
+                    break;
+                //-----------------------------------PLIKI---------------------------------------
                 case "CE":
                     CE(order);
                     break;
@@ -683,18 +831,20 @@ public class Interpreter implements IInterpreter {
                 case "RN":
                     RN(order);
                     break;
-                //komunikaty
+                //-----------------------------KOMUNIKATY---------------------------------------
                 case "RM":
                     RM();
                     break;
                 case "SM":
                     SM(order);
                     break;
+
                 case "EX":
                     processManager.getActivePCB().setState(PCB.State.FINISHED);
                     break;
                 default:
                     System.out.println("Undefined order.");
+                    break;
             }
         } catch (Exception e) {
             PC++;
