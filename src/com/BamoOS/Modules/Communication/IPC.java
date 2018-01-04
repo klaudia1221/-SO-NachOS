@@ -48,9 +48,9 @@ public class IPC
             //zapisz wiadomosc w kontenerze wyslanych
             allSent.add(sms);
 
-            //powiadom proces-odbiorcę o wiadomości metodą signal()
+            //powiadom procesy czekajace na wiadomosc o nowej wiadomości metodą signalAll()
             try {
-                pm.getConditionVariable(recID).signal();
+                pm.getConditionVariable(recID).signalAll();
             } catch (Exception e) {
                 e.printStackTrace();
             }
