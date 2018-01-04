@@ -969,7 +969,6 @@ public class Interpreter implements IInterpreter{
                 DC(order);
             } else if (operation.equals("IC")) {
                 IC(order);
-                RegisterStatus();
             } else if (operation.equals("MU")) {
                 MU(order);
             } else if (operation.equals("MX")) {
@@ -1037,8 +1036,7 @@ public class Interpreter implements IInterpreter{
                 System.out.println("Undefined order.");
             }
         }catch (Exception e) {
-            System.out.println(e);
-            System.out.println("Incorrect order");
+
             SaveRegister();
             throw e;
         }
