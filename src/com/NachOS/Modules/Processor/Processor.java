@@ -45,7 +45,7 @@ public class Processor implements IProcessor {
         if(processManager.getActivePCB().getState() == PCB.State.WAITING || processManager.getActivePCB().getState() == PCB.State.FINISHED ||
                 (processReadyList.size() > 0 && Active.getPID() == 0)){
             if(Active.getState() == PCB.State.FINISHED){
-                time = Active.getCounter();
+                time = Active.getTimer();
                 try{
                     processManager.killProcess(Active.getPID());
                 }catch (Exception e){
