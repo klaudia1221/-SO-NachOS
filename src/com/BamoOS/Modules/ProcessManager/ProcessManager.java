@@ -67,6 +67,8 @@ public class ProcessManager implements IProcessManager {
 			if(temp != null) {
 				String textFileContent = readCommandFile("src/" + FileName + ".txt");
 				Map mapLine = new HashMap<Integer, Integer>();
+				//Podejrzane w pizdu.
+
 				for(int i = 0, j = 0; i != -1;j++){
 					i = textFileContent.indexOf(";", i);
 					mapLine.put(j,i-1);
