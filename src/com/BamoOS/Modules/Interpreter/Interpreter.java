@@ -196,6 +196,7 @@ public class Interpreter implements IInterpreter{
         } else {
             System.out.println("Incorrect register.");
         }
+        SaveRegister();
     }
 
     private void AX(String[] order){
@@ -242,6 +243,7 @@ public class Interpreter implements IInterpreter{
             } else {
                 System.out.println("Incorrect register.");
             }
+            SaveRegister();
         }
     //}
 
@@ -272,6 +274,8 @@ public class Interpreter implements IInterpreter{
         } else {
             System.out.println("Incorrect register.");
         }
+        SaveRegister();
+
     }
 
     private void SX(String[] order){
@@ -317,7 +321,9 @@ public class Interpreter implements IInterpreter{
             } else {
                 System.out.println("Incorrect register.");
             }
-        }
+        SaveRegister();
+
+    }
     //}
 
     private void DC(String[] order){
@@ -332,6 +338,7 @@ public class Interpreter implements IInterpreter{
         } else {
             System.out.println("Incorrect register.");
         }
+        SaveRegister();
     }
 
     private void IC(String[] order){
@@ -345,6 +352,7 @@ public class Interpreter implements IInterpreter{
         } else {
             System.out.println("Incorrect register.");
         }
+        SaveRegister();
     }
 
     private void MU(String[] order){
@@ -376,6 +384,8 @@ public class Interpreter implements IInterpreter{
         } else {
             System.out.println("Incorrect register.");
         }
+        SaveRegister();
+
     }
 
     private void MX(String[] order) {
@@ -422,7 +432,9 @@ public class Interpreter implements IInterpreter{
             } else {
                 System.out.println("Incorrect register.");
             }
-        }
+        SaveRegister();
+
+    }
     //}
 
     private void DV(String[] order) {
@@ -452,6 +464,8 @@ public class Interpreter implements IInterpreter{
         } else {
             System.out.println("Incorrect register.");
         }
+        SaveRegister();
+
     }
 
     private void DX(String[] order) {
@@ -501,7 +515,9 @@ public class Interpreter implements IInterpreter{
                     System.out.println("Incorrect register.");
                 }
             }
-        }
+        SaveRegister();
+
+    }
    // }
 
     private void MD(String[] order) {
@@ -560,6 +576,8 @@ public class Interpreter implements IInterpreter{
         } else {
             System.out.println("Incorrect register.");
         }
+        SaveRegister();
+
     }
 
     private void XM(String[] order) {
@@ -648,7 +666,9 @@ public class Interpreter implements IInterpreter{
                     System.out.println("Incorrect register.");
                 }
             }
-        }
+        SaveRegister();
+
+    }
 
    // }
 
@@ -683,6 +703,7 @@ public class Interpreter implements IInterpreter{
         } else {
             System.out.println("Incorrect register.");
         }
+        SaveRegister();
 
     }
 
@@ -724,6 +745,7 @@ public class Interpreter implements IInterpreter{
         } else {
             System.out.println("Incorrect register.");
         }
+        SaveRegister();
     }
 
   /*  private void MY(String[] order) {
@@ -922,12 +944,14 @@ public class Interpreter implements IInterpreter{
         } catch (Exception e) {
             System.out.println();
         }
+        SaveRegister();
+
     }
 
     public void Exe() throws Exception{
         String raw_order = processManager.getCommand(get_PC());
         String[] order = raw_order.split(" ");
-        DownloadRegisters();
+//        DownloadRegisters();
         RegisterStatus();
 
         try {
@@ -945,6 +969,7 @@ public class Interpreter implements IInterpreter{
                 DC(order);
             } else if (operation.equals("IC")) {
                 IC(order);
+                RegisterStatus();
             } else if (operation.equals("MU")) {
                 MU(order);
             } else if (operation.equals("MX")) {
@@ -959,10 +984,12 @@ public class Interpreter implements IInterpreter{
                 XM(order);
             } else if (operation.equals("MV")) {
                 MV(order);
+
             /*} else if (operation.equals("MZ")) {
                 MZ(order);*/
             } else if (operation.equals("MO")) {
                 MO(order);
+                RegisterStatus();
             /*} else if (operation.equals("MY")) {
                 MY(order);*/
             } else if (operation.equals("CE")) {
@@ -1015,6 +1042,7 @@ public class Interpreter implements IInterpreter{
             SaveRegister();
             throw e;
         }
+        SaveRegister();
         PC++;
         set_PC();
     }
