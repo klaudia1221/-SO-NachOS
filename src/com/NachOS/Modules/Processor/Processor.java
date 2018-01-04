@@ -26,35 +26,40 @@ public class Processor implements IProcessor {
         this.interpreter = interpreter;
     }
     public void Scheduler() {
-        ArrayList<PCB> readyProcesses = processManager.getReadyProcesses();
-        if(readyProcesses.size() != 0){
-            if (Active != null && Active.getState() == PCB.State.FINISHED) {
-                time = Active.getTimer();
-                try {
-                    processManager.killProcess(Active.getPID());
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-            if (readyProcesses.size() == 0) {
-                Active = processManager.getPCB(0);
-                Active.setState(PCB.State.ACTIVE);
-                processManager.setActivePCB(Active);
-            } else {
-                calculateThau(readyProcesses);
-                sortProcessReadyByThau(readyProcesses);
-                for (PCB pcb : readyProcesses) {
-                    if (!(pcb.getState() == PCB.State.WAITING) && !(pcb.getPID() == 0)) {
-                        Active = pcb;
-                        pcb.setState(PCB.State.ACTIVE);
-                        processManager.setActivePCB(Active);
-                        return;
-                    }
-                }
-                Active = processManager.getPCB(0);
-                Active.setState(PCB.State.ACTIVE);
-            }
-        }
+
+//        if(processManager.getActivePCB().getState() == PCB.State.WAITING || processManager.getActivePCB().getState() == PCB.State.FINISHED ||
+//                (processReadyList.size() > 0 && Active.getPID() == 0)){
+//            //Szukaj najkrótszego na liście etc.
+//        }
+//        ArrayList<PCB> readyProcesses = processManager.getReadyProcesses();
+//        if(readyProcesses.size() != 0){
+//            if (Active != null && Active.getState() == PCB.State.FINISHED) {
+//                time = Active.getTimer();
+//                try {
+//                    processManager.killProcess(Active.getPID());
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//            if (readyProcesses.size() == 0) {
+//                Active = processManager.getPCB(0);
+//                Active.setState(PCB.State.ACTIVE);
+//                processManager.setActivePCB(Active);
+//            } else {
+//                calculateThau(readyProcesses);
+//                sortProcessReadyByThau(readyProcesses);
+//                for (PCB pcb : readyProcesses) {
+//                    if (!(pcb.getState() == PCB.State.WAITING) && !(pcb.getPID() == 0)) {
+//                        Active = pcb;
+//                        pcb.setState(PCB.State.ACTIVE);
+//                        processManager.setActivePCB(Active);
+//                        return;
+//                    }
+//                }
+//                Active = processManager.getPCB(0);
+//                Active.setState(PCB.State.ACTIVE);
+//            }
+//        }
 
     }
 
@@ -76,7 +81,7 @@ public class Processor implements IProcessor {
         });
     }
 
-    public void exe() throws Exception {   //
+    public void exe() {   //
         Scheduler();
         try{
             interpreter.Exe();

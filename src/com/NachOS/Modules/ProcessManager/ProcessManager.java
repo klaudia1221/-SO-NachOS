@@ -32,6 +32,7 @@ public class ProcessManager implements IProcessManager {
 	public void setStartingActivePCB(){
 		try {
 			ActivePCB = newProcessGroup("Proces bezczynności");
+			ActivePCB.setState(PCB.State.ACTIVE);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -133,7 +134,7 @@ public class ProcessManager implements IProcessManager {
 		}
 	}
 	//Tworzenie nowej grupy oraz pierwszego procesu
-	public PCB newProcessGroup(String ProcessName) throws Exception {
+	public PCB newProcessGroup(String ProcessName) {
 		//PCB pcb = new PCB(this.ProcessCounter, ProcessName, this.GroupsCounter);
 		//PCB pcb = newProcess(ProcessName, this.GroupsCounter);
 
@@ -153,7 +154,7 @@ public class ProcessManager implements IProcessManager {
 		return pcb;
 	}
 
-	public PCB newProcessGroup(String ProcessName, String FileName) throws Exception {
+	public PCB newProcessGroup(String ProcessName, String FileName) {
 		//PCB pcb = new PCB(this.ProcessCounter, ProcessName, this.GroupsCounter);
 		//PCB pcb = newProcess(ProcessName, this.GroupsCounter, FileName);
 		String textFileContent = readCommandFile("src/" + FileName + ".txt");
@@ -269,6 +270,7 @@ public class ProcessManager implements IProcessManager {
 		throw new Exception("Brak procesu o podanym PID");
 	}
 
+	//Zwaraca ready bez bezczynności.
 	public ArrayList<PCB> getReadyProcesses() {
 		ArrayList<PCB> Processes = new ArrayList<PCB>();
 		for (ArrayList<PCB> arr : this.ProcessGroups){
