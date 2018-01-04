@@ -85,6 +85,10 @@ public class ProcessManager implements IProcessManager {
 			throw new Exception("Brak grupy o podanym PGID");
 	}
 	private String readCommandFile(String relativePathToFile){
+//		TODO
+//		Jak zrobisz.
+//		process --groupCreate nazwa programKtórynieistnieje
+//		wyrzuci exception a process i tak się utworzy.
 		StringBuilder contentBuilder = new StringBuilder();
 		try(Stream<String> stream = Files.lines(Paths.get(relativePathToFile), StandardCharsets.UTF_8)){
 			stream.forEach(s -> contentBuilder.append(s));
