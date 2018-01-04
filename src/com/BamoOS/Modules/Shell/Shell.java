@@ -83,7 +83,6 @@ public class Shell {
         allCommands.put("group", "Kontrola grup");
         allCommands.put("cr", "Tworzenie wpisu");
         allCommands.put("cat", "wyswietlenie pliku/dodanie na koniec pliku");
-        allCommands.put("rm", "Usuwa plik o podanej nazwie");
         allCommands.put("mv", "Zmiana nazwy pliku");
         allCommands.put("ls", "Wyswietla zawartosc katalogow");
         allCommands.put("process", "Dzaialnia dotyczace procesu");
@@ -195,9 +194,6 @@ public class Shell {
                                 break;
                             case "mv":
                                 mv(separateCommand);
-                                break;
-                            case "rm":
-                                rm(separateCommand);
                                 break;
                             case "process":
                                 process(separateCommand);
@@ -656,44 +652,7 @@ public class Shell {
             readCommend();
         }
     }
-    /**
-     * Metoda,ktora zostaje wywolalan gdy uzytkownik poda komende 'rm [nazwa_pliku]'
-     * usuniecie pliku o podanej nazwie lub zawartosci pliku
-     * Wywoływane sa tutaj metody ACLControllera oraz filesystem oraz loginService
-     * @param command
-     */
-    private void rm(String[] command) {
-        //rm [nazwa_pliku]
-        if (command.length > 1) {
-            if (command.length == 2) {
-                FileBase fileBase = null;
-                try {
-                    fileBase = fileSystem.getFileBase(command[1]);
-                } catch (Exception e) {
-                    System.out.println(e.getMessage());
-                    readCommend();
-                }
-                if (ACLController.hasUserPremissionToOperation(fileBase, loginService.getLoggedUser(), MODIFY)) {  //sprawdzenie uprawnien
-                    try {
-                        fileSystem.deleteFile(command[1]);
-                    }catch(Exception e) {
-                        System.out.println(e.getMessage());
-                        readCommend();
-                    }
-                }else{
-                    System.out.println("Brak uprawnien do pliku");
-                    readCommend();
-                }
-            }
-         else {
-                System.out.println("Bledne parametry");
-                readCommend();
-            }
-        }else {
-            System.out.println("Bledna komenda");
-            readCommend();
-        }
-    }
+
     /**
      *Metoda, ktora zostaje wywolanna gdy uzytkownik poda komende 'access ...'
      * Wywoływane sa tutaj metody ACLControllera oraz filesystem oraz loginService
