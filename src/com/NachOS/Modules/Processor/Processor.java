@@ -39,6 +39,7 @@ public class Processor implements IProcessor {
     2. Jeśli lista jest pusta, a wybrany proces ma stan FINISED lub WAITING:
         I. Ustaw stan aktywny jako stan bezczynny.
      */
+    //TODO NK zweryfikuje to
     public void Scheduler() {
         ArrayList<PCB> processReadyList = processManager.getReadyProcesses();
         if(processManager.getActivePCB().getState() == PCB.State.WAITING || processManager.getActivePCB().getState() == PCB.State.FINISHED ||
