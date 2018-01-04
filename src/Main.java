@@ -1,24 +1,21 @@
-import com.BamoOS.Modules.ACL.ACLController;
-import com.BamoOS.Modules.ACL.Interfaces.IACLController;
-import com.BamoOS.Modules.ACL.Interfaces.ILoginService;
-import com.BamoOS.Modules.ACL.Interfaces.IUserController;
-import com.BamoOS.Modules.ACL.LoginService;
-import com.BamoOS.Modules.ACL.UserController;
-import com.BamoOS.Modules.Communication.IPC;
-import com.BamoOS.Modules.ConditionVariable.ConditionVariable;
-import com.BamoOS.Modules.ConditionVariable.IConditionVariable;
-import com.BamoOS.Modules.FileSystem.Catalog;
-import com.BamoOS.Modules.FileSystem.FileSystem;
-import com.BamoOS.Modules.FileSystem.IFileSystem;
-import com.BamoOS.Modules.Interpreter.IInterpreter;
-import com.BamoOS.Modules.Interpreter.Interpreter;
-import com.BamoOS.Modules.MemoryManagment.RAM;
-import com.BamoOS.Modules.ProcessManager.IProcessManager;
-import com.BamoOS.Modules.ProcessManager.PCB;
-import com.BamoOS.Modules.ProcessManager.ProcessManager;
-import com.BamoOS.Modules.Processor.IProcessor;
-import com.BamoOS.Modules.Processor.Processor;
-import com.BamoOS.Modules.Shell.*;
+import com.NachOS.Modules.ACL.ACLController;
+import com.NachOS.Modules.ACL.Interfaces.IACLController;
+import com.NachOS.Modules.ACL.Interfaces.ILoginService;
+import com.NachOS.Modules.ACL.Interfaces.IUserController;
+import com.NachOS.Modules.ACL.LoginService;
+import com.NachOS.Modules.ACL.UserController;
+import com.NachOS.Modules.Communication.IPC;
+import com.NachOS.Modules.ConditionVariable.ConditionVariable;
+import com.NachOS.Modules.ConditionVariable.IConditionVariable;
+import com.NachOS.Modules.FileSystem.Catalog;
+import com.NachOS.Modules.FileSystem.FileSystem;
+import com.NachOS.Modules.FileSystem.IFileSystem;
+import com.NachOS.Modules.Interpreter.Interpreter;
+import com.NachOS.Modules.MemoryManagment.RAM;
+import com.NachOS.Modules.ProcessManager.ProcessManager;
+import com.NachOS.Modules.Processor.IProcessor;
+import com.NachOS.Modules.Processor.Processor;
+import com.NachOS.Modules.Shell.Shell;
 
 
 public class Main{
