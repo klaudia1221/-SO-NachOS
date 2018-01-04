@@ -68,17 +68,14 @@ public class Interpreter implements IInterpreter{
     private int PID = 0;
 
     private IProcessManager processManager;
-    private RAM memory;
     private IFileSystem fileSystem;
     private IPC communication;
     private ILoginService loginService;
 
-    public Interpreter(RAM memory,
-                IProcessManager processManager,
+    public Interpreter(IProcessManager processManager,
                 IFileSystem fileSystem,
                 IPC communication,
                 ILoginService loginService) {
-        this.memory = memory;
         this.processManager = processManager;
         this.fileSystem = fileSystem;
         this.communication = communication;

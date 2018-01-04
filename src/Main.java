@@ -10,6 +10,7 @@ import com.BamoOS.Modules.ConditionVariable.IConditionVariable;
 import com.BamoOS.Modules.FileSystem.Catalog;
 import com.BamoOS.Modules.FileSystem.FileSystem;
 import com.BamoOS.Modules.FileSystem.IFileSystem;
+import com.BamoOS.Modules.Interpreter.IInterpreter;
 import com.BamoOS.Modules.Interpreter.Interpreter;
 import com.BamoOS.Modules.MemoryManagment.RAM;
 import com.BamoOS.Modules.ProcessManager.IProcessManager;
@@ -54,8 +55,9 @@ public class Main{
             fileSystem = new FileSystem(catalog, processManager);
 
             conditionVariable = new ConditionVariable(processManager);
-            interpreter = new Interpreter(ram, processManager, fileSystem, ipc, loginService);
+            interpreter = new Interpreter(processManager, fileSystem, ipc, loginService);
             IProcessor processor = new Processor(processManager, interpreter);
+            processor.setInterpreter(interpreter);
 
             Shell shell = new Shell(userController, fileSystem, ram, processor, aclController, processManager, loginService, ipc);
             shell.start();

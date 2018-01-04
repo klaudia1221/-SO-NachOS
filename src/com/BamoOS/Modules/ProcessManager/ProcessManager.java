@@ -275,7 +275,8 @@ public class ProcessManager implements IProcessManager {
 	}
 
 	public String getCommand(int pointer){
-		int firstchar = this.ActivePCB.getMapLine().get(pointer);
+	    int firstchar = this.ActivePCB.getMapLine().get(pointer);
+
 		String command = "";
 		char ch;
 		do{
