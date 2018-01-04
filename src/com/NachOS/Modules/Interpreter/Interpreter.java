@@ -1,6 +1,5 @@
 package com.NachOS.Modules.Interpreter;
 
-import com.NachOS.Modules.Interpreter.IInterpreter;
 import com.NachOS.Modules.ProcessManager.IProcessManager;
 import com.NachOS.Modules.FileSystem.IFileSystem;
 import com.NachOS.Modules.Communication.IPC;
@@ -8,10 +7,7 @@ import com.NachOS.Modules.Communication.Sms;
 import com.NachOS.Modules.ACL.Interfaces.ILoginService;
 import com.NachOS.Modules.ProcessManager.PCB;
 
-import java.util.ArrayList;
-
 public class Interpreter implements IInterpreter {
-
     /**
      Rozkazy:
         Arytmetyczno-logiczne
@@ -49,11 +45,10 @@ public class Interpreter implements IInterpreter {
 
         Komunikaty
         RM  - zapisywanie otrzymanego komunikatu do RAM,
-        SM  - wysłanie komunikatu, 
+        SM  - wysłanie komunikatu 
 
         EX - kończy program
      **/
-
     private int A = 0;
     private int B = 0;
     private int C = 0;
@@ -484,9 +479,10 @@ public class Interpreter implements IInterpreter {
 
     //MZ address reg - zapisuje do pamięci zawartość rejestru pod wskazanym adresem,
     //Klaudia metoda do zapisywania do pamięci
+    //ogarnąć
     private void MZ(String[] order) {
         String raw_address = order[1];
-        String register = order[2];
+        String reg = order[2];
         String[] split_address = raw_address.split("");
 
         if ((!split_address[0].equals("[")) || (!split_address[raw_address.length() - 1].equals("]"))) {
@@ -494,14 +490,19 @@ public class Interpreter implements IInterpreter {
         } else {
             raw_address = raw_address.replaceAll("\\[", "").replaceAll("]", "");
             int address = Integer.parseInt(raw_address);
-            if (register.equals("A")) {
-                //memory.writeMemory((char) A, address);
-            } else if (register.equals("B")) {
-                //memory.writeMemory((char) B, address);
-            } else if (register.equals("C")) {
-                //memory.writeMemory((char) C, address);
-            } else {
-                System.out.println("Incorrect register.");
+            switch (reg){
+                case "A":
+                    //memory.writeMemory((char) A, address);
+                    break;
+                case "B":
+                    //memory.writeMemory((char) B, address);
+                    break;
+                case "C":
+                    //memory.writeMemory((char) C, address);
+                    break;
+                default:
+                    System.out.println("Incorrect register.");
+                    break;
             }
         }
     }
@@ -530,7 +531,7 @@ public class Interpreter implements IInterpreter {
     //MY reg address - umieszcza w rejestrze zawartość pamiętaną pod wskazanym adresem,
     //Klaudia metoda do zapisywania do pamięci
     private void MY(String[] order) {
-        String register = order[1];
+        String reg = order[1];
         String raw_address = order[2];
         String[] split_address = raw_address.split("");
 
@@ -539,21 +540,28 @@ public class Interpreter implements IInterpreter {
         } else {
             raw_address = raw_address.replaceAll("\\[", "").replaceAll("]", "");
             int address = Integer.parseInt(raw_address);
-           /*char pom = memory.readMemory(address);
+            /*
+            char pom = memory.readMemory(address);
 
             if (pom != '#') {
-                if (register.equals("A")) {
-                    A = memory.readMemory(address);
-                } else if (register.equals("B")) {
-                    B = memory.readMemory(address);
-                } else if (register.equals("C")) {
-                    C = memory.readMemory(address);
-                } else {
-                    System.out.println("Incorrect register.");
+                switch (reg) {
+                    case "A":
+                        A = memory.readMemory(address);
+                        break;
+                    case "B":
+                        B = memory.readMemory(address);
+                        break;
+                    case "C":
+                        C = memory.readMemory(address);
+                        break;
+                    default:
+                        System.out.println("Incorrect register.");
+                        break;
                 }
             } else {
                 System.out.println("Address is empty.");
-            }*/
+            }
+            */
         }
     }
 
@@ -795,7 +803,6 @@ public class Interpreter implements IInterpreter {
                 case "JZ":
                     JZ(order);
                     break;
-                //wyswietlanie wyniku operacji
                 case "PE":
                     PE(order);
                     break;
