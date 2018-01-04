@@ -10,7 +10,6 @@ import com.NachOS.Modules.ProcessManager.PCB;
 
 public class Processor implements IProcessor {
 
-    private PCB Active;
     public double alpha; // Weighting factor od 0 do 1 (postarzanie) okresla poziom istotnosci ostatnej fazy
     public int time;
     private IProcessManager processManager;
@@ -43,24 +42,26 @@ public class Processor implements IProcessor {
     public void Scheduler() {
         ArrayList<PCB> processReadyList = processManager.getReadyProcesses();
         if(processManager.getActivePCB().getState() == PCB.State.WAITING || processManager.getActivePCB().getState() == PCB.State.FINISHED ||
-                (processReadyList.size() > 0 && Active.getPID() == 0)){
-            if(Active.getState() == PCB.State.FINISHED){
-                time = Active.getTimer();
+                (processReadyList.size() > 0 && processManager.getActivePCB().getPID() == 0)){
+            if(processManager.getActivePCB().getState() == PCB.State.FINISHED){
+                time = processManager.getActivePCB().getTimer();
                 try{
-                    processManager.killProcess(Active.getPID());
+                    processManager.killProcess(processManager.getActivePCB().getPID());
                 }catch (Exception e){
                     System.out.println(e.getMessage());
                 }
             }
             calculateThau(processReadyList);
             sortProcessReadyByThau(processReadyList);
-            Active = processReadyList.get(0);
-            Active.setState(PCB.State.ACTIVE);
+
+            processManager.getActivePCB().setState(PCB.State.READY);
+            processManager.setActivePCB(processReadyList.get(0));
+            processManager.getActivePCB().setState(PCB.State.ACTIVE);
         }
         if(processReadyList.size() == 0 &&
                 (processManager.getActivePCB().getState() == PCB.State.FINISHED || processManager.getActivePCB().getState() == PCB.State.WAITING)){
-            Active = processManager.getPCB(0);
-            Active.setState(PCB.State.ACTIVE);
+             processManager.setActivePCB(processManager.getPCB(0));
+             processManager.getActivePCB().setState(PCB.State.ACTIVE);
         }
     }
 
@@ -69,7 +70,7 @@ public class Processor implements IProcessor {
             if (time == 0) {
                 pcb.setTau(10.0d);
             } else {
-                pcb.setTau(alpha * time + (1.0d - alpha) * Active.getTau());
+                pcb.setTau(alpha * time + (1.0d - alpha) * processManager.getActivePCB().getTau());
             }
         }
     }
