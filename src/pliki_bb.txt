@@ -1,1 +1,1 @@
-CE plik1;CF plik2 tekst;AF plik1 tekst;CF plik3 systemy;AF plik4 tekst;DF plik3;EX;
+CE plik1;CF plik2 tekst;AF plik1 tekst;CF plik3 systemy;DF plik3;EX;
