@@ -684,27 +684,7 @@ public class Shell {
                     readCommend();
                 }
             }
-            //rm --content [nazwa_pliku]
-            else if(command.length==3) {
-                FileBase fileBase = null;
-                try {
-                    fileBase = fileSystem.getFileBase(command[2]);
-                } catch (Exception e) {
-                    System.out.println(e.getMessage());
-                    readCommend();
-                }
-                if (ACLController.hasUserPremissionToOperation(fileBase, loginService.getLoggedUser(), MODIFY)) {  //sprawdzenie uprawnien
-                    try {
-                        fileSystem.deleteContent(command[2]);
-                    }catch(Exception e) {
-                        System.out.println(e.getMessage());
-                        readCommend();
-                    }
-                }else{
-                    System.out.println("Brak uprawnien do pliku");
-                    readCommend();
-                }
-            }else {
+         else {
                 System.out.println("Bledne parametry");
                 readCommend();
             }
