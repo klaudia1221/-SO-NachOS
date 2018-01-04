@@ -53,7 +53,7 @@ public class IPC
 
             //powiadom procesy czekajace na wiadomosc o nowej wiadomości metodą signalAll()
             try {
-                pm.getConditionVariable(recID).signalAll();
+                pm.getConditionVariable(recID).signal();
             } catch (Exception e) {
                 e.printStackTrace();
             }
