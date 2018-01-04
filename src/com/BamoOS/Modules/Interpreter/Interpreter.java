@@ -934,7 +934,7 @@ public class Interpreter implements IInterpreter{
     private void JZ(String[] order) {
         try {
             String register = order[1];
-            int counter = Integer.parseInt(order[1]);
+            int counter = Integer.parseInt(order[2]);
 
             if (register.equals("A")) {
                 if (A == 0) {
@@ -1046,7 +1046,7 @@ public class Interpreter implements IInterpreter{
                 System.out.println("Undefined order.");
             }
         }catch (Exception e) {
-
+            PC++;
             SaveRegister();
             throw e;
         }
