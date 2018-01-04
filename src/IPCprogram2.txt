@@ -1,5 +1,4 @@
 RM;
-SM 1 zadlugawiadomosc;
 RM;
-SM 3 od2do3;
+SM 1 od2do1;
 EX;
