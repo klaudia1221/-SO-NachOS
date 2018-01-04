@@ -41,21 +41,24 @@ public class IPC
                 return;
             }
             //zapisz w odpowiednim polu PCB danego procesu wiadomość
-            ArrayList<Sms> temp_list = pm.getActivePCB().getSmsList();
+            ArrayList<Sms> temp_list = pm.getPCB(recID).getSmsList();
             temp_list.add(sms);
-            pm.getActivePCB().setSmsList(temp_list);
+            pm.getPCB(recID).setSmsList(temp_list);
+            //System.out.println("smslist(0)=="+pm.getActivePCB().getSmsList().get(0));
+            //System.out.println("sms=="+sms.get_senID()+sms.get_recID()+sms.get_mes());
+
 
             //zapisz wiadomosc w kontenerze wyslanych
             allSent.add(sms);
 
             //powiadom procesy czekajace na wiadomosc o nowej wiadomości metodą signalAll()
             try {
-                pm.getConditionVariable(recID).signalAll();
+                pm.getConditionVariable(recID).signal();
             } catch (Exception e) {
                 e.printStackTrace();
             }
 
-            System.out.println("Wyslano wiadomosc o tresci "+sms.get_mes()+" do procesu o ID "+recID);
+            System.out.println("Wyslano wiadomosc o tresci "+sms.get_mes()+" od procesu "+sms.get_senID()+" do procesu o ID "+recID);
             return;
         }
 
@@ -77,12 +80,13 @@ public class IPC
 
         }else
         {
+            Sms sms = temp_list.get(0);
             //wyświetla pierwszą wiadomość, którą znajdzie w kontenerze wiadomości w PCB
-            System.out.println(temp_list.get(0).get_mes());
+            System.out.println("Proces o ID "+sms.get_recID()+" odebral wiadomosc o tresci "+sms.get_mes()+" od procesu o ID "+sms.get_senID());
 
             //zapisuje wiadomosc w kontenerze odebranych i ID nadawcy w PCB
-            allReceived.add(temp_list.get(0));
-            pm.getActivePCB().setLastSenderID(temp_list.get(0).get_senID());
+            allReceived.add(sms);
+            pm.getActivePCB().setLastSenderID(sms.get_senID());
 
             //usuwa z kontenera w PCB pierwszą wiadomość
             temp_list.remove(0);
