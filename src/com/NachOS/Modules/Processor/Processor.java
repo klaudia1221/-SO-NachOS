@@ -29,7 +29,9 @@ public class Processor implements IProcessor {
         ArrayList<PCB> processReadyList = processManager.getReadyProcesses();
         if(processManager.getActivePCB().getState() == PCB.State.WAITING || processManager.getActivePCB().getState() == PCB.State.FINISHED ||
                 (processReadyList.size() > 0 && Active.getPID() == 0)){
-            //Szukaj najkrótszego na liście etc.
+            if(Active.getState() == PCB.State.FINISHED){
+                time = Active.getCounter();
+            }
         }
 //        ArrayList<PCB> readyProcesses = processManager.getReadyProcesses();
 //        if(readyProcesses.size() != 0){
