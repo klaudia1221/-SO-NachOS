@@ -26,11 +26,11 @@ public class Processor implements IProcessor {
         this.interpreter = interpreter;
     }
     public void Scheduler() {
-
-//        if(processManager.getActivePCB().getState() == PCB.State.WAITING || processManager.getActivePCB().getState() == PCB.State.FINISHED ||
-//                (processReadyList.size() > 0 && Active.getPID() == 0)){
-//            //Szukaj najkrótszego na liście etc.
-//        }
+        ArrayList<PCB> processReadyList = processManager.getReadyProcesses();
+        if(processManager.getActivePCB().getState() == PCB.State.WAITING || processManager.getActivePCB().getState() == PCB.State.FINISHED ||
+                (processReadyList.size() > 0 && Active.getPID() == 0)){
+            //Szukaj najkrótszego na liście etc.
+        }
 //        ArrayList<PCB> readyProcesses = processManager.getReadyProcesses();
 //        if(readyProcesses.size() != 0){
 //            if (Active != null && Active.getState() == PCB.State.FINISHED) {
