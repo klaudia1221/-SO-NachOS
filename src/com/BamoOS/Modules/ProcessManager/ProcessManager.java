@@ -171,7 +171,7 @@ public class ProcessManager implements IProcessManager {
 		PCB pcb = new PCB(this.ProcessCounter, ProcessName, this.GroupsCounter, pt1, mapLine);
 		Map map = pcb.getMapLine();
 		System.out.println("Mapa konwersji");
-		for(Map.Entry<String, HashMap> entry : map.entrySet()){
+		for(Map.Entry<Integer, Integer> entry : map.entrySet()){
 			System.out.println(entry.getKey()+"\t"+entry.getValue());
 		}
 		ram.pageTables.put(this.ProcessCounter, pt1);
