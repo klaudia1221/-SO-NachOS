@@ -929,6 +929,7 @@ public class Interpreter implements IInterpreter{
     private void JP(String[] order) {
             int counter = Integer.parseInt(order[1]);
             PC = counter-1;
+            SaveRegister();
     }
 
     private void JZ(String[] order) {
@@ -963,69 +964,78 @@ public class Interpreter implements IInterpreter{
         String raw_order = processManager.getCommand(get_PC());
         String[] order = raw_order.split(" ");
 //        DownloadRegisters();
-        RegisterStatus();
-
         try {
             String operation = order[0];
 
             if (operation.equals("AD")) {
+                RegisterStatus();
                 AD(order);
                 RegisterStatus();
 
             } else if (operation.equals("AX")) {
+                RegisterStatus();
                 AX(order);
                 RegisterStatus();
 
             } else if (operation.equals("SB")) {
+                RegisterStatus();
                 SB(order);
                 RegisterStatus();
             } else if (operation.equals("SX")) {
+                RegisterStatus();
                 SX(order);
                 RegisterStatus();
 
             } else if (operation.equals("DC")) {
+                RegisterStatus();
                 DC(order);
                 RegisterStatus();
 
             } else if (operation.equals("IC")) {
+                RegisterStatus();
                 IC(order);
                 RegisterStatus();
 
             } else if (operation.equals("MU")) {
+                RegisterStatus();
                 MU(order);
                 RegisterStatus();
 
             } else if (operation.equals("MX")) {
+                RegisterStatus();
                 MX(order);
                 RegisterStatus();
 
             } else if (operation.equals("DV")) {
+                RegisterStatus();
                 DV(order);
                 RegisterStatus();
 
             } else if (operation.equals("DX")) {
+                RegisterStatus();
                 DX(order);
                 RegisterStatus();
 
             } else if (operation.equals("MD")) {
+                RegisterStatus();
                 MD(order);
                 RegisterStatus();
 
             } else if (operation.equals("XM")) {
+                RegisterStatus();
                 XM(order);
                 RegisterStatus();
 
             } else if (operation.equals("MV")) {
+                RegisterStatus();
                 MV(order);
                 RegisterStatus();
-
-
             /*} else if (operation.equals("MZ")) {
                 MZ(order);*/
             } else if (operation.equals("MO")) {
+                RegisterStatus();
                 MO(order);
                 RegisterStatus();
-
             /*} else if (operation.equals("MY")) {
                 MY(order);*/
             } else if (operation.equals("CE")) {
@@ -1061,10 +1071,11 @@ public class Interpreter implements IInterpreter{
             } else if (operation.equals("DM")) {
                 LM(order);
             } else if (operation.equals("JP")) {
+                RegisterStatus();
                 JP(order);
                 RegisterStatus();
-
             } else if (operation.equals("JZ")) {
+                RegisterStatus();
                 JZ(order);
                 RegisterStatus();
             } else if (operation.equals("PE")){
