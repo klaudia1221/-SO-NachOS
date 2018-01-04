@@ -56,10 +56,13 @@ public class ConditionVariable implements IConditionVariable {
      */
     public void await(boolean forceLock) {
         if (this.busy || forceLock) {
-            processManager.getActivePCB().setState(PCB.State.WAITING); // zmien stan procesu i wywołaj planis // zmien stan procesu i wywołaj planiste
+            PCB pcb = processManager.getActivePCB();
+            pcb.setState(PCB.State.WAITING); // zmien stan aktywnego procesu na WAITING
             this.waiting.addLast(this.processManager.getActivePCB()); // dodaj do kolejki
+            System.out.print("Zmieniam stan aktywnego procesu o id " + Integer.toString(pcb.getPID()) + " na `WAITING`");
         } else {
             this.busy = true;
+            System.out.println("ConditionVariable: blokuje zasob");
         }
     }
 
@@ -74,8 +77,21 @@ public class ConditionVariable implements IConditionVariable {
             PCB pcb = this.waiting.getFirst(); // weź pierwszy z kolejki (bufora)
             pcb.setState(PCB.State.READY); // zmien stan procesu na READY i wywolaj planiste
             this.waiting.removeFirst(); // usuń z początku kolejki oczekujących (ten ktorego stan zmienilismy)
+            System.out.print("Zmieniam stan procesu o id " + Integer.toString(pcb.getPID()) + " na `READY`");
         }
         this.busy = false; // "uwolnij" zasób
+        System.out.println("ConditionVariable: uwalniam zasob");
+    }
+
+    /**
+     * Wywołuje signal() dla wszystkich procesów oczekujących.
+     * Wykorzystywane przy synchronizacji dla komunikatów.
+     */
+    public void signalAll() {
+        int amount = this.waiting.size();
+        for(int i=0; i < amount; i++) {
+            this.signal();
+        }
     }
 
     /**
