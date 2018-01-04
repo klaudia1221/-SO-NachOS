@@ -83,7 +83,6 @@ public class Shell {
         allCommands.put("group", "Kontrola grup");
         allCommands.put("cr", "Tworzenie wpisu");
         allCommands.put("cat", "wyswietlenie pliku/dodanie na koniec pliku");
-        allCommands.put("mv", "Zmiana nazwy pliku");
         allCommands.put("ls", "Wyswietla zawartosc katalogow");
         allCommands.put("process", "Dzaialnia dotyczace procesu");
         allCommands.put("pcbinfo", "Blok kontrolny");
@@ -191,9 +190,6 @@ public class Shell {
                                 break;
                             case "ls":
                                 ls(separateCommand);
-                                break;
-                            case "mv":
-                                mv(separateCommand);
                                 break;
                             case "process":
                                 process(separateCommand);
@@ -617,43 +613,6 @@ public class Shell {
         }
     }
     /**
-     * Metoda, ktora zostaje wywolana gdy uzytkownik poda komende 'mv' [stara_nazwa_pliku] [nowa_nazwa_pliku]'
-     * Wywoływane sa tutaj metody ACLControllera oraz filesystem oraz loginService
-     * @param command
-     */
-    private void mv(String[] command) {
-        //mv [nazwa_1][nazwa_2]
-        if (command.length > 1) {
-            if (command.length == 3) {
-                FileBase fileBase = null;
-                try {
-                    fileBase = fileSystem.getFileBase(command[1]);
-                } catch (Exception e) {
-                    System.out.println(e.getMessage());
-                    readCommend();
-                }
-                if (ACLController.hasUserPremissionToOperation(fileBase, loginService.getLoggedUser(), MODIFY)) {  //sprawdzenie uprawnien
-                    try {
-                        fileSystem.renameFile(command[1], command[2]);
-                    } catch (Exception e) {
-                        System.out.println(e.getMessage());
-                        readCommend();
-                    }
-                } else {
-                    System.out.println("Brak uprawnien do pliku");
-                    readCommend();
-                }
-            } else {
-                System.out.println("Bledna komenda");
-                readCommend();
-            }
-        } else {
-            System.out.println("Bledna komenda");
-            readCommend();
-        }
-    }
-
-    /**
      *Metoda, ktora zostaje wywolanna gdy uzytkownik poda komende 'access ...'
      * Wywoływane sa tutaj metody ACLControllera oraz filesystem oraz loginService
      * Dodanie uprawnień do pliku dla konkretnego  użytkownika
@@ -1040,6 +999,7 @@ public class Shell {
      * @param command
      */
     private void sms(String[] command){
+        //sms
         if(command.length==1) {
             ipc.display_all();
         }else{
