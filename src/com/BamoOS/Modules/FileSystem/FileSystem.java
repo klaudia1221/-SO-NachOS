@@ -147,9 +147,7 @@ public class FileSystem implements IFileSystem {
     public String list() {
         String dir_list = new String();
         for (int i=0; i<dir.size(); i++) {
-            dir_list=dir_list + dir.get(i).FILE_NAME + " " + dir.get(i).FILE_SIZE + " " + dir.get(i).FIRST_BLOCK;
-            if (dir.get(i).LAST_BLOCK!=33 && dir.get(i).FILE_SIZE!=0) { dir_list = dir_list + " " + dir.get(i).LAST_BLOCK; }
-            dir_list = dir_list + "\n";
+            dir_list=dir_list + dir.get(i).FILE_NAME + " " + dir.get(i).FILE_SIZE + " " + dir.get(i).FIRST_BLOCK + " " + dir.get(i).LAST_BLOCK + "\n";
         }
         return dir_list;
     }
