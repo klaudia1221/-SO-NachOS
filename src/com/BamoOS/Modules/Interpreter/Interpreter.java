@@ -161,6 +161,7 @@ public class Interpreter implements IInterpreter{
         processManager.getActivePCB().setRegister(PCB.Register.A, get_A());
         processManager.getActivePCB().setRegister(PCB.Register.B, get_B());
         processManager.getActivePCB().setRegister(PCB.Register.C, get_C());
+        processManager.getActivePCB().setRegister(PCB.Register.D, get_D());
         processManager.getActivePCB().setCounter(get_PC());
     }
 
@@ -718,6 +719,8 @@ public class Interpreter implements IInterpreter{
             B = val;
         } else if (reg.equals("C")) {
             C = val;
+        } else if(reg.equals("D")){
+            D = val;
         } else {
             System.out.println("Incorrect register.");
         }
