@@ -853,66 +853,7 @@ public class Interpreter implements IInterpreter{
         }
     }
 
-    private void NP(String[] order) throws Exception{
-        try {
-            String FileName = order[1];
-            processManager.runNew(FileName);
-        } catch (Exception e){
-            throw e;
-        }
-    }
-
-    private void NG(String[] order) throws Exception{
-        try {
-            String ProcessName = order[1];
-            processManager.newProcessGroup(ProcessName);
-        } catch (Exception e){
-            throw e;
-        }
-    }
-
-    private void KP(String[] order) throws Exception{
-        try {
-            int PID = Integer.parseInt(order[1]);
-            processManager.killProcess(PID);
-        }catch (Exception e) {
-            throw e;
-        }
-    }
-
-    private void SS(String[] order) {
-            int PID = Integer.parseInt(order[1]);
-            String state = order[2];
-            if (state.equals("ACTIVE")) {
-//                PCB.setState(PID, IPCB.State.ACTIVE);
-                processManager.getActivePCB().setState(PCB.State.ACTIVE);
-            } else if (state.equals("WAITING")) {
-                processManager.getActivePCB().setState(PCB.State.WAITING);
-            } else if (state.equals("READY")) {
-                processManager.getActivePCB().setState(PCB.State.READY);
-            }
-    }
-
-    private void RP(String[] order) throws Exception{
-        try {
-            int PID = Integer.parseInt(order[1]);
-            processManager.runNew();
-        }catch (Exception e){
-            throw e;
-        }
-    }
-
-    private void KG(String[] order) throws Exception{ //Bartek musi rzucić wyjątek
-        try {
-            int PGID = Integer.parseInt(order[1]);
-            processManager.killProcessGroup(PGID);
-        }catch (Exception e){
-            throw e;
-        }
-    }
-
     private void RM(String[] order) {
-            int PID = Integer.parseInt(order[1]);
             communication.receiveMessage();
     }
 
@@ -928,7 +869,7 @@ public class Interpreter implements IInterpreter{
 
     private void JP(String[] order) {
             int counter = Integer.parseInt(order[1]);
-            PC = counter-1;
+            PC = counter;
             SaveRegister();
     }
 
@@ -955,7 +896,6 @@ public class Interpreter implements IInterpreter{
         } catch (Exception e) {
             System.out.println();
         }
-        PC--;
         SaveRegister();
 
     }
@@ -1050,18 +990,6 @@ public class Interpreter implements IInterpreter{
                 RF(order);
             } else if (operation.equals("RN")) {
                 RN(order);
-            } else if (operation.equals("NP")) {
-                NP(order);
-            } else if (operation.equals("NG")) {
-                NG(order);
-            } else if (operation.equals("KP")) {
-                KP(order);
-            } else if (operation.equals("SS")) {
-                SS(order);
-            } else if (operation.equals("RP")) {
-                RP(order);
-            } else if (operation.equals("KG")) {
-                KG(order);
             } else if (operation.equals("PP")){
                 processManager.PrintProcesses();
             } else if (operation.equals("RM")) {

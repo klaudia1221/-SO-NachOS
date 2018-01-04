@@ -593,7 +593,6 @@ public class Shell {
                 System.out.println(e.getMessage());
                 readCommend();
             }
-            if (ACLController.hasUserPremissionToOperation(catalog, loginService.getLoggedUser(), READ)) {
                 try {
                     System.out.println("Nazwa pliku|rozmiar|pierwszyBlok|OstatniBlok");
                     System.out.println(fileSystem.list());
@@ -601,11 +600,6 @@ public class Shell {
                     System.out.println(e.getMessage());
                     readCommend();
                 }
-
-            } else {
-                System.out.println("Brak uprawnien do katalogu");
-                readCommend();
-            }
         } else {
             System.out.println("Bledna komenda");
             readCommend();
@@ -826,6 +820,8 @@ public class Shell {
         if(command.length==2){
             if(command[1].equals("--print")){
                memory.writeRAM();
+               System.out.println();
+               memory.writeQueue();
             }
             else {
                 System.out.println("Bledna komenda");
