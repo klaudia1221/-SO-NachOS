@@ -68,11 +68,14 @@ public class ProcessManager implements IProcessManager {
 				String textFileContent = readCommandFile("src/" + FileName + ".txt");
 				Map mapLine = new HashMap<Integer, Integer>();
 				//Podejrzane w pizdu.
-
-				for(int i = 0, j = 0; i != -1;j++){
-					i = textFileContent.indexOf(";", i);
-					mapLine.put(j,i-1);
-				}
+                mapLine.put(0,0);
+                for(int i = 0, j = 1; i != -1 && i+1 < textFileContent.length();j++){
+                    i = textFileContent.indexOf(";", i+1);
+                    if(i+1 < textFileContent.length()) {
+                        mapLine.put(j, i + 1);
+                        //System.out.println(j + " " + textFileContent.charAt(i + 1));
+                    }
+                }
                 char[] code = textFileContent.toCharArray();
 				PageTable pt1 = new PageTable(this.ProcessCounter, code.length);
 				PCB pcb = new PCB(this.ProcessCounter, ProcessName, PGID, pt1, mapLine);
@@ -80,6 +83,7 @@ public class ProcessManager implements IProcessManager {
 		        ram.pageTables.put(this.ProcessCounter, pt1);
 				ram.exchangeFile.writeToExchangeFile(this.ProcessCounter, code);
 				this.ProcessCounter++;
+				return pcb;
 			}
 			throw new Exception("Brak grupy o podanym PGID");
 	}
