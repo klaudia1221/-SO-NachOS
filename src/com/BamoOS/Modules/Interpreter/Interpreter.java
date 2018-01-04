@@ -1042,8 +1042,7 @@ public class Interpreter implements IInterpreter{
             SaveRegister();
             throw e;
         }
-        SaveRegister();
         PC++;
-        set_PC();
+        SaveRegister();
     }
 }
