@@ -162,7 +162,7 @@ public class Interpreter implements IInterpreter{
         processManager.getActivePCB().setRegister(PCB.Register.B, get_B());
         processManager.getActivePCB().setRegister(PCB.Register.C, get_C());
         processManager.getActivePCB().setRegister(PCB.Register.D, get_D());
-        processManager.getActivePCB().setCounter(get_PC());
+        processManager.getActivePCB().setCounter(PC);
     }
 
     private void AD(String [] order){
@@ -969,36 +969,62 @@ public class Interpreter implements IInterpreter{
 
             if (operation.equals("AD")) {
                 AD(order);
+                RegisterStatus();
+
             } else if (operation.equals("AX")) {
                 AX(order);
+                RegisterStatus();
+
             } else if (operation.equals("SB")) {
                 SB(order);
+                RegisterStatus();
             } else if (operation.equals("SX")) {
                 SX(order);
+                RegisterStatus();
+
             } else if (operation.equals("DC")) {
                 DC(order);
+                RegisterStatus();
+
             } else if (operation.equals("IC")) {
                 IC(order);
+                RegisterStatus();
+
             } else if (operation.equals("MU")) {
                 MU(order);
+                RegisterStatus();
+
             } else if (operation.equals("MX")) {
                 MX(order);
+                RegisterStatus();
+
             } else if (operation.equals("DV")) {
                 DV(order);
+                RegisterStatus();
+
             } else if (operation.equals("DX")) {
                 DX(order);
+                RegisterStatus();
+
             } else if (operation.equals("MD")) {
                 MD(order);
+                RegisterStatus();
+
             } else if (operation.equals("XM")) {
                 XM(order);
+                RegisterStatus();
+
             } else if (operation.equals("MV")) {
                 MV(order);
+                RegisterStatus();
+
 
             /*} else if (operation.equals("MZ")) {
                 MZ(order);*/
             } else if (operation.equals("MO")) {
                 MO(order);
                 RegisterStatus();
+
             /*} else if (operation.equals("MY")) {
                 MY(order);*/
             } else if (operation.equals("CE")) {
@@ -1035,8 +1061,11 @@ public class Interpreter implements IInterpreter{
                 LM(order);
             } else if (operation.equals("JP")) {
                 JP(order);
+                RegisterStatus();
+
             } else if (operation.equals("JZ")) {
                 JZ(order);
+                RegisterStatus();
             } else if (operation.equals("PE")){
                 System.out.println("Result: " + get_D());
             } else if (operation.equals("EX")) {

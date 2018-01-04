@@ -27,34 +27,36 @@ public class Processor implements IProcessor {
     }
     public void Scheduler() {
         ArrayList<PCB> readyProcesses = processManager.getReadyProcesses();
-
-        if (Active != null && Active.getState() == PCB.State.FINISHED) {
-            time = Active.getTimer();
-            try {
-                processManager.killProcess(Active.getPID());
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        if (readyProcesses.size() == 0) {
-            Active = processManager.getPCB(0);
-            Active.setState(PCB.State.ACTIVE);
-            processManager.setActivePCB(Active);
-        } else {
-            calculateThau(readyProcesses);
-            sortProcessReadyByThau(readyProcesses);
-            for (PCB pcb : readyProcesses) {
-                if (!(pcb.getState() == PCB.State.WAITING) && !(pcb.getPID() == 0)) {
-                    Active = pcb;
-                    pcb.setState(PCB.State.ACTIVE);
-                    processManager.setActivePCB(Active);
-                    return;
+        if(readyProcesses.size() != 0){
+            if (Active != null && Active.getState() == PCB.State.FINISHED) {
+                time = Active.getTimer();
+                try {
+                    processManager.killProcess(Active.getPID());
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
-            Active = processManager.getPCB(0);
-            Active.setState(PCB.State.ACTIVE);
+            if (readyProcesses.size() == 0) {
+                Active = processManager.getPCB(0);
+                Active.setState(PCB.State.ACTIVE);
+                processManager.setActivePCB(Active);
+            } else {
+                calculateThau(readyProcesses);
+                sortProcessReadyByThau(readyProcesses);
+                for (PCB pcb : readyProcesses) {
+                    if (!(pcb.getState() == PCB.State.WAITING) && !(pcb.getPID() == 0)) {
+                        Active = pcb;
+                        pcb.setState(PCB.State.ACTIVE);
+                        processManager.setActivePCB(Active);
+                        return;
+                    }
+                }
+                Active = processManager.getPCB(0);
+                Active.setState(PCB.State.ACTIVE);
+            }
         }
-    } 
+
+    }
 
     private void calculateThau(ArrayList<PCB> readyProcesses) {
         for (PCB pcb : readyProcesses) {
@@ -79,7 +81,7 @@ public class Processor implements IProcessor {
         try{
             interpreter.Exe();
         }catch (Exception e){
-            e.printStackTrace();
+            System.out.println(e.getMessage());
         }
     }
 
