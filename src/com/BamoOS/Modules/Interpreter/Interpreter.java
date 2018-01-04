@@ -700,6 +700,16 @@ public class Interpreter implements IInterpreter{
             } else {
                 System.out.println("Incorrect register.");
             }
+        }else if(reg_1.equals("D")){
+            if (reg_2.equals("A")) {
+                D = A;
+            } else if (reg_2.equals("B")) {
+                D = B;
+            } else if (reg_2.equals("C")) {
+                D = C;
+            } else {
+                System.out.println("Incorrect register.");
+            }
         } else {
             System.out.println("Incorrect register.");
         }
