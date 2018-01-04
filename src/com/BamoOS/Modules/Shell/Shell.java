@@ -604,6 +604,7 @@ public class Shell {
             }
             if (ACLController.hasUserPremissionToOperation(catalog, loginService.getLoggedUser(), READ)) {
                 try {
+                    System.out.println("Nazwa pliku|rozmiar|pierwszyBlok|OstatniBlok");
                     System.out.println(fileSystem.list());
                 } catch (Exception e) {
                     System.out.println(e.getMessage());
