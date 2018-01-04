@@ -463,7 +463,7 @@ public class Shell {
     private void create(String[] command) {
         if (command.length > 1) {
             //cr [nazwa_pliku]
-            if (command.length == 3) {
+            if (command.length == 2) {
                 if (ACLController.hasUserPremissionToOperation(fileSystem.getCatalog(), loginService.getLoggedUser(), MODIFY)) { //sprawdzenie uprawnien
                     //tworzenie pliku
                     try {
@@ -572,7 +572,7 @@ public class Shell {
             }
             if (ACLController.hasUserPremissionToOperation(fileBase, loginService.getLoggedUser(), READ)) {  //sprawdzenie uprawnien
                 try {
-                    fileSystem.readFile(command[1]);
+                    System.out.println(fileSystem.readFile(command[1]));
                 } catch (Exception e) {
                     System.out.println(e.getMessage());
                     readCommend();
