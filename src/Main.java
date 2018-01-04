@@ -51,7 +51,7 @@ public class Main{
             CreateDefaultUsers();
 
             CreateCatalog();
-            fileSystem = new FileSystem(catalog, processManager);;
+            fileSystem = new FileSystem(catalog, processManager);
 
             conditionVariable = new ConditionVariable(processManager);
             interpreter = new Interpreter(ram, processManager, fileSystem, ipc, loginService);

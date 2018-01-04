@@ -356,6 +356,23 @@ public class Shell {
                     System.out.println("Bledna komenda");
                     readCommend();
                 }
+            }else if(command[1].equals("--showgroups")){
+                //user --showgroups
+                if(command.length==2){
+                    try {
+                       System.out.println( userController.printUserGroups(loginService.getLoggedUser().getName()));
+                    } catch (Exception e) {
+                        System.out.println(e.getMessage());
+                        readCommend();
+                    }
+                }else{
+                    System.out.println("Bledna komenda");
+                    readCommend();
+                }
+            }
+            else {
+                System.out.println("Bledna komenda");
+                readCommend();
             }
         }
     }
@@ -423,6 +440,12 @@ public class Shell {
             readCommend();
         }
     }
+
+    /**
+     * Metoda, ktora zostaje wywolalan gdy uzytkownik poda komende 'groups'
+     * Wyswetla liste grup.
+     * @param command
+     */
     private void groups(String[] command){
         //groups
         if (command.length == 1) {
@@ -440,7 +463,7 @@ public class Shell {
     private void create(String[] command) {
         if (command.length > 1) {
             //cr [nazwa_pliku]
-            if (command.length == 3) {
+            if (command.length == 2) {
                 if (ACLController.hasUserPremissionToOperation(fileSystem.getCatalog(), loginService.getLoggedUser(), MODIFY)) { //sprawdzenie uprawnien
                     //tworzenie pliku
                     try {
@@ -549,7 +572,7 @@ public class Shell {
             }
             if (ACLController.hasUserPremissionToOperation(fileBase, loginService.getLoggedUser(), READ)) {  //sprawdzenie uprawnien
                 try {
-                    fileSystem.readFile(command[1]);
+                    System.out.println(fileSystem.readFile(command[1]));
                 } catch (Exception e) {
                     System.out.println(e.getMessage());
                     readCommend();
@@ -917,7 +940,7 @@ public class Shell {
      */
     private void go(String[]command){
         if(command.length==1){
-           // processor.wykonaj();
+            processor.exe();
         }else{
             System.out.println("Bledna komenda");
             readCommend();
