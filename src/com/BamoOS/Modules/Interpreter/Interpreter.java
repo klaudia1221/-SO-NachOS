@@ -912,7 +912,6 @@ public class Interpreter implements IInterpreter{
     }
 
     private void RM(String[] order) {
-            int PID = Integer.parseInt(order[1]);
             communication.receiveMessage();
     }
 
