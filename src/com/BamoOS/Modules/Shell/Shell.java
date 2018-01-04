@@ -839,7 +839,11 @@ public class Shell {
      */
     private void go(String[]command){
         if(command.length==1){
-            processor.exe();
+            try {
+                processor.exe();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }else{
             System.out.println("Bledna komenda");
             readCommend();

@@ -5,6 +5,7 @@ import com.BamoOS.Modules.MemoryManagment.PageTable;
 import com.BamoOS.Modules.Processor.IProcessor;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 public class PCB {
@@ -43,7 +44,7 @@ public class PCB {
 	public PageTable pageTable;
 	private ArrayList<Sms> SmsList;
 	private int LastSenderID;
-	private Map<Integer,Integer> mapLine;
+	private Map<Integer,Integer> mapLine = new HashMap<>();
 	private ProcessManager PM;
 
 	
@@ -57,6 +58,7 @@ public class PCB {
 		this.Counter = 0;
 		this.Timer = 0;
 		this.ProcessState = State.READY;
+        mapLine = new HashMap<>();
 	}
 
 	public PCB(int ProcessID, String ProcessName, int ProcessGroup, PageTable pt, Map ml) {

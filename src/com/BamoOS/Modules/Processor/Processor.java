@@ -36,7 +36,7 @@ public class Processor implements IProcessor {
                 e.printStackTrace();
             }
         }
-        if (readyProcesses.size() < 0) {
+        if (readyProcesses.size() == 0) {
             Active = processManager.getPCB(0);
             Active.setState(PCB.State.ACTIVE);
             processManager.setActivePCB(Active);
@@ -44,7 +44,7 @@ public class Processor implements IProcessor {
             calculateThau(readyProcesses);
             sortProcessReadyByThau(readyProcesses);
             for (PCB pcb : readyProcesses) {
-                if (!(pcb.getState() == PCB.State.WAITING)) {
+                if (!(pcb.getState() == PCB.State.WAITING) && !(pcb.getPID() == 0)) {
                     Active = pcb;
                     pcb.setState(PCB.State.ACTIVE);
                     processManager.setActivePCB(Active);
@@ -74,13 +74,12 @@ public class Processor implements IProcessor {
         });
     }
 
-    public void exe() {   //
+    public void exe() throws Exception {   //
         Scheduler();
         try{
             interpreter.Exe();
-        }catch(Exception e){
-            System.out.println(e.getMessage());
-            Active.setState(PCB.State.FINISHED);
+        }catch (Exception e){
+            e.printStackTrace();
         }
     }
 
