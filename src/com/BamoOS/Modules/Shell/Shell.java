@@ -940,7 +940,7 @@ public class Shell {
      */
     private void go(String[]command){
         if(command.length==1){
-           // processor.wykonaj();
+            processor.exe();
         }else{
             System.out.println("Bledna komenda");
             readCommend();
