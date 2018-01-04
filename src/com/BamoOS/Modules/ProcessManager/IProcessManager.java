@@ -3,6 +3,7 @@ package com.BamoOS.Modules.ProcessManager;
 import java.util.ArrayList;
 
 public interface IProcessManager {
+    void setStartingActivePCB();
     PCB newProcess(String ProcessName, int PGID) throws Exception;
     PCB newProcess(String ProcessName, int PGID, String FileName) throws Exception;
     PCB runNew() throws Exception;
@@ -18,5 +19,5 @@ public interface IProcessManager {
     PCB getActivePCB();
     void setActivePCB(PCB activePCB);
     ArrayList<PCB> getReadyProcesses();
-    public String getCommand(int pointer);
+    String getCommand(int pointer);
 }

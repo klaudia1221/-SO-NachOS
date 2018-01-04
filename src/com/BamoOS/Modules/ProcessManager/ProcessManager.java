@@ -155,10 +155,16 @@ public class ProcessManager implements IProcessManager {
 		//PCB pcb = newProcess(ProcessName, this.GroupsCounter, FileName);
 		String textFileContent = readCommandFile("src/" + FileName + ".txt");
 		Map mapLine = new HashMap<Integer, Integer>();
-		for(int i = 0, j = 0; i != -1;j++){
-			i = textFileContent.indexOf(";", i);
-			mapLine.put(j,i-1);
+		System.out.println("Kod programu: "+ textFileContent);
+		mapLine.put(0,0);
+		for(int i = 0, j = 1; i != -1 && i+1 < textFileContent.length();j++){
+			i = textFileContent.indexOf(";", i+1);
+			if(i+1 < textFileContent.length()) {
+				mapLine.put(j, i + 1);
+				//System.out.println(j + " " + textFileContent.charAt(i + 1));
+			}
 		}
+		//System.out.println("2");
 		char[] code = textFileContent.toCharArray();
 		PageTable pt1 = new PageTable(this.ProcessCounter, code.length);
 		PCB pcb = new PCB(this.ProcessCounter, ProcessName, this.GroupsCounter, pt1, mapLine);
