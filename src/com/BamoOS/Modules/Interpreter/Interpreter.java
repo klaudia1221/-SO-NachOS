@@ -928,7 +928,7 @@ public class Interpreter implements IInterpreter{
 
     private void JP(String[] order) {
             int counter = Integer.parseInt(order[1]);
-            PC = counter;
+            PC = counter-1;
     }
 
     private void JZ(String[] order) {
@@ -954,6 +954,7 @@ public class Interpreter implements IInterpreter{
         } catch (Exception e) {
             System.out.println();
         }
+        PC--;
         SaveRegister();
 
     }
