@@ -1,0 +1,5 @@
+RM;
+SM 2 od3do2;
+RM;
+SM 3 test;
+EX;
