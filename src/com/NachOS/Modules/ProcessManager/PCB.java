@@ -60,7 +60,7 @@ public class PCB {
         mapLine = new HashMap<>();
 	}
 
-	public PCB(int ProcessID, String ProcessName, int ProcessGroup, PageTable pt, Map ml) {
+	public PCB(int ProcessID, String ProcessName, int ProcessGroup, PageTable pt, Map<Integer, Integer> ml) {
 		this.PID = ProcessID;
 		this.PGID = ProcessGroup;
 		this.ProcessName = ProcessName;
