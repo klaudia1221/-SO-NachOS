@@ -1,1 +1,1 @@
-MO D 5;PE;EX;
+MO A 2;MO B 5;SU B A;MV D B;PE;EX;
