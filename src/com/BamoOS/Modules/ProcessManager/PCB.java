@@ -144,11 +144,11 @@ public class PCB {
 		System.out.print(this.getPID()+"\t"+this.getPGID()+"\t");
 		System.out.print(this.getRegister(Register.A)+"\t"+this.getRegister(Register.B)+"\t"+this.getRegister(Register.C)+"\t");
 		System.out.println(this.getCounter()+"\t"+this.getTimer()+"\t"+this.getTau()+"\t"+this.getState()+"\t"+this.getName());
-		try {
-			PM.findConditionVariable(this.PGID).printInfo();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+//		try {
+//			PM.findConditionVariable(this.PGID).printInfo();
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
 	}
 	//Gettery i Settery dla p�l wiadomo�ci, interpretera oraz cpu
 

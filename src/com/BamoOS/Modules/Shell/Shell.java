@@ -798,8 +798,14 @@ public class Shell {
             }
             //pcbinfo --process [PID]
             else if(command[1].equals("--process")){
-                PCB pcb =processManager.getPCB(Integer.parseInt(command[2]));
-                pcb.printInfo();
+                PCB pcb=null;
+                try {
+                    pcb = processManager.getPCB(Integer.parseInt(command[2]));
+                    pcb.printInfo();
+                }catch(Exception e){
+                    System.out.println(e.getMessage());
+                }
+
             }else{
                 System.out.println("Bledna komenda");
                 readCommend();
