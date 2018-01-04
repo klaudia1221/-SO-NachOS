@@ -385,7 +385,6 @@ public class Shell {
     /**
      * Metoda, ktora zostaje wywolana, gdy uzytkownik poda komedne 'group. ...'
      * Wywolywane sa tutaj metody userControllera
-     *
      * @param command
      */
     private void group(String[] command) {
@@ -842,7 +841,8 @@ public class Shell {
             try {
                 processor.exe();
             } catch (Exception e) {
-                e.printStackTrace();
+                System.out.println(e.getMessage());
+                readCommend();
             }
         }else{
             System.out.println("Bledna komenda");
