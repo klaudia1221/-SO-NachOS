@@ -30,7 +30,7 @@ public class Interpreter implements IInterpreter {
         PE reg - wyświetla wynik programu znajdujący się w podanym rejestrze,
 
         Procesy
-        KP nazwa - usunięcie procesu o danej nazwie,
+        KP nazwa - usunięcie procesu o podanej nazwie,
         RP nazwa – uruchamia proces o danej nazwie,
 
         Pliki
@@ -619,7 +619,7 @@ public class Interpreter implements IInterpreter {
 
     //---------------------------------PROCESY---------------------------------------
 
-    //KP nazwa - usunięcie procesu o danej nazwie
+    //KP nazwa - usunięcie procesu o podanej nazwie
     //ogarnąć
     private void DP(String[] order){
 
@@ -664,19 +664,19 @@ public class Interpreter implements IInterpreter {
     }
 
     //CF file_name file_content - tworzy plik z zawartością
-    //ogarnąć żeby mi się zgadzało ze splitem
     private void CF(String[] order) throws Exception {
         try {
             String filename = order[1];
             int n = order.length;
 
-            String fileContent;
+            String fileContent = "";
             for (int i = 2; i < n; i++) {
-                //fileContent += order[i];
+                fileContent += order[i];
             }
+
             fileSystem.createFile(filename, loginService.getLoggedUser(), processManager);
             fileSystem.openFile(filename);
-            //fileSystem.appendFile(filename, fileContent);
+            fileSystem.appendFile(filename, fileContent);
             fileSystem.closeFile(filename);
         } catch (Exception e) {
             throw e;
@@ -687,7 +687,12 @@ public class Interpreter implements IInterpreter {
     private void AF(String[] order) throws Exception {
         try {
             String filename = order[1];
-            String fileContent = order[2];
+            int n = order.length;
+
+            String fileContent = "";
+            for (int i = 2; i < n; i++) {
+                fileContent += order[i];
+            }
             fileSystem.appendFile(filename, fileContent);
         } catch (Exception e) {
             throw e;
