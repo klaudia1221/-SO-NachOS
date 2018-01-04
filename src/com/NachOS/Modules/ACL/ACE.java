@@ -1,6 +1,5 @@
 package com.NachOS.Modules.ACL;
 
-
 public class ACE {
     private User user;
     private Group group;

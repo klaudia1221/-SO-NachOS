@@ -4,49 +4,54 @@ import com.NachOS.Modules.Interpreter.IInterpreter;
 import com.NachOS.Modules.ProcessManager.IProcessManager;
 import com.NachOS.Modules.FileSystem.IFileSystem;
 import com.NachOS.Modules.Communication.IPC;
+import com.NachOS.Modules.Communication.Sms;
 import com.NachOS.Modules.ACL.Interfaces.ILoginService;
 import com.NachOS.Modules.ProcessManager.PCB;
+
 import java.util.ArrayList;
 
 public class Interpreter implements IInterpreter {
 
     /**
-     * Rozkazy:
-     * <p>
-     * Arytmetyczno-logiczne
-     * •AD reg1 reg2 - dodaje rejestr2 do rejestru1,
-     * •AX reg num – dodaje liczbę do rejestru,
-     * •SB reg1 reg2 - odejmuje od rejestru1 zawartość rejestru2,
-     * •SX reg num – odejmuje liczbę od rejestru,
-     * •DC reg - zwiększa zawartość rejestru o 1,
-     * •IC reg - zmniejsza zawartość rejestru o 1,
-     * •MU reg1 reg2 – mnoży rejestr 1 przez rejestr 2,
-     * •MX reg num – mnoży rejestr przez liczbę,
-     * •DV reg1 reg2 - dzieli zawartość rejestru1 przez zawartość rejestru2,
-     * •DX reg num – dzieli rejestr przez liczbę,
-     * •MV reg1 reg2 – kopiuje wartość rejestru 2 do rejestru 1,
-     *  •MZ address reg - zapisuje do pamięci zawartość rejestru pod wskazanym adresem,
-     * •MO reg n – umieszcza w rejestrze wartość n,
-     * •MY reg address - umieszcza w rejestrze zawartość pamiętaną pod wskazanym adresem,
-     * •PE reg - wyświetla wynik programu znajdujący się w podanym rejestrze rejestrze,
-     * •JP counter - skacze do innego rozkazu poprzez zmianę licznika,
-     * •JZ reg n - skok przy zerowej zawartości rejestru będącego argumentem,
-     * <p>
-     * Pliki
-     *  •CE file_name - tworzy pusty plik o podanej nazwie,
-     * •OF file_name - otwiera plik o podanej nazwie
-     * •CL file_name - zamyka plik o podanej nazwie,
-     *  •CF file_name file_content - tworzy plik z zawartością,
-     * •AF file_name file_content - dodaje dane na końcu pliku,
-     * •DF file_name - usuwa plik o danej nazwie,
-     * •RF file_name - czyta plik o podanej nazwie,
-     *  •RN old_file_name new_file_name - zmienia nazwę pliku
-     * <p>
-     * Komunikaty
-     * •RM  - zapisywanie otrzymanego komunikatu do RAM,                  --->>KUBA struktura
-     * •SM  - wysłanie komunikatu,                                         --->>KUBA struktura
-     * <p>
-     * •EX - kończy program,
+     Rozkazy:
+        Arytmetyczno-logiczne
+        AD reg1 reg2 - dodaje rejestr2 do rejestru1,
+        AX reg num – dodaje liczbę do rejestru,
+        SB reg1 reg2 - odejmuje od rejestru1 zawartość rejestru2,
+        SX reg num – odejmuje liczbę od rejestru,
+        DC reg - zwiększa zawartość rejestru o 1,
+        IC reg - zmniejsza zawartość rejestru o 1,
+        MU reg1 reg2 – mnoży rejestr 1 przez rejestr 2,
+        MX reg num – mnoży rejestr przez liczbę,
+        DV reg1 reg2 - dzieli zawartość rejestru1 przez zawartość rejestru2,
+        DX reg num – dzieli rejestr przez liczbę,
+        MV reg1 reg2 – kopiuje wartość rejestru 2 do rejestru 1,
+        MZ address reg - zapisuje do pamięci zawartość rejestru pod wskazanym adresem,
+        MO reg n – umieszcza w rejestrze wartość n,
+        MY reg address - umieszcza w rejestrze zawartość pamiętaną pod wskazanym adresem,
+        PE reg - wyświetla wynik programu znajdujący się w podanym rejestrze rejestrze,
+        JP counter - skacze do innego rozkazu poprzez zmianę licznika,
+        JZ reg n - skok przy zerowej zawartości rejestru będącego argumentem,
+
+        Procesy
+        KP nazwa - usunięcie procesu o danej nazwie,
+        RP nazwa – uruchamia proces o danej nazwie,
+
+        Pliki
+        CE file_name - tworzy pusty plik o podanej nazwie,
+        OF file_name - otwiera plik o podanej nazwie
+        CL file_name - zamyka plik o podanej nazwie,
+        CF file_name file_content - tworzy plik z zawartością,
+        AF file_name file_content - dodaje dane na końcu pliku,
+        DF file_name - usuwa plik o danej nazwie,
+        RF file_name - czyta plik o podanej nazwie,
+        RN old_file_name new_file_name - zmienia nazwę pliku
+
+        Komunikaty
+        RM  - zapisywanie otrzymanego komunikatu do RAM,
+        SM  - wysłanie komunikatu, 
+
+        EX - kończy program
      **/
 
     private int A = 0;
@@ -91,7 +96,9 @@ public class Interpreter implements IInterpreter {
         processManager.getActivePCB().setCounter(PC);
     }
 
-    //arytmetyczno-logiczne
+    //------------------------ARYTMETYCZNO-LOGICZNE----------------------------------
+
+    //AD reg1 reg2 - dodaje rejestr2 do rejestru1
     private void AD(String[] order) {
         String reg_1 = order[1];
         String reg_2 = order[2];
@@ -125,6 +132,7 @@ public class Interpreter implements IInterpreter {
         }
     }
 
+    //AX reg num – dodaje liczbę do rejestru
     private void AX(String[] order) {
         String reg = order[1];
         int val = Integer.parseInt(order[2]);
@@ -140,6 +148,7 @@ public class Interpreter implements IInterpreter {
         }
     }
 
+    //SB reg1 reg2 - odejmuje od rejestru1 zawartość rejestru2
     private void SB(String[] order) {
         String reg_1 = order[1];
         String reg_2 = order[2];
@@ -169,6 +178,7 @@ public class Interpreter implements IInterpreter {
         }
     }
 
+    //SX reg num – odejmuje liczbę od rejestru
     private void SX(String[] order) {
         String reg = order[1];
         int val = Integer.parseInt(order[2]);
@@ -184,6 +194,7 @@ public class Interpreter implements IInterpreter {
         }
     }
 
+    //DC reg - zwiększa zawartość rejestru o 1
     private void DC(String[] order) {
         String reg = order[1];
 
@@ -198,6 +209,7 @@ public class Interpreter implements IInterpreter {
         }
     }
 
+    //IC reg - zmniejsza zawartość rejestru o 1
     private void IC(String[] order) {
         String reg = order[1];
         if (reg.equals("A")) {
@@ -211,6 +223,7 @@ public class Interpreter implements IInterpreter {
         }
     }
 
+    //MU reg1 reg2 – mnoży rejestr 1 przez rejestr 2
     private void MU(String[] order) {
         String reg_1 = order[1];
         String reg_2 = order[2];
@@ -242,6 +255,7 @@ public class Interpreter implements IInterpreter {
         }
     }
 
+    //MX reg num – mnoży rejestr przez liczbę
     private void MX(String[] order) {
         String reg = order[1];
         int val = Integer.parseInt(order[2]);
@@ -257,6 +271,7 @@ public class Interpreter implements IInterpreter {
         }
     }
 
+    //DV reg1 reg2 - dzieli zawartość rejestru1 przez zawartość rejestru2
     private void DV(String[] order) {
         String reg_1 = order[1];
         String reg_2 = order[2];
@@ -286,6 +301,7 @@ public class Interpreter implements IInterpreter {
         }
     }
 
+    //DX reg num – dzieli rejestr przez liczbę
     private void DX(String[] order) {
         String reg = order[1];
         int val = Integer.parseInt(order[2]);
@@ -302,6 +318,7 @@ public class Interpreter implements IInterpreter {
         }
     }
 
+    //MV reg1 reg2 – kopiuje wartość rejestru 2 do rejestru 1
     private void MV(String[] order) {
         String reg_1 = order[1];
         String reg_2 = order[2];
@@ -335,6 +352,8 @@ public class Interpreter implements IInterpreter {
         }
     }
 
+    //MZ address reg - zapisuje do pamięci zawartość rejestru pod wskazanym adresem,
+    //Klaudia metoda do zapisywania do pamięci
     private void MZ(String[] order) {
         String raw_address = order[1];
         String register = order[2];
@@ -346,17 +365,18 @@ public class Interpreter implements IInterpreter {
             raw_address = raw_address.replaceAll("\\[", "").replaceAll("]", "");
             int address = Integer.parseInt(raw_address);
             if (register.equals("A")) {
-                memory.writeMemory((char) A, address);
+                //memory.writeMemory((char) A, address);
             } else if (register.equals("B")) {
-                memory.writeMemory((char) B, address);
+                //memory.writeMemory((char) B, address);
             } else if (register.equals("C")) {
-                memory.writeMemory((char) C, address);
+                //memory.writeMemory((char) C, address);
             } else {
                 System.out.println("Incorrect register.");
             }
         }
     }
 
+    //MO reg n – umieszcza w rejestrze wartość n,
     private void MO(String[] order) {
         String reg = order[1];
         int val = Integer.parseInt(order[2]);
@@ -373,6 +393,8 @@ public class Interpreter implements IInterpreter {
         SaveRegister();
     }
 
+    //MY reg address - umieszcza w rejestrze zawartość pamiętaną pod wskazanym adresem,
+    //Klaudia metoda do zapisywania do pamięci
     private void MY(String[] order) {
         String register = order[1];
         String raw_address = order[2];
@@ -383,7 +405,7 @@ public class Interpreter implements IInterpreter {
         } else {
             raw_address = raw_address.replaceAll("\\[", "").replaceAll("]", "");
             int address = Integer.parseInt(raw_address);
-            char pom = memory.readMemory(address);
+           /*char pom = memory.readMemory(address);
 
             if (pom != '#') {
                 if (register.equals("A")) {
@@ -397,15 +419,17 @@ public class Interpreter implements IInterpreter {
                 }
             } else {
                 System.out.println("Address is empty.");
-            }
+            }*/
         }
     }
 
+    //JP counter - skacze do innego rozkazu poprzez zmianę licznika
     private void JP(String[] order) {
         int counter = Integer.parseInt(order[1]);
         PC = counter - 1;
     }
 
+    //JZ reg n - skok przy zerowej zawartości rejestru będącego argumentem,
     private void JZ(String[] order) {
         try {
             String register = order[1];
@@ -432,103 +456,7 @@ public class Interpreter implements IInterpreter {
 
     }
 
-    //pliki
-    private void CE(String[] order) throws Exception {
-        try {
-            String filename = order[1];
-            fileSystem.createFile(filename, loginService.getLoggedUser(), processManager);
-        } catch (Exception e) {
-            throw e;
-        }
-    }
-
-    private void OF(String[] order) throws Exception {
-        try {
-            String filename = order[1];
-            fileSystem.openFile(filename);
-        } catch (Exception e) {
-            throw e;
-        }
-    }
-
-    private void CL(String[] order) throws Exception {
-        try {
-            String filename = order[1];
-            fileSystem.closeFile(filename);
-        } catch (Exception e) {
-            throw e;
-        }
-    }
-
-    private void CF(String[] order) throws Exception {
-        try {
-            String filename = order[1];
-            int n = order.length;
-
-            String fileContent;
-            for (int i = 2; i < n; i++) {
-                fileContent += order[i];
-            }
-            fileSystem.createFile(filename, loginService.getLoggedUser(), processManager);
-            fileSystem.openFile(filename);
-            fileSystem.appendFile(filename, fileContent);
-            fileSystem.closeFile(filename);
-        } catch (Exception e) {
-            throw e;
-        }
-    }
-
-    private void AF(String[] order) throws Exception {
-        try {
-            String filename = order[1];
-            String fileContent = order[2];
-            fileSystem.appendFile(filename, fileContent);
-        } catch (Exception e) {
-            throw e;
-        }
-    }
-
-    private void DF(String[] order) throws Exception {
-        try {
-            String filename = order[1];
-            fileSystem.deleteFile(filename);
-        } catch (Exception e) {
-            throw e;
-        }
-    }
-
-    private void RF(String[] order) throws Exception {
-        try {
-            String filename = order[1];
-            String fileContent = fileSystem.readFile(filename);
-            System.out.println("File content:");
-            System.out.println(fileContent);
-        } catch (Exception e) {
-            throw e;
-        }
-    }
-
-    private void RN(String[] order) throws Exception {
-        try {
-            String oldName = order[1];
-            String newName = order[2];
-            fileSystem.renameFile(oldName, newName);
-        } catch (Exception e) {
-            throw e;
-        }
-    }
-
-    //KOMUNIKATY
-    private void RM(String[] order) {
-        communication.receiveMessage();
-    }
-
-    private void SM(String[] order) {
-        int PID = Integer.parseInt(order[1]);
-        Sms sms = new Sms(order[2]);
-        communication.sendMessage(PID, sms);
-    }
-
+    //PE reg - wyświetla wynik programu znajdujący się w podanym rejestrze rejestrze,
     private void PE(String[] order) {
         String reg = order[1];
         if (reg.equals("A")) {
@@ -541,6 +469,133 @@ public class Interpreter implements IInterpreter {
             System.out.println("Incorrect register.");
         }
     }
+
+    //---------------------------------PROCESY---------------------------------------
+
+    //KP nazwa - usunięcie procesu o danej nazwie
+    //ogarnąć
+    private void DP(String[] order){
+
+    }
+
+    //RP nazwa – uruchamia proces o danej nazwie
+    //ogarnąć
+    private void RP(String[] order){
+
+    }
+
+    //-----------------------------------PLIKI---------------------------------------
+
+    //CE file_name - tworzy pusty plik o podanej nazwie
+    private void CE(String[] order) throws Exception {
+        try {
+            String filename = order[1];
+            fileSystem.createFile(filename, loginService.getLoggedUser(), processManager);
+        } catch (Exception e) {
+            throw e;
+        }
+    }
+
+    //OF file_name - otwiera plik o podanej nazwie
+    private void OF(String[] order) throws Exception {
+        try {
+            String filename = order[1];
+            fileSystem.openFile(filename);
+        } catch (Exception e) {
+            throw e;
+        }
+    }
+
+    //CL file_name - zamyka plik o podanej nazwie
+    private void CL(String[] order) throws Exception {
+        try {
+            String filename = order[1];
+            fileSystem.closeFile(filename);
+        } catch (Exception e) {
+            throw e;
+        }
+    }
+
+    //CF file_name file_content - tworzy plik z zawartością
+    //ogarnąć żeby mi się zgadzało ze splitem
+    private void CF(String[] order) throws Exception {
+        try {
+            String filename = order[1];
+            int n = order.length;
+
+            String fileContent;
+            for (int i = 2; i < n; i++) {
+                //fileContent += order[i];
+            }
+            fileSystem.createFile(filename, loginService.getLoggedUser(), processManager);
+            fileSystem.openFile(filename);
+            fileSystem.appendFile(filename, fileContent);
+            fileSystem.closeFile(filename);
+        } catch (Exception e) {
+            throw e;
+        }
+    }
+
+    //AF file_name file_content - dodaje dane na końcu pliku
+    private void AF(String[] order) throws Exception {
+        try {
+            String filename = order[1];
+            String fileContent = order[2];
+            fileSystem.appendFile(filename, fileContent);
+        } catch (Exception e) {
+            throw e;
+        }
+    }
+
+    //DF file_name - usuwa plik o danej nazwie
+    private void DF(String[] order) throws Exception {
+        try {
+            String filename = order[1];
+            fileSystem.deleteFile(filename);
+        } catch (Exception e) {
+            throw e;
+        }
+    }
+
+    //RF file_name - czyta plik o podanej nazwie
+    private void RF(String[] order) throws Exception {
+        try {
+            String filename = order[1];
+            String fileContent = fileSystem.readFile(filename);
+            System.out.println("File content:");
+            System.out.println(fileContent);
+        } catch (Exception e) {
+            throw e;
+        }
+    }
+
+    //RN old_file_name new_file_name - zmienia nazwę pliku
+    private void RN(String[] order) throws Exception {
+        try {
+            String oldName = order[1];
+            String newName = order[2];
+            fileSystem.renameFile(oldName, newName);
+        } catch (Exception e) {
+            throw e;
+        }
+    }
+
+    //-----------------------------KOMUNIKATY---------------------------------------
+
+    //RM  - zapisywanie otrzymanego komunikatu do RAM
+    //Kuba metoda receiveMessage
+    private void RM() {
+        communication.receiveMessage();
+    }
+
+    //SM  - wysłanie komunikatu
+    //Kuba metoda sendMessage
+    private void SM(String[] order) {
+        int PID = Integer.parseInt(order[1]);
+        Sms sms = new Sms(order[2]);
+        communication.sendMessage(PID, sms);
+    }
+
 
     public void Exe() throws Exception {
         String raw_order = processManager.getCommand(PC);
@@ -630,7 +685,7 @@ public class Interpreter implements IInterpreter {
                     break;
                 //komunikaty
                 case "RM":
-                    RM(order);
+                    RM();
                     break;
                 case "SM":
                     SM(order);
