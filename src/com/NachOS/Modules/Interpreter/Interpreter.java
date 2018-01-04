@@ -1,57 +1,52 @@
-package com.BamoOS.Modules.Interpreter;
+package com.NachOS.Modules.Interpreter;
 
-import com.BamoOS.Modules.ACL.Interfaces.ILoginService;
-import com.BamoOS.Modules.FileSystem.IFileSystem;
-import com.BamoOS.Modules.MemoryManagment.PageTable;
-import com.BamoOS.Modules.MemoryManagment.RAM;
-import com.BamoOS.Modules.ProcessManager.IProcessManager;
-import com.BamoOS.Modules.ProcessManager.PCB;
-import com.BamoOS.Modules.Communication.IPC;
-import com.BamoOS.Modules.Communication.Sms;
-import com.BamoOS.Modules.Processor.IProcessor;
-
+import com.NachOS.Modules.Interpreter.IInterpreter;
+import com.NachOS.Modules.ProcessManager.IProcessManager;
+import com.NachOS.Modules.FileSystem.IFileSystem;
+import com.NachOS.Modules.Communication.IPC;
+import com.NachOS.Modules.ACL.Interfaces.ILoginService;
+import com.NachOS.Modules.ProcessManager.PCB;
 import java.util.ArrayList;
 
-public class Interpreter implements IInterpreter{
+public class Interpreter implements IInterpreter {
 
     /**
-     *
-     Rozkazy:
-
-     Arytmetyczno-logiczne
-     •AD reg1 reg2 - dodaje rejestr2 do rejestru1,
-     •AX reg num – dodaje liczbę do rejestru, 
-     •SB reg1 reg2 - odejmuje od rejestru1 zawartość rejestru2, 
-     •SX reg num – odejmuje liczbę od rejestru, 
-     •DC reg - zwiększa zawartość rejestru o 1,
-     •IC reg - zmniejsza zawartość rejestru o 1,
-     •MU reg1 reg2 – mnoży rejestr 1 przez rejestr 2, 
-     •MX reg num – mnoży rejestr przez liczbę, 
-     •DV reg1 reg2 - dzieli zawartość rejestru1 przez zawartość rejestru2, 
-     •DX reg num – dzieli rejestr przez liczbę,
-     •MV reg1 reg2 – kopiuje wartość rejestru 2 do rejestru 1,
-      •MZ address reg - zapisuje do pamięci zawartość rejestru pod wskazanym adresem,
-     •MO reg n – umieszcza w rejestrze wartość n, 
-     •MY reg address - umieszcza w rejestrze zawartość pamiętaną pod wskazanym adresem,
-     •PE reg - wyświetla wynik programu znajdujący się w podanym rejestrze rejestrze,
-     •JP counter - skacze do innego rozkazu poprzez zmianę licznika, 
-     •JZ reg n - skok przy zerowej zawartości rejestru będącego argumentem, 
-
-     Pliki
-      •CE file_name - tworzy pusty plik o podanej nazwie, 
-     •OF file_name - otwiera plik o podanej nazwie
-     •CL file_name - zamyka plik o podanej nazwie,
-      •CF file_name file_content - tworzy plik z zawartością,
-     •AF file_name file_content - dodaje dane na końcu pliku,
-     •DF file_name - usuwa plik o danej nazwie, 
-     •RF file_name - czyta plik o podanej nazwie,
-      •RN old_file_name new_file_name - zmienia nazwę pliku
-
-     Komunikaty
-     •RM  - zapisywanie otrzymanego komunikatu do RAM,                  --->>KUBA struktura
-     •SM  - wysłanie komunikatu,                                         --->>KUBA struktura
-
-     •EX - kończy program,
+     * Rozkazy:
+     * <p>
+     * Arytmetyczno-logiczne
+     * •AD reg1 reg2 - dodaje rejestr2 do rejestru1,
+     * •AX reg num – dodaje liczbę do rejestru,
+     * •SB reg1 reg2 - odejmuje od rejestru1 zawartość rejestru2,
+     * •SX reg num – odejmuje liczbę od rejestru,
+     * •DC reg - zwiększa zawartość rejestru o 1,
+     * •IC reg - zmniejsza zawartość rejestru o 1,
+     * •MU reg1 reg2 – mnoży rejestr 1 przez rejestr 2,
+     * •MX reg num – mnoży rejestr przez liczbę,
+     * •DV reg1 reg2 - dzieli zawartość rejestru1 przez zawartość rejestru2,
+     * •DX reg num – dzieli rejestr przez liczbę,
+     * •MV reg1 reg2 – kopiuje wartość rejestru 2 do rejestru 1,
+     *  •MZ address reg - zapisuje do pamięci zawartość rejestru pod wskazanym adresem,
+     * •MO reg n – umieszcza w rejestrze wartość n,
+     * •MY reg address - umieszcza w rejestrze zawartość pamiętaną pod wskazanym adresem,
+     * •PE reg - wyświetla wynik programu znajdujący się w podanym rejestrze rejestrze,
+     * •JP counter - skacze do innego rozkazu poprzez zmianę licznika,
+     * •JZ reg n - skok przy zerowej zawartości rejestru będącego argumentem,
+     * <p>
+     * Pliki
+     *  •CE file_name - tworzy pusty plik o podanej nazwie,
+     * •OF file_name - otwiera plik o podanej nazwie
+     * •CL file_name - zamyka plik o podanej nazwie,
+     *  •CF file_name file_content - tworzy plik z zawartością,
+     * •AF file_name file_content - dodaje dane na końcu pliku,
+     * •DF file_name - usuwa plik o danej nazwie,
+     * •RF file_name - czyta plik o podanej nazwie,
+     *  •RN old_file_name new_file_name - zmienia nazwę pliku
+     * <p>
+     * Komunikaty
+     * •RM  - zapisywanie otrzymanego komunikatu do RAM,                  --->>KUBA struktura
+     * •SM  - wysłanie komunikatu,                                         --->>KUBA struktura
+     * <p>
+     * •EX - kończy program,
      **/
 
     private int A = 0;
@@ -74,14 +69,14 @@ public class Interpreter implements IInterpreter{
         this.loginService = loginService;
     }
 
-    private void DownloadRegisters(){
+    private void DownloadRegisters() {
         A = processManager.getActivePCB().getRegister(PCB.Register.A);
         B = processManager.getActivePCB().getRegister(PCB.Register.B);
         C = processManager.getActivePCB().getRegister(PCB.Register.A);
         PC = processManager.getActivePCB().getCounter();
     }
 
-    public void RegisterStatus() {
+    private void RegisterStatus() {
         System.out.println("Register A: " + A);
         System.out.println("Register B: " + B);
         System.out.println("Register C: " + C);
@@ -97,7 +92,7 @@ public class Interpreter implements IInterpreter{
     }
 
     //arytmetyczno-logiczne
-    private void AD(String [] order){
+    private void AD(String[] order) {
         String reg_1 = order[1];
         String reg_2 = order[2];
 
@@ -130,7 +125,7 @@ public class Interpreter implements IInterpreter{
         }
     }
 
-    private void AX(String[] order){
+    private void AX(String[] order) {
         String reg = order[1];
         int val = Integer.parseInt(order[2]);
 
@@ -145,7 +140,7 @@ public class Interpreter implements IInterpreter{
         }
     }
 
-    private void SB(String[] order){
+    private void SB(String[] order) {
         String reg_1 = order[1];
         String reg_2 = order[2];
 
@@ -174,7 +169,7 @@ public class Interpreter implements IInterpreter{
         }
     }
 
-    private void SX(String[] order){
+    private void SX(String[] order) {
         String reg = order[1];
         int val = Integer.parseInt(order[2]);
 
@@ -189,7 +184,7 @@ public class Interpreter implements IInterpreter{
         }
     }
 
-    private void DC(String[] order){
+    private void DC(String[] order) {
         String reg = order[1];
 
         if (reg.equals("A")) {
@@ -203,7 +198,7 @@ public class Interpreter implements IInterpreter{
         }
     }
 
-    private void IC(String[] order){
+    private void IC(String[] order) {
         String reg = order[1];
         if (reg.equals("A")) {
             A += 1;
@@ -216,7 +211,7 @@ public class Interpreter implements IInterpreter{
         }
     }
 
-    private void MU(String[] order){
+    private void MU(String[] order) {
         String reg_1 = order[1];
         String reg_2 = order[2];
 
@@ -267,23 +262,23 @@ public class Interpreter implements IInterpreter{
         String reg_2 = order[2];
 
         if (reg_1.equals("A")) {
-            if (reg_2.equals("B")&& B!=0) {
+            if (reg_2.equals("B") && B != 0) {
                 A /= B;
-            } else if (reg_2.equals("C")&& C!=0) {
+            } else if (reg_2.equals("C") && C != 0) {
                 A /= C;
             } else System.out.println("Incorrect register.");
 
         } else if (reg_1.equals("B")) {
-            if (reg_2.equals("A")&& A!=0) {
+            if (reg_2.equals("A") && A != 0) {
                 B /= A;
-            } else if (reg_2.equals("C")&& C!=0) {
+            } else if (reg_2.equals("C") && C != 0) {
                 B /= C;
             } else System.out.println("Incorrect register.");
 
         } else if (reg_1.equals("C")) {
-            if (reg_2.equals("A") && A!=0) {
+            if (reg_2.equals("A") && A != 0) {
                 C /= A;
-            } else if (reg_2.equals("B") && B!=0) {
+            } else if (reg_2.equals("B") && B != 0) {
                 C /= B;
             } else System.out.println("Incorrect register.");
         } else {
@@ -345,16 +340,16 @@ public class Interpreter implements IInterpreter{
         String register = order[2];
         String[] split_address = raw_address.split("");
 
-        if((!split_address[0].equals("["))|| (!split_address[raw_address.length()-1].equals("]"))){
+        if ((!split_address[0].equals("[")) || (!split_address[raw_address.length() - 1].equals("]"))) {
             System.out.println("Incorrect address.");
-        }else {
+        } else {
             raw_address = raw_address.replaceAll("\\[", "").replaceAll("]", "");
             int address = Integer.parseInt(raw_address);
             if (register.equals("A")) {
                 memory.writeMemory((char) A, address);
-            } else if(register.equals("B")){
+            } else if (register.equals("B")) {
                 memory.writeMemory((char) B, address);
-            } else if(register.equals("C")){
+            } else if (register.equals("C")) {
                 memory.writeMemory((char) C, address);
             } else {
                 System.out.println("Incorrect register.");
@@ -408,7 +403,7 @@ public class Interpreter implements IInterpreter{
 
     private void JP(String[] order) {
         int counter = Integer.parseInt(order[1]);
-        PC = counter-1;
+        PC = counter - 1;
     }
 
     private void JZ(String[] order) {
@@ -418,15 +413,15 @@ public class Interpreter implements IInterpreter{
 
             if (register.equals("A")) {
                 if (A == 0) {
-                    PC = counter-1;
+                    PC = counter - 1;
                 }
             } else if (register.equals("B")) {
                 if (B == 0) {
-                    PC = counter-1;
+                    PC = counter - 1;
                 }
             } else if (register.equals("C")) {
                 if (C == 0) {
-                    PC = counter-1;
+                    PC = counter - 1;
                 }
             } else {
                 System.out.println("Incorrect register");
@@ -438,29 +433,29 @@ public class Interpreter implements IInterpreter{
     }
 
     //pliki
-    private void CE(String[] order) throws Exception{
+    private void CE(String[] order) throws Exception {
         try {
             String filename = order[1];
             fileSystem.createFile(filename, loginService.getLoggedUser(), processManager);
-        }catch (Exception e) {
+        } catch (Exception e) {
             throw e;
         }
     }
 
-    private void OF(String[] order) throws Exception{
+    private void OF(String[] order) throws Exception {
         try {
             String filename = order[1];
             fileSystem.openFile(filename);
-        }catch (Exception e) {
+        } catch (Exception e) {
             throw e;
         }
     }
 
-    private void CL(String[] order) throws Exception{
+    private void CL(String[] order) throws Exception {
         try {
             String filename = order[1];
             fileSystem.closeFile(filename);
-        }catch (Exception e) {
+        } catch (Exception e) {
             throw e;
         }
     }
@@ -471,12 +466,12 @@ public class Interpreter implements IInterpreter{
             int n = order.length;
 
             String fileContent;
-            for(int i=2;i<n;i++){
+            for (int i = 2; i < n; i++) {
                 fileContent += order[i];
             }
             fileSystem.createFile(filename, loginService.getLoggedUser(), processManager);
             fileSystem.openFile(filename);
-            fileSystem.appendFile(filename,fileContent);
+            fileSystem.appendFile(filename, fileContent);
             fileSystem.closeFile(filename);
         } catch (Exception e) {
             throw e;
@@ -493,7 +488,7 @@ public class Interpreter implements IInterpreter{
         }
     }
 
-    private void DF(String[] order) throws Exception{
+    private void DF(String[] order) throws Exception {
         try {
             String filename = order[1];
             fileSystem.deleteFile(filename);
@@ -502,7 +497,7 @@ public class Interpreter implements IInterpreter{
         }
     }
 
-    private void RF(String[] order) throws Exception{
+    private void RF(String[] order) throws Exception {
         try {
             String filename = order[1];
             String fileContent = fileSystem.readFile(filename);
@@ -513,7 +508,7 @@ public class Interpreter implements IInterpreter{
         }
     }
 
-    private void RN(String[] order) throws Exception{
+    private void RN(String[] order) throws Exception {
         try {
             String oldName = order[1];
             String newName = order[2];
@@ -535,19 +530,19 @@ public class Interpreter implements IInterpreter{
     }
 
     private void PE(String[] order) {
-        String reg= order[1];
+        String reg = order[1];
         if (reg.equals("A")) {
             System.out.println("Result: " + A);
-        } else if(reg.equals("B")) {
+        } else if (reg.equals("B")) {
             System.out.println("Result: " + B);
-        } else if (reg.equals("C")){
+        } else if (reg.equals("C")) {
             System.out.println("Result: " + C);
         } else {
             System.out.println("Incorrect register.");
         }
     }
 
-    public void Exe() throws Exception{
+    public void Exe() throws Exception {
         String raw_order = processManager.getCommand(PC);
         DownloadRegisters();
         String[] order = raw_order.split(" ");
@@ -641,36 +636,19 @@ public class Interpreter implements IInterpreter{
                     SM(order);
                     break;
                 case "EX":
-                    SaveRegister();
                     processManager.getActivePCB().setState(PCB.State.FINISHED);
                     break;
+                default:
+                    System.out.println("Undefined order.");
             }
-        }catch (Exception e){
+        } catch (Exception e) {
+            PC++;
+            SaveRegister();
             throw e;
-        }finally {
+        } finally {
+            PC++;
             SaveRegister();
             RegisterStatus();
         }
-
-        //pliki, procesy, komunikaty
-        try {
-
-            switch (operation) {
-                //pliki
-
-
-
-            }
-        }catch (Exception e){
-
-            System.out.println("Undefined order.");
-        }
-    }catch (Exception e) {
-        PC++;
-        SaveRegister();
-        throw e;
     }
-    PC++;
-    SaveRegister();
-}
 }
