@@ -62,7 +62,7 @@ public class ProcessManager implements IProcessManager {
 			ArrayList<PCB> temp = checkIfGroupExists(PGID);
 			if(temp != null) {
 				String textFileContent = readCommandFile("src/" + FileName + ".txt");
-				Map<Integer, Integer> mapLine = new HashMap<Integer, Integer>();
+				Map mapLine = new HashMap<Integer, Integer>();
 				//Podejrzane w pizdu.
                 mapLine.put(0,0);
                 for(int i = 0, j = 1; i != -1 && i+1 < textFileContent.length();j++){
@@ -157,7 +157,7 @@ public class ProcessManager implements IProcessManager {
 		//PCB pcb = new PCB(this.ProcessCounter, ProcessName, this.GroupsCounter);
 		//PCB pcb = newProcess(ProcessName, this.GroupsCounter, FileName);
 		String textFileContent = readCommandFile("src/" + FileName + ".txt");
-		Map<Integer, Integer> mapLine = new HashMap<Integer, Integer>();
+		Map mapLine = new HashMap<Integer, Integer>();
 		System.out.println("Kod programu: "+ textFileContent);
 		mapLine.put(0,0);
 		for(int i = 0, j = 1; i != -1 && i+1 < textFileContent.length();j++){
@@ -171,7 +171,7 @@ public class ProcessManager implements IProcessManager {
 		char[] code = textFileContent.toCharArray();
 		PageTable pt1 = new PageTable(this.ProcessCounter, code.length);
 		PCB pcb = new PCB(this.ProcessCounter, ProcessName, this.GroupsCounter, pt1, mapLine);
-		Map<Integer, Integer> map = pcb.getMapLine();
+		Map map = pcb.getMapLine();
 		System.out.println("Mapa konwersji");
 //		for(Map.Entry<Integer, Integer> entry : map.){
 //			System.out.println(entry.getKey()+"\t"+entry.getValue());
