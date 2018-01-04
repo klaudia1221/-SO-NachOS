@@ -130,12 +130,16 @@ public class Interpreter implements IInterpreter{
     }
 
     private void DownloadRegisters(){
-        set_A();
-        set_B();
-        set_C();
-        set_D();
-        set_PC();
-        set_PID();
+//        set_A();
+//        set_B();
+//        set_C();
+//        set_D();
+//        set_PC();
+//        set_PID();
+        PCB temp = processManager.getActivePCB();
+        this.A = temp.getRegister(PCB.Register.A);
+        this.B = temp.getRegister(PCB.Register.B);
+        this.C = temp.getRegister(PCB.Register.C);
     }
 
     public void RegisterStatus() {
@@ -156,7 +160,6 @@ public class Interpreter implements IInterpreter{
         processManager.getActivePCB().setRegister(PCB.Register.A, get_A());
         processManager.getActivePCB().setRegister(PCB.Register.B, get_B());
         processManager.getActivePCB().setRegister(PCB.Register.C, get_C());
-        processManager.getActivePCB().setRegister(PCB.Register.D, get_D());
         processManager.getActivePCB().setCounter(PC);
     }
 
