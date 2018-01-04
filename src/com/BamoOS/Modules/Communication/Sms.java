@@ -46,5 +46,4 @@ public class Sms
     public int get_mesSize()
     {
         return this.mesSize;
-    }
-}
+    }}
