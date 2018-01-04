@@ -103,6 +103,7 @@ public class ProcessManager implements IProcessManager {
 		if(temp != null) {
 			ram.deleteProcessData(temp.getPID());
 			checkIfGroupExists(temp.getPGID()).remove(temp);
+			return;
 		}
 		throw new Exception("Brak procesu o podanym PID");
 	}
