@@ -1,0 +1,1 @@
+CE plik1;CF plik2 tekst;AF plik1 tekst;CF plik3 systemy;RN plik3 nowy_plik3;DF plik3;EX;
