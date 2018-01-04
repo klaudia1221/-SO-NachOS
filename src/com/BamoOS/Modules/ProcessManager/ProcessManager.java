@@ -169,6 +169,11 @@ public class ProcessManager implements IProcessManager {
 		char[] code = textFileContent.toCharArray();
 		PageTable pt1 = new PageTable(this.ProcessCounter, code.length);
 		PCB pcb = new PCB(this.ProcessCounter, ProcessName, this.GroupsCounter, pt1, mapLine);
+		Map map = pcb.getMapLine();
+		System.out.println("Mapa konwersji");
+		for(Map.Entry<String, HashMap> entry : map.entrySet()){
+			System.out.println(entry.getKey()+"\t"+entry.getValue());
+		}
 		ram.pageTables.put(this.ProcessCounter, pt1);
 		ram.exchangeFile.writeToExchangeFile(this.ProcessCounter, code);
 
@@ -287,6 +292,7 @@ public class ProcessManager implements IProcessManager {
 			command += ch;
 			firstchar++;
 		}while(true);
+		System.out.println("Rozkaz nr: "+pointer+" Rozkaz: "+ command);
 		return command;
     }
 }
