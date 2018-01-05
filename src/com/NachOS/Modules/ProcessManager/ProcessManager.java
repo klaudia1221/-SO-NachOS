@@ -172,7 +172,6 @@ public class ProcessManager implements IProcessManager {
 				//System.out.println(j + " " + textFileContent.charAt(i + 1));
 			}
 		}
-		//System.out.println("2");
 		char[] code = textFileContent.toCharArray();
 		PageTable pt1 = new PageTable(this.ProcessCounter, code.length);
 		PCB pcb = new PCB(this.ProcessCounter, ProcessName, this.GroupsCounter, pt1, mapLine);
@@ -302,5 +301,14 @@ public class ProcessManager implements IProcessManager {
 		}while(true);
 		System.out.println("Rozkaz nr: "+pointer+" Rozkaz: "+ command);
 		return command;
+    }
+
+    public char getMemory(int pointer){
+        return ram.getCommand(pointer,ActivePCB.getPID(), ActivePCB.pageTable);
+    }
+
+    public void setMemory(int pointer){
+        //TODO
+        //Czekam na klaudię
     }
 }

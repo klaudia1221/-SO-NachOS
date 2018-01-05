@@ -58,7 +58,6 @@ public class Interpreter implements IInterpreter{
     private int A = 0;
     private int B = 0;
     private int C = 0;
-    private int D = 0;
     private int PC = 0;
     private int PID = 0;
 
@@ -76,58 +75,45 @@ public class Interpreter implements IInterpreter{
         this.communication = communication;
         this.loginService = loginService;
     }
-
-    public void set_A(){
-//        this.A = PCB.GetRegister(IPCB.Register.A);
-        this.A = processManager.getActivePCB().getRegister(PCB.Register.A);
-    }
-
-    public void set_B(){
-//        this.B = PCB.GetRegister(IPCB.Register.B);
-        this.B = processManager.getActivePCB().getRegister(PCB.Register.B);
-    }
-
-    public void set_C(){
-//        this.C = PCB.GetRegister(IPCB.Register.C);
-        this.C = processManager.getActivePCB().getRegister(PCB.Register.C);
-    }
-
-    public void set_D(){
-        this.D = processManager.getActivePCB().getRegister(PCB.Register.D);
-    }
-
-    public void set_PC(){
-        this.PC = processManager.getActivePCB().getCounter();
-    }
-
-    public void set_PID(){
-//        this.PID = PCB.GetPID();
-        this.PID = processManager.getActivePCB().getPID();
-    }
-
-    public int get_A(){
-        return A;
-    }
-
-    public int get_B(){
-        return B;
-    }
-
-    public int get_C(){
-        return C;
-    }
-
-    public int get_D(){
-        return D;
-    }
-
-    public int get_PC(){
-        return PC;
-    }
-
-    public int get_PID(){
-        return PID;
-    }
+//
+//    public void set_A(){
+////        this.A = PCB.GetRegister(IPCB.Register.A);
+//        this.A = processManager.getActivePCB().getRegister(PCB.Register.A);
+//    }
+//
+//    public void set_B(){
+////        this.B = PCB.GetRegister(IPCB.Register.B);
+//        this.B = processManager.getActivePCB().getRegister(PCB.Register.B);
+//    }
+//
+//    public void set_C(){
+////        this.C = PCB.GetRegister(IPCB.Register.C);
+//        this.C = processManager.getActivePCB().getRegister(PCB.Register.C);
+//    }
+//
+//    public void set_PC(){
+//        this.PC = processManager.getActivePCB().getCounter();
+//    }
+//
+//    public int get_A(){
+//        return A;
+//    }
+//
+//    public int get_B(){
+//        return B;
+//    }
+//
+//    public int get_C(){
+//        return C;
+//    }
+//
+//    public int get_PC(){
+//        return PC;
+//    }
+//
+//    public int get_PID(){
+//        return PID;
+//    }
 
     private void DownloadRegisters(){
 //        set_A();
@@ -137,18 +123,19 @@ public class Interpreter implements IInterpreter{
 //        set_PC();
 //        set_PID();
         PCB temp = processManager.getActivePCB();
+        this.PID = processManager.getActivePCB().getPID();
         this.A = temp.getRegister(PCB.Register.A);
         this.B = temp.getRegister(PCB.Register.B);
         this.C = temp.getRegister(PCB.Register.C);
+        this.PC = temp.getCounter();
     }
 
     public void RegisterStatus() {
-        System.out.println("PID: " + get_PID());
-        System.out.println("Register A: " + get_A());
-        System.out.println("Register B: " + get_B());
-        System.out.println("Register C: " + get_C());
-        System.out.println("Register D: " + get_D());
-        System.out.println("Register PC: " + get_PC());
+        System.out.println("PID: " + PID);
+        System.out.println("Register A: " + A);
+        System.out.println("Register B: " + B);
+        System.out.println("Register C: " + C);
+        System.out.println("Register PC: " + PC);
         System.out.println();
     }
 
@@ -157,9 +144,10 @@ public class Interpreter implements IInterpreter{
 //        PCB.SetRegister(IPCB.Register.B, get_B());
 //        PCB.SetRegister(IPCB.Register.C, get_C());
 //        PCB.SetCounter(get_PC());
-        processManager.getActivePCB().setRegister(PCB.Register.A, get_A());
-        processManager.getActivePCB().setRegister(PCB.Register.B, get_B());
-        processManager.getActivePCB().setRegister(PCB.Register.C, get_C());
+
+        processManager.getActivePCB().setRegister(PCB.Register.A, A);
+        processManager.getActivePCB().setRegister(PCB.Register.B, B);
+        processManager.getActivePCB().setRegister(PCB.Register.C, C);
         processManager.getActivePCB().setCounter(PC);
     }
 
@@ -698,17 +686,7 @@ public class Interpreter implements IInterpreter{
             } else {
                 System.out.println("Incorrect register.");
             }
-        }else if(reg_1.equals("D")){
-            if (reg_2.equals("A")) {
-                D = A;
-            } else if (reg_2.equals("B")) {
-                D = B;
-            } else if (reg_2.equals("C")) {
-                D = C;
-            } else {
-                System.out.println("Incorrect register.");
-            }
-        } else {
+        }else {
             System.out.println("Incorrect register.");
         }
         SaveRegister();
@@ -748,9 +726,7 @@ public class Interpreter implements IInterpreter{
             B = val;
         } else if (reg.equals("C")) {
             C = val;
-        } else if(reg.equals("D")){
-            D = val;
-        } else {
+        }else {
             System.out.println("Incorrect register.");
         }
         SaveRegister();
@@ -899,9 +875,9 @@ public class Interpreter implements IInterpreter{
     }
 
     public void Exe() throws Exception{
-        String raw_order = processManager.getCommand(get_PC());
+        DownloadRegisters();
+        String raw_order = processManager.getCommand(PC);
         String[] order = raw_order.split(" ");
-//        DownloadRegisters();
         try {
             String operation = order[0];
 
@@ -1005,7 +981,7 @@ public class Interpreter implements IInterpreter{
                 JZ(order);
                 RegisterStatus();
             } else if (operation.equals("PE")){
-                System.out.println("Result: " + get_D());
+                System.out.println("Result: " + C);
             } else if (operation.equals("EX")) {
                 SaveRegister();
                 processManager.getActivePCB().setState(PCB.State.FINISHED);
