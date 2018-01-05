@@ -812,7 +812,6 @@ public class Interpreter implements IInterpreter {
         PC++;
         processManager.getActivePCB().setCounter(PC);
     }
-
     //SM  - wysłanie komunikatu
     //Kuba metoda sendMessage
     private void SM(String[] order, int PC) {
