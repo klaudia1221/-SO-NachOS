@@ -828,7 +828,10 @@ public class Interpreter implements IInterpreter {
     private void EX(int PC){
         processManager.getActivePCB().setState(PCB.State.FINISHED);
         PC++;
-        processManager.getActivePCB().setCounter(PC);
+        //TODO nie tak ma to wyglądać
+        int counter = processManager.getActivePCB().getTimer();
+        counter++;
+        processManager.getActivePCB().setTimer(counter);
     }
 
     //------------------------------------------------------------------------------
