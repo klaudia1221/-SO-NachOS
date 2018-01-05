@@ -19,8 +19,7 @@ public class PCB {
     public enum Register{
     	A,
     	B,
-    	C,
-		D
+    	C
     }
 	
 	//Id procesu
@@ -29,22 +28,26 @@ public class PCB {
 	private State ProcessState;
 	//Nazwa procesu
 	private String ProcessName;
-	//Id grupy do kt�rej nale�y proces
+	//Id grupy do której należy proces
 	private int PGID;
 	//Rejestry
 	private int A;
 	private int B;
 	private int C;
-	private int D;
-	//Pola dla interpretera oraz cpu
-	private int Counter;
+	//Licznik etykiet
+	private int ecounter;
+	//Mapa konwertujaca etykiety na konkretną komórkę w pamięci
+	private Map<Integer,Integer> mapLine = new HashMap<>();
+	//Licznik komorki pamieci
+	private int mcounter;
 	private int Timer;
 	private double Tau;
+	//Tablica stronnic
 	public PageTable pageTable;
+	//Pola do komunikacji między procesorowej
 	private ArrayList<Sms> SmsList = new ArrayList<>();
 	private int LastSenderID;
-	private Map<Integer,Integer> mapLine = new HashMap<>();
-	private ProcessManager PM;
+
 
 	
 	public PCB(int ProcessID, String ProcessName, int ProcessGroup) {
@@ -54,7 +57,8 @@ public class PCB {
 		this.A = 0;
 		this.B = 0;
 		this.C = 0;
-		this.Counter = 0;
+		this.ecounter = 0;
+        this.mcounter = 0;
 		this.Timer = 0;
 		this.ProcessState = State.READY;
         mapLine = new HashMap<>();
@@ -67,7 +71,8 @@ public class PCB {
 		this.A = 0;
 		this.B = 0;
 		this.C = 0;
-		this.Counter = 0;
+        this.ecounter = 0;
+        this.mcounter = 0;
 		this.Timer = 0;
 		this.ProcessState = State.READY;
 		this.pageTable = pt;
@@ -102,8 +107,6 @@ public class PCB {
 			return this.B;
 		case C:
 			return this.C;
-		case D:
-			return this.D;
 		}
 		return A;
 	}
@@ -116,17 +119,15 @@ public class PCB {
 			this.B = val;
 		case C:
 			this.C = val;
-			case D:
-
 		}
 	}
 	
 	public int getCounter() {
-		return this.Counter;
+		return this.ecounter;
 	}
 	
 	public void setCounter(int counter) {
-		this.Counter = counter;
+		this.ecounter = counter;
 	}
 
 	public int getTimer() {
