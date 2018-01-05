@@ -70,10 +70,10 @@ public class Interpreter implements IInterpreter {
     }
 
     private void DownloadRegisters() {
-        A = processManager.getActivePCB().getRegister(PCB.Register.A);
-        B = processManager.getActivePCB().getRegister(PCB.Register.B);
-        C = processManager.getActivePCB().getRegister(PCB.Register.A);
-        PC = processManager.getActivePCB().getCounter();
+        this.A = processManager.getActivePCB().getRegister(PCB.Register.A);
+        this.B = processManager.getActivePCB().getRegister(PCB.Register.B);
+        this.C = processManager.getActivePCB().getRegister(PCB.Register.A);
+        this.PC = processManager.getActivePCB().getCounter();
     }
 
     private void RegisterStatus() {
@@ -751,13 +751,14 @@ public class Interpreter implements IInterpreter {
     //------------------------------------------------------------------------------
 
     public void Exe() throws Exception {
-        String raw_order = processManager.getCommand(PC);
-        System.out.println("Order: " + raw_order);
-        DownloadRegisters();
-        String[] order = raw_order.split(" ");
-        String operation = order[0];
-
         try {
+            DownloadRegisters();
+            RegisterStatus();
+            String raw_order = processManager.getCommand(PC);
+            System.out.println("Order: " + raw_order);
+            String[] order = raw_order.split(" ");
+            String operation = order[0];
+
             switch (operation) {
                 //------------------------ARYTMETYCZNO-LOGICZNE----------------------------------
                 case "AD":
