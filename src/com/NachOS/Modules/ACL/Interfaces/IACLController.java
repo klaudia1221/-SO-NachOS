@@ -1,6 +1,6 @@
 package com.NachOS.Modules.ACL.Interfaces;
 
-import com.BamoOS.Modules.ACL.*;
+import com.NachOS.Modules.ACL.*;
 import com.NachOS.Modules.FileSystem.FileBase;
 import com.NachOS.Modules.ACL.Group;
 import com.NachOS.Modules.ACL.Mask;

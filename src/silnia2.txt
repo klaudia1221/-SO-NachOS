@@ -1,0 +1,1 @@
+MO A 3;MO B 1;MU B A;DC A;JZ A 5;JP 1;MV D B;PE;EX;
