@@ -90,6 +90,9 @@ public class Shell {
         allCommands.put("meminfo", "Wyswietlenie RAM");
         allCommands.put("cv", "Wyswietlenie informacji o zmiennej warunkowej");
         allCommands.put("sms", "Wyswietlenie wszytskich komunikatow wyslanych podczas komunikacji miedzyprocesorowej");
+        allCommands.put("p", "DEBUG Dzaialnia dotyczace procesu");
+        allCommands.put("i", "DEBUG Blok kontrolny");
+        allCommands.put("m", "DEBUG Wyswietlenie RAM");
     }
     private void logo() {
 
