@@ -600,8 +600,8 @@ public class Interpreter implements IInterpreter {
     private void JP(String[] order, int A, int B, int C, int PC) {
         int counter = Integer.parseInt(order[1]);
         PC = counter;
+        processManager.getActivePCB().setCounter(PC);
         RegisterStatus(A,B,C,PC);
-        SaveRegister(A,B,C,PC);
     }
 
     //JZ reg n - skok przy zerowej zawartości rejestru będącego argumentem,
@@ -613,24 +613,31 @@ public class Interpreter implements IInterpreter {
                 case "A":
                     if (A == 0) {
                         PC = counter;
+                    } else {
+                        PC++;
                     }
                     break;
                 case "B":
                     if (B == 0) {
                         PC = counter;
+                    } else {
+                        PC++;
                     }
                     break;
                 case "C":
                     if (C == 0) {
                         PC = counter;
+                    } else {
+                        PC++;
                     }
                     break;
                 default:
                     System.out.println("Incorrect register");
+                    PC++;
                     break;
             }
+        processManager.getActivePCB().setCounter(PC);
         RegisterStatus(A,B,C,PC);
-        SaveRegister(A,B,C,PC);
     }
 
     //PE reg - wyświetla wynik programu znajdujący się w podanym rejestrze,
@@ -651,7 +658,6 @@ public class Interpreter implements IInterpreter {
                     break;
                 }
         PC++;
-        RegisterStatus(A,B,C,PC);
         SaveRegister(A,B,C,PC);
         }
 
@@ -819,16 +825,23 @@ public class Interpreter implements IInterpreter {
 
     //------------------------------------------------------------------------------
 
+    private void EX(int PC){
+        processManager.getActivePCB().setState(PCB.State.FINISHED);
+        PC++;
+        processManager.getActivePCB().setCounter(PC);
+    }
+
+    //------------------------------------------------------------------------------
+
     public void Exe() throws Exception {
         int A, B, C, PC;
         try {
             A = processManager.getActivePCB().getRegister(PCB.Register.A);
             B = processManager.getActivePCB().getRegister(PCB.Register.B);
-            C = processManager.getActivePCB().getRegister(PCB.Register.A);
+            C = processManager.getActivePCB().getRegister(PCB.Register.C);
             PC = processManager.getActivePCB().getCounter();
 
             String raw_order = processManager.getCommand(PC);
-            System.out.println("Order: " + raw_order);
             String[] order = raw_order.split(" ");
             String operation = order[0];
 
@@ -926,7 +939,7 @@ public class Interpreter implements IInterpreter {
                     break;
 
                 case "EX":
-                    processManager.getActivePCB().setState(PCB.State.FINISHED);
+                    EX(PC);
                     break;
                 default:
                     System.out.println("Undefined order.");
