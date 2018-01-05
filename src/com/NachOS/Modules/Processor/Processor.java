@@ -10,7 +10,6 @@ import com.NachOS.Modules.ProcessManager.PCB;
 
 public class Processor implements IProcessor {
 
-    private PCB Active;
     public double alpha; // Weighting factor od 0 do 1 (postarzanie) okresla poziom istotnosci ostatnej fazy
     public int time;
     private IProcessManager processManager;
@@ -25,42 +24,45 @@ public class Processor implements IProcessor {
     public void setInterpreter(Interpreter interpreter){
         this.interpreter = interpreter;
     }
+    /*
+    Jak działa ten algorytm:
+    1. Sprawdzamy czy proces aktywny ma stan FINISED || WAITING && czy lista porceós gotowych jest większa od zero(czy jest jakiś proces w liście procesów gotowy &&
+    i czy aktywny proces to nie proces bezczyności. Jeśli tak:
+        I. Sprawdź czy aktwnyny PCB nie ma stanu Finished:
+            a. Ustaw pole time na wartość Process Countera aktywnego PCB
+            b. Zabij proces.
+        II. Oblicz Thau dla każdego gotowego procesu.
+        III. Posortuj liste gotowych proceós(proces o najmniejszym Thau pierwszy)
+        IV. Ustaw pierwszy element listy jako aktywny proces.
+        V. Ustaw stan wybranego procesu na aktywny.
+    2. Jeśli lista jest pusta, a wybrany proces ma stan FINISED lub WAITING:
+        I. Ustaw stan aktywny jako stan bezczynny.
+     */
+    //TODO NK zweryfikuje to
     public void Scheduler() {
         ArrayList<PCB> processReadyList = processManager.getReadyProcesses();
         if(processManager.getActivePCB().getState() == PCB.State.WAITING || processManager.getActivePCB().getState() == PCB.State.FINISHED ||
-                (processReadyList.size() > 0 && Active.getPID() == 0)){
-            //Szukaj najkrótszego na liście etc.
-        }
-//        ArrayList<PCB> readyProcesses = processManager.getReadyProcesses();
-//        if(readyProcesses.size() != 0){
-//            if (Active != null && Active.getState() == PCB.State.FINISHED) {
-//                time = Active.getTimer();
-//                try {
-//                    processManager.killProcess(Active.getPID());
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//            if (readyProcesses.size() == 0) {
-//                Active = processManager.getPCB(0);
-//                Active.setState(PCB.State.ACTIVE);
-//                processManager.setActivePCB(Active);
-//            } else {
-//                calculateThau(readyProcesses);
-//                sortProcessReadyByThau(readyProcesses);
-//                for (PCB pcb : readyProcesses) {
-//                    if (!(pcb.getState() == PCB.State.WAITING) && !(pcb.getPID() == 0)) {
-//                        Active = pcb;
-//                        pcb.setState(PCB.State.ACTIVE);
-//                        processManager.setActivePCB(Active);
-//                        return;
-//                    }
-//                }
-//                Active = processManager.getPCB(0);
-//                Active.setState(PCB.State.ACTIVE);
-//            }
-//        }
+                (processReadyList.size() > 0 && processManager.getActivePCB().getPID() == 0)){
+            if(processManager.getActivePCB().getState() == PCB.State.FINISHED){
+                time = processManager.getActivePCB().getTimer();
+                try{
+                    processManager.killProcess(processManager.getActivePCB().getPID());
+                }catch (Exception e){
+                    System.out.println(e.getMessage());
+                }
+            }
+            calculateThau(processReadyList);
+            sortProcessReadyByThau(processReadyList);
 
+            processManager.getActivePCB().setState(PCB.State.READY);
+            processManager.setActivePCB(processReadyList.get(0));
+            processManager.getActivePCB().setState(PCB.State.ACTIVE);
+        }
+        if(processReadyList.size() == 0 &&
+                (processManager.getActivePCB().getState() == PCB.State.FINISHED || processManager.getActivePCB().getState() == PCB.State.WAITING)){
+             processManager.setActivePCB(processManager.getPCB(0));
+             processManager.getActivePCB().setState(PCB.State.ACTIVE);
+        }
     }
 
     private void calculateThau(ArrayList<PCB> readyProcesses) {
@@ -68,7 +70,7 @@ public class Processor implements IProcessor {
             if (time == 0) {
                 pcb.setTau(10.0d);
             } else {
-                pcb.setTau(alpha * time + (1.0d - alpha) * Active.getTau());
+                pcb.setTau(alpha * time + (1.0d - alpha) * processManager.getActivePCB().getTau());
             }
         }
     }
