@@ -213,6 +213,16 @@ public class Shell {
                             case "groups":
                                 groups(separateCommand);
                                 break;
+                            /* do debugu bo nie chce mi się tego pisać za każdym razem*/
+                            case "p": //process
+                                processD(separateCommand);
+                                break;
+                            case "i": //pcbinfo
+                                pcbinfoD(separateCommand);
+                                break;
+                            case "m": //meminfo
+                                meminfoD(separateCommand);
+                                break;
                         }
                     } else if (!isCommandGood(separateCommand[0])) {
                         System.out.println("Bledna komenda");
@@ -1003,6 +1013,139 @@ public class Shell {
         //sms
         if(command.length==1) {
             ipc.display_all();
+        }else{
+            System.out.println("Bledna komenda");
+            readCommend();
+        }
+    }
+
+    /*Do debugu bo nie będę pisałe tego wszystkiego xd */
+
+    private void processD(String[] command) {
+        if (command.length > 1) {
+            if (command.length == 3) {
+                //process --kill [PID]
+                if (command[1].equals("-k")) {
+                    //zakonczenie pracy procesu
+                    try {
+                        processManager.killProcess(Integer.parseInt(command[2]));
+                    } catch (Exception e) {
+                        System.out.println(e.getMessage());
+                        readCommend();
+                    }
+                }
+                //process --killall [PGID]
+                else if (command[1].equals("-ka")) {
+                    try {
+                        processManager.killProcessGroup(Integer.parseInt(command[2]));
+                    } catch (Exception e) {
+                        System.out.println(e.getMessage());
+                        readCommend();
+                    }
+                }
+                //process -–create [nazwaProcesu] [nazwaPliku][PGID]
+            }
+            else if (command.length == 5) {
+                if (command[1].equals("-c")) {
+                    try {
+                        processManager.newProcess(command[2], Integer.parseInt(command[4]), command[3]);
+                    } catch (Exception e) {
+                        System.out.println(e.getMessage());
+                        readCommend();
+                    }
+                }else {
+                    System.out.println("Bledna komenda");
+                    readCommend();
+                }
+            }
+            //process –-groupCreate [nazwaProcesu] [nazwaPliku]  // nowa grupa
+            else if (command.length==4){
+                if (command[1].equals("-g")) {
+                    try {
+                        processManager.newProcessGroup(command[2], command[3]);
+                    } catch (Exception e) {
+                        System.out.println(e.getMessage());
+                        readCommend();
+                    }
+                }else{
+                    System.out.println("Bledna komenda");
+                    readCommend();
+                }
+            } else {
+                System.out.println("Bledna komenda");
+                readCommend();
+            }
+        }
+    }
+
+    private void pcbinfoD(String[] command) {
+        //pcbinfo --active
+        if (command.length == 2) {
+            if (command[1].equals("-active")) {
+                // wyswietlanie bloku kontrolengo aktywnego procesu
+                try {
+                    processManager.getActivePCB().printInfo();
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
+                    readCommend();
+                }
+
+            }//pcbinfo --all
+            else if (command[1].equals("-a")) {
+                try {
+                    processManager.PrintProcesses();
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
+                    readCommend();
+                }
+            } else {
+                System.out.println("Bledna komenda");
+                readCommend();
+            }
+        }
+        //pcbinfo --all [PGID]
+        else if(command.length==3){
+            if(command[1].equals("-a")) {
+                try {
+                    processManager.PrintGroupInfo(Integer.parseInt(command[2]));
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
+                    readCommend();
+                }
+            }
+            //pcbinfo --process [PID]
+            else if(command[1].equals("-p")){
+                PCB pcb=null;
+                try {
+                    pcb = processManager.getPCB(Integer.parseInt(command[2]));
+                    pcb.printInfo();
+                }catch(Exception e){
+                    System.out.println(e.getMessage());
+                }
+
+            }else{
+                System.out.println("Bledna komenda");
+                readCommend();
+            }
+        }
+        else {
+            System.out.println("Bledna komenda");
+            readCommend();
+        }
+    }
+
+    private void meminfoD(String[] command){
+        // meminfo --print
+        if(command.length==1){
+            if(true){
+                memory.writeRAM();
+                System.out.println();
+                memory.writeQueue();
+            }
+            else {
+                System.out.println("Bledna komenda");
+                readCommend();
+            }
         }else{
             System.out.println("Bledna komenda");
             readCommend();
