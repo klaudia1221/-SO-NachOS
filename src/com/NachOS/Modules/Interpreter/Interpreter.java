@@ -82,7 +82,7 @@ public class Interpreter implements IInterpreter {
 
     //------------------------ARYTMETYCZNO-LOGICZNE----------------------------------
 
-    //AD reg1 reg2 - dodaje rejestr2 do rejestru1
+    //AD reg1 reg2 - dodaje
     private void AD(String[] order, int A, int B, int C, int PC){
         String reg_1 = order[1];
         String reg_2 = order[2];
