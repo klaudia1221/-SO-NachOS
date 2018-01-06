@@ -59,31 +59,62 @@ public class ProcessManager implements IProcessManager {
 	}
 
 	public PCB newProcess(String ProcessName, int PGID, String FileName) throws Exception {
-			if(PGID == 0 && checkIfProcessExists(0) != null) throw new Exception("Brak dost�pu do grupy procesu bezczynno�ci");
-			ArrayList<PCB> temp = checkIfGroupExists(PGID);
-			if(temp != null) {
-				String textFileContent = readCommandFile("src/" + FileName + ".txt");
-				Map mapLine = new HashMap<Integer, Integer>();
-				//Podejrzane w pizdu.
-                mapLine.put(0,0);
-                for(int i = 0, j = 1; i != -1 && i+1 < textFileContent.length();j++){
-                    i = textFileContent.indexOf(";", i+1);
-                    if(i+1 < textFileContent.length()) {
-                        mapLine.put(j, i + 1);
-                        //System.out.println(j + " " + textFileContent.charAt(i + 1));
-                    }
-                }
-                char[] code = textFileContent.toCharArray();
-				PageTable pt1 = new PageTable(this.ProcessCounter, code.length);
-				PCB pcb = new PCB(this.ProcessCounter, ProcessName, PGID, pt1, mapLine);
-				temp.add(pcb);
-		        ram.pageTables.put(this.ProcessCounter, pt1);
-				ram.exchangeFile.writeToExchangeFile(this.ProcessCounter, code);
-				this.ProcessCounter++;
-				return pcb;
+		if(PGID == 0 && checkIfProcessExists(0) != null) throw new Exception("Brak dost�pu do grupy procesu bezczynno�ci");
+		ArrayList<PCB> temp = checkIfGroupExists(PGID);
+		if(temp != null) {
+			String textFileContent = readCommandFile("src/" + FileName + ".txt");
+			Map mapLine = new HashMap<Integer, Integer>();
+			//Podejrzane w pizdu.
+			mapLine.put(0,0);
+			for(int i = 0, j = 1; i != -1 && i+1 < textFileContent.length();j++){
+				i = textFileContent.indexOf(";", i+1);
+				if(i+1 < textFileContent.length()) {
+					mapLine.put(j, i + 1);
+					//System.out.println(j + " " + textFileContent.charAt(i + 1));
+				}
 			}
-			throw new Exception("Brak grupy o podanym PGID");
+			char[] code = textFileContent.toCharArray();
+			PageTable pt1 = new PageTable(this.ProcessCounter, code.length);
+			PCB pcb = new PCB(this.ProcessCounter, ProcessName, PGID, pt1, mapLine);
+			temp.add(pcb);
+			ram.pageTables.put(this.ProcessCounter, pt1);
+			ram.exchangeFile.writeToExchangeFile(this.ProcessCounter, code);
+			this.ProcessCounter++;
+			return pcb;
+		}
+		throw new Exception("Brak grupy o podanym PGID");
 	}
+
+	public PCB newProcess(String ProcessName, int PGID, String FileName, int memSize) throws Exception {
+		if(PGID == 0 && checkIfProcessExists(0) != null) throw new Exception("Brak dost�pu do grupy procesu bezczynno�ci");
+		ArrayList<PCB> temp = checkIfGroupExists(PGID);
+		if(temp != null) {
+			String textFileContent = readCommandFile("src/" + FileName + ".txt");
+			Map mapLine = new HashMap<Integer, Integer>();
+			//Podejrzane w pizdu.
+			mapLine.put(0,0);
+			for(int i = 0, j = 1; i != -1 && i+1 < textFileContent.length();j++){
+				i = textFileContent.indexOf(";", i+1);
+				if(i+1 < textFileContent.length()) {
+					mapLine.put(j, i + 1);
+					//System.out.println(j + " " + textFileContent.charAt(i + 1));
+				}
+			}
+			char[] code = textFileContent.toCharArray();
+			if (code.length >= memSize){
+				throw new Exception("Przydzielona pamięć jest za mała dla tego programu");
+			}
+			PageTable pt1 = new PageTable(this.ProcessCounter, code.length);
+			PCB pcb = new PCB(this.ProcessCounter, ProcessName, PGID, pt1, mapLine);
+			temp.add(pcb);
+			ram.pageTables.put(this.ProcessCounter, pt1);
+			ram.exchangeFile.writeToExchangeFile(this.ProcessCounter, code);
+			this.ProcessCounter++;
+			return pcb;
+		}
+		throw new Exception("Brak grupy o podanym PGID");
+	}
+
 	private String readCommandFile(String relativePathToFile){
 //		TODO
 //		Jak zrobisz.
@@ -102,6 +133,9 @@ public class ProcessManager implements IProcessManager {
 	}
 	public PCB runNew(String FileName) throws Exception {
 		return newProcess("P"+this.ProcessCounter, this.ActivePCB.getPGID(), FileName);
+	}
+	public PCB runNew(String FileName, int memSize) throws Exception {
+		return newProcess("P"+this.ProcessCounter, this.ActivePCB.getPGID(), FileName, memSize);
 	}
 	//Usuwanie procesu
 	public void killProcess(int PID) throws Exception {
@@ -174,6 +208,44 @@ public class ProcessManager implements IProcessManager {
 		}
 		char[] code = textFileContent.toCharArray();
 		PageTable pt1 = new PageTable(this.ProcessCounter, code.length);
+		PCB pcb = new PCB(this.ProcessCounter, ProcessName, this.GroupsCounter, pt1, mapLine);
+		Map map = pcb.getMapLine();
+		System.out.println("Mapa konwersji");
+//		for(Map.Entry<Integer, Integer> entry : map.){
+//			System.out.println(entry.getKey()+"\t"+entry.getValue());
+//		}
+		ram.pageTables.put(this.ProcessCounter, pt1);
+		ram.exchangeFile.writeToExchangeFile(this.ProcessCounter, code);
+
+
+		ArrayList<PCB> al = new ArrayList<PCB>();
+		al.add(pcb);
+		ProcessGroups.add(al);
+		ConditionVariables.add(new ConditionVariable(this, this.GroupsCounter));
+		this.ProcessCounter++;
+		this.GroupsCounter++;
+		return pcb;
+	}
+
+	public PCB newProcessGroup(String ProcessName, String FileName, int memSize) throws Exception {
+		//PCB pcb = new PCB(this.ProcessCounter, ProcessName, this.GroupsCounter);
+		//PCB pcb = newProcess(ProcessName, this.GroupsCounter, FileName);
+		String textFileContent = readCommandFile("src/" + FileName + ".txt");
+		Map mapLine = new HashMap<Integer, Integer>();
+		System.out.println("Kod programu: "+ textFileContent);
+		mapLine.put(0,0);
+		for(int i = 0, j = 1; i != -1 && i+1 < textFileContent.length();j++){
+			i = textFileContent.indexOf(";", i+1);
+			if(i+1 < textFileContent.length()) {
+				mapLine.put(j, i + 1);
+				//System.out.println(j + " " + textFileContent.charAt(i + 1));
+			}
+		}
+		char[] code = textFileContent.toCharArray();
+		if (code.length >= memSize){
+			throw new Exception("Przydzielona pamięć jest za mała dla tego programu");
+		}
+		PageTable pt1 = new PageTable(this.ProcessCounter, memSize);
 		PCB pcb = new PCB(this.ProcessCounter, ProcessName, this.GroupsCounter, pt1, mapLine);
 		Map map = pcb.getMapLine();
 		System.out.println("Mapa konwersji");
