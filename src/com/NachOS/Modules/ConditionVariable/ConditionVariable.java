@@ -56,13 +56,13 @@ public class ConditionVariable implements IConditionVariable {
      */
     public void await(boolean forceLock) {
         if (this.busy || forceLock) {
-            PCB pcb = processManager.getActivePCB();
-            pcb.setState(PCB.State.WAITING); // zmien stan aktywnego procesu na WAITING
-            this.waiting.addLast(this.processManager.getActivePCB()); // dodaj do kolejki
-            System.out.print("Zmieniam stan aktywnego procesu o id " + Integer.toString(pcb.getPID()) + " na `WAITING`");
+            PCB activePCB = this.processManager.getActivePCB();
+            this.processManager.setStateOfActivePCB(PCB.State.WAITING); // zmien stan aktywnego procesu na WAITING
+            this.waiting.addLast(activePCB); // dodaj do kolejki
+            System.out.println("ConVar: Zmieniam stan aktywnego procesu o id " + Integer.toString(activePCB.getPID()) + " na `WAITING`");
         } else {
             this.busy = true;
-            System.out.println("ConditionVariable: blokuje zasob");
+            System.out.println("ConVar: Zablokowalem zasob.");
         }
     }
 
@@ -73,14 +73,15 @@ public class ConditionVariable implements IConditionVariable {
      * Brak efektu, gdy w kolejce nie ma oczekujących procesów.
      */
     public void signal() {
+        this.busy = false; // "uwolnij" zasób
+        System.out.println("ConVar: Uwolnilem zasob.");
+
         if(!this.waiting.isEmpty()) { // jezeli są procesy oczeujace to wyrzuć pierwszy i zmien na `ready`
             PCB pcb = this.waiting.getFirst(); // weź pierwszy z kolejki (bufora)
             pcb.setState(PCB.State.READY); // zmien stan procesu na READY i wywolaj planiste
             this.waiting.removeFirst(); // usuń z początku kolejki oczekujących (ten ktorego stan zmienilismy)
-            System.out.print("Zmieniam stan procesu o id " + Integer.toString(pcb.getPID()) + " na `READY`");
+            System.out.println("ConVar: Zmieniam stan procesu o id " + Integer.toString(pcb.getPID()) + " na `READY`");
         }
-        this.busy = false; // "uwolnij" zasób
-        System.out.println("ConditionVariable: uwalniam zasob");
     }
 
     /**
@@ -109,10 +110,10 @@ public class ConditionVariable implements IConditionVariable {
         }
 
         if(this.busy){
-            System.out.println("Zasób jest `zajęty` (busy).");
+            System.out.println("Zasob jest `zajety` (busy).");
         }
         else {
-            System.out.println("Zasób jest `wolny` (not busy).");
+            System.out.println("Zasob jest `wolny` (not busy).");
         }
     }
 
