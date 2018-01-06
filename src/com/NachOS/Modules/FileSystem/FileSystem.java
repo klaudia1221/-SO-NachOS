@@ -26,6 +26,7 @@ public class FileSystem implements IFileSystem {
     public void openFile(String fileName) throws Exception {
         if (!nameExists(fileName)) { throw new Exception("Plik o takiej nazwie nie istnieje."); }
         else {
+            // TODO otoczyc try catch, łapać wyjatek ChangedToWaitingException i propagowac dalej gdzie bedzie przejety przez interpreter
             dir.getFileByName(fileName).cv.await(false);
             String tmp = new String();
             int block = dir.getFirstBlock(fileName), i=0;
@@ -38,7 +39,6 @@ public class FileSystem implements IFileSystem {
                 i++;
             }
             dir.updateFileContent(fileName, tmp);
-            throw new ChangedToWaitingException("");
         }
     }
 
