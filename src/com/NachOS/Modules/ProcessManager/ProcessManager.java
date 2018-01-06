@@ -31,6 +31,7 @@ public class ProcessManager implements IProcessManager {
 	}
 	public void setStartingActivePCB(){
 		try {
+
 			ActivePCB = newProcessGroup("Proces bezczynności");
 			ActivePCB.setState(PCB.State.ACTIVE);
 		} catch (Exception e) {
@@ -47,6 +48,7 @@ public class ProcessManager implements IProcessManager {
 
     public void setStateOfActivePCB(PCB.State state){
 		if(state == PCB.State.WAITING){
+			ActivePCB.setState(PCB.State.WAITING);
 			ActivePCB = getPCB(0);
 		}else{
 			ActivePCB.setState(state);
