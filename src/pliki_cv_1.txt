@@ -1,1 +1,1 @@
-CE testfile;OF testfile;AF testfile jeden;RM;RM;AF testfile dwa;RM;RM;CL testfile;EX;
+CE testfile;OF testfile;AF testfile jeden;RM;AF testfile dwa;RM;CL testfile;EX;
