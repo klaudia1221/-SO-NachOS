@@ -1,2 +1,1 @@
-SM 2 od1do2;
-EX;
+SM 1 P2doP1;MO A 3;EX;
