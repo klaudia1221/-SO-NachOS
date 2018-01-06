@@ -1,1 +1,1 @@
-SM 1 2do1;OF testfile;AF testfile trzy;CL testfile;EX;
+SM 1 2do1;OF testfile;OF testfile;AF testfile trzy;CL testfile;EX;

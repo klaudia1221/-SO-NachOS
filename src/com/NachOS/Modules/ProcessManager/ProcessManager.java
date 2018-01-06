@@ -42,8 +42,16 @@ public class ProcessManager implements IProcessManager {
 		return ActivePCB;
 	}
 	public void setActivePCB(PCB activePCB){
-	    this.ActivePCB = activePCB;
+		this.ActivePCB = activePCB;
     }
+
+    public void setStateOfActivePCB(PCB.State state){
+		if(state == PCB.State.WAITING){
+			ActivePCB = getPCB(0);
+		}else{
+			ActivePCB.setState(state);
+		}
+	}
 
     //Nowy proces o ile zosta�a wcze�niej utworzona grupa
 	public PCB newProcess(String ProcessName, int PGID) throws Exception {

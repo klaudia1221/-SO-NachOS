@@ -20,4 +20,5 @@ public interface IProcessManager {
     void setActivePCB(PCB activePCB);
     ArrayList<PCB> getReadyProcesses();
     String getCommand(int pointer);
+    void setStateOfActivePCB(PCB.State state);
 }

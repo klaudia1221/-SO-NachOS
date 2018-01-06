@@ -53,18 +53,18 @@ public class Processor implements IProcessor {
             }
             calculateThau(processReadyList);
             sortProcessReadyByThau(processReadyList);
-
-            processManager.getActivePCB().setState(PCB.State.READY);
+            processManager.setStateOfActivePCB(PCB.State.READY);
             processManager.setActivePCB(processReadyList.get(0));
-            processManager.getActivePCB().setState(PCB.State.ACTIVE);
+            processManager.setStateOfActivePCB(PCB.State.ACTIVE);
         }
         if(processReadyList.size() == 0 &&
                 (processManager.getActivePCB().getState() == PCB.State.FINISHED || processManager.getActivePCB().getState() == PCB.State.WAITING)){
              processManager.setActivePCB(processManager.getPCB(0));
-             processManager.getActivePCB().setState(PCB.State.ACTIVE);
+             processManager.setStateOfActivePCB(PCB.State.ACTIVE);
+
         }
     }
-
+    //TODO Obliczanie czasu.
     private void calculateThau(ArrayList<PCB> readyProcesses) {
         for (PCB pcb : readyProcesses) {
             if (time == 0) {
