@@ -7,6 +7,7 @@ import com.NachOS.Modules.ACL.Interfaces.IUserController;
 import com.NachOS.Modules.ACL.Mask;
 import com.NachOS.Modules.ACL.User;
 import com.NachOS.Modules.Communication.IPC;
+import com.NachOS.Modules.ConditionVariable.ConditionVariable;
 import com.NachOS.Modules.FileSystem.Catalog;
 import com.NachOS.Modules.FileSystem.File;
 import com.NachOS.Modules.FileSystem.FileBase;
@@ -1017,6 +1018,18 @@ public class Shell {
                     System.out.println(e.getMessage());
                     readCommend();
                 }
+            }
+        }
+        // cv --group [PGID]
+        //wyswietlanie zmiennej warunkowej dla konkrentej grupy procesow
+        else if(command.length==2){
+            ConditionVariable cv=null;
+            try {
+                cv=processManager.findConditionVariable(Integer.parseInt(command[2]));
+                cv.printInfo();
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+                readCommend();
             }
         }
         else {
