@@ -2,6 +2,7 @@ package com.NachOS.Modules.ConditionVariable;
 
 import java.util.LinkedList;
 
+import com.NachOS.Modules.Exceptions.ChangedToWaitingException;
 import com.NachOS.Modules.ProcessManager.IProcessManager;
 import com.NachOS.Modules.ProcessManager.ProcessManager;
 import com.NachOS.Modules.ProcessManager.PCB;
@@ -54,12 +55,13 @@ public class ConditionVariable implements IConditionVariable {
      * @param forceLock jezeli `true` powoduje bezwarunkowe zablokowanie procesu bez sprawdzania czy zasób jest zajęty
      *                  i nie powoduje ustawienia pola `busy` na `true`
      */
-    public void await(boolean forceLock) {
+    public void await(boolean forceLock) throws ChangedToWaitingException {
         if (this.busy || forceLock) {
             PCB activePCB = this.processManager.getActivePCB();
             this.processManager.setStateOfActivePCB(PCB.State.WAITING); // zmien stan aktywnego procesu na WAITING
             this.waiting.addLast(activePCB); // dodaj do kolejki
             System.out.println("ConVar: Zmieniam stan aktywnego procesu o id " + Integer.toString(activePCB.getPID()) + " na `WAITING`");
+            throw new ChangedToWaitingException("Stan zmieniony na waiting.");
         } else {
             this.busy = true;
             System.out.println("ConVar: Zablokowalem zasob.");

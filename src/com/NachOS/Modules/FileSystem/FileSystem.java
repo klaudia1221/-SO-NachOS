@@ -27,7 +27,11 @@ public class FileSystem implements IFileSystem {
         if (!nameExists(fileName)) { throw new Exception("Plik o takiej nazwie nie istnieje."); }
         else {
             // TODO otoczyc try catch, łapać wyjatek ChangedToWaitingException i propagowac dalej gdzie bedzie przejety przez interpreter
-            dir.getFileByName(fileName).cv.await(false);
+            try{
+                dir.getFileByName(fileName).cv.await(false);
+            }catch(ChangedToWaitingException e){
+                throw e;
+            }
             String tmp = new String();
             int block = dir.getFirstBlock(fileName), i=0;
             while (tmp.length()<=dir.getSize(fileName)) {

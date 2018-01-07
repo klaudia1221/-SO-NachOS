@@ -1,6 +1,7 @@
 package com.NachOS.Modules.FileSystem;
 
 import com.NachOS.Modules.ACL.User;
+import com.NachOS.Modules.Exceptions.ChangedToWaitingException;
 import com.NachOS.Modules.ProcessManager.IProcessManager;
 
 public interface IFileSystem {
