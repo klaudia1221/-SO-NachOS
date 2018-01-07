@@ -1,8 +1,6 @@
 package com.NachOS.Modules.MemoryManagment;
 
 
-
-
 import javafx.util.Pair;
 
 import java.util.*;
@@ -33,6 +31,17 @@ public class RAM {
             for (int j = 0; j < 8; j++)
                 this.ram[i * j] = ' ';
         }
+    }
+
+    public void writeCharToRam(int processID, int logicalAddress, char content) {
+        char d = getCommand(logicalAddress, processID, pageTables.get(processID)); //sprowadzenie potrzebnej strony do RAMU
+        int c = Calc.whichPage(logicalAddress);
+        int e = Calc.calcIndex(logicalAddress);
+        int frameIndex = pageTables.get(processID).getPositionInRam(c);
+        System.out.println("zapisywanie do RAMU");
+        System.out.println("zamieniam znak " + ram[frameIndex * 16 + e] + " na znak " + content);
+        ram[frameIndex * 16 + e] = content; //zapisywanie pojedynczego znaku do RAM
+
     }
 
     // metoda dla interpretera, zwraca znak o ktory prosi interpreter
@@ -152,10 +161,15 @@ public class RAM {
         }
     }
 
-
     // wypisanie aktualnego stanu kolejki fifo
     public void writeQueue() {
-        System.out.println("Kolejka FIFO: " + this.FIFO);
+        System.out.println("Kolejka FIFO: \nstrona=ID procesu");
+        System.out.println(this.FIFO);
     }
+    public void printPageTables() {
+        for (Map.Entry<Integer, PageTable> entry : pageTables.entrySet()) {
+            entry.getValue().writePageTable();
+        }
+}
 }
 

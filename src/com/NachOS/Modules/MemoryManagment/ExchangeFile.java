@@ -17,7 +17,7 @@ public class ExchangeFile {
         map = new HashMap<>();
     }
 
-    public void writeToExchangeFile(int processID, char[] data) {
+    public void writeToExchangeFile(int processID, char[] data, int additionalSpace) {
 
         int howManyPages = Calc.howManyPages(data.length, pageSize);
         map.put(processID, startIndex);
@@ -26,10 +26,12 @@ public class ExchangeFile {
         for (char c : data) {
             cList.add(c);
         }
+        for (int i = 0; i < additionalSpace; i++) { //dodatkowa pamiec, ktorej chce user
+            cList.add('^');
+        }
         while (cList.size() % 16 != 0) { //dopelniamy strone do 16
             cList.add('#');
         }
-        //  System.out.println(cList.toString());
         ArrayList<Character> temp;
         for (int i = 0; i < howManyPages; i++) {
             temp = new ArrayList<>();
