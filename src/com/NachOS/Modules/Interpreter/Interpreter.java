@@ -518,8 +518,7 @@ public class Interpreter implements IInterpreter {
     }
 
     //MZ address reg - zapisuje do pamięci zawartość rejestru pod wskazanym adresem,
-    //Klaudia metoda do zapisywania do pamięci
-    //ogarnąć
+    //TODO metoda do zapisywania do pamięci - Klaudia
     private void MZ(String[] order, int A, int B, int C, int PC) {
         String raw_address = order[1];
         String reg = order[2];
@@ -577,7 +576,7 @@ public class Interpreter implements IInterpreter {
     }
 
     //MY reg address - umieszcza w rejestrze zawartość pamiętaną pod wskazanym adresem,
-    //Klaudia metoda do zapisywania do pamięci
+    //TODO metoda do czytania z pamięci - Klaudia
     private void MY(String[] order, int A, int B, int C, int PC) {
         String reg = order[1];
         String raw_address = order[2];
