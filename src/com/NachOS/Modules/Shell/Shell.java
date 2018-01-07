@@ -189,15 +189,7 @@ public class Shell {
                             case "ls":
                                 ls(separateCommand);
                                 break;
-                            case "process":
-                                process(separateCommand);
-                                break;
-                            case "pcbinfo":
-                                pcbinfo(separateCommand);
-                                break;
-                            case "meminfo":
-                                meminfo(separateCommand);
-                                break;
+
                             case "go":
                                 go(separateCommand);
                                 break;
@@ -215,6 +207,15 @@ public class Shell {
                                 break;
                             case "groups":
                                 groups(separateCommand);
+                                break;
+                            case "process":
+                                process(separateCommand);
+                                break;
+                            case "meminfo":
+                                meminfo(separateCommand);
+                                break;
+                            case "pcbinfo":
+                                pcbinfo(separateCommand);
                                 break;
                             /* do debugu bo nie chce mi się tego pisać za każdym razem*/
                             case "p": //process
@@ -594,13 +595,6 @@ public class Shell {
     private void ls(String[] command) {
         //ls
         if (command.length == 1) {
-            Catalog catalog = null;
-            try {
-                catalog = fileSystem.getCatalog();
-            } catch (Exception e) {
-                System.out.println(e.getMessage());
-                readCommend();
-            }
                 try {
                     System.out.println("Nazwa pliku|rozmiar|pierwszyBlok|OstatniBlok");
                     System.out.println(fileSystem.list());
@@ -728,21 +722,45 @@ public class Shell {
             else if (command.length == 5) {
                     if (command[1].equals("--create")) {
                         try {
-                            processManager.newProcess(command[2], Integer.parseInt(command[4]), command[3]);
+                            processManager.newProcess(command[2], Integer.parseInt(command[4]), command[3], 200); //domslnie memSize=200
                         } catch (Exception e) {
                             System.out.println(e.getMessage());
                             readCommend();
                         }
-                    }else {
+                    }
+                    //process –-groupCreate [nazwaProcesu] [nazwaPliku] [memSize]
+                    else  if (command[1].equals("--groupCreate")) {
+                        try {
+                            processManager.newProcessGroup(command[2], command[3], Integer.parseInt(command[4]));
+                        } catch (Exception e) {
+                            System.out.println(e.getMessage());
+                            readCommend();
+                        }
+                    }
+                        else {
                         System.out.println("Bledna komenda");
                         readCommend();
                     }
+            }
+            //process -–create [nazwaProcesu] [nazwaPliku][PGID] [memSize]
+            else if(command.length==6){
+                if (command[1].equals("-create")) {
+                    try {
+                        processManager.newProcess(command[2], Integer.parseInt(command[4]), command[3], Integer.parseInt(command[5]));
+                    } catch (Exception e) {
+                        System.out.println(e.getMessage());
+                        readCommend();
+                    }
+                }else {
+                    System.out.println("Bledna komenda");
+                    readCommend();
+                }
             }
             //process –-groupCreate [nazwaProcesu] [nazwaPliku]  // nowa grupa
             else if (command.length==4){
                 if (command[1].equals("--groupCreate")) {
                     try {
-                        processManager.newProcessGroup(command[2], command[3]);
+                        processManager.newProcessGroup(command[2], command[3], 200); //domslnie memSize=200
                     } catch (Exception e) {
                         System.out.println(e.getMessage());
                         readCommend();
@@ -807,7 +825,6 @@ public class Shell {
                 }catch(Exception e){
                     System.out.println(e.getMessage());
                 }
-
             }else{
                 System.out.println("Bledna komenda");
                 readCommend();
@@ -824,17 +841,12 @@ public class Shell {
      * @param command
      */
     private void meminfo(String[] command){
-        // meminfo --print
-        if(command.length==2){
-            if(command[1].equals("--print")){
+        // meminfo
+        if(command.length==1){
+         // Jakas inna metoda Klaudii
                memory.writeRAM();
                System.out.println();
                memory.writeQueue();
-            }
-            else {
-                System.out.println("Bledna komenda");
-                readCommend();
-            }
         }else{
             System.out.println("Bledna komenda");
             readCommend();
@@ -847,6 +859,7 @@ public class Shell {
      * @param command
      */
     private void go(String[]command){
+        //go
         if(command.length==1){
             try {
                 processor.exe();
@@ -884,6 +897,7 @@ public class Shell {
      * @param command
      */
     private void whoLogin(String[] command){
+        //whoami
         if(command.length==1) {
             System.out.println(loginService.getLoggedUser().getName());
         }else{
@@ -938,7 +952,8 @@ public class Shell {
         //open [nazwa_pliku]
         if(command.length==2){
             try {
-                fileSystem.openFile(command[1]);
+                //JAKAS INNA METODA MICHALA NA OTWOERANIE PLIKU
+               // fileSystem.openFile(command[1]);
             }catch(Exception e) {
                 System.out.println(e.getMessage());
                 readCommend();
@@ -957,7 +972,8 @@ public class Shell {
         //close [nazwa_pliku]
         if(command.length==2){
             try {
-                fileSystem.closeFile(command[1]);
+                //JAKAS INNA METODA MICHALA NA ZAMYKANIE PLIKU
+               // fileSystem.closeFile(command[1]);
             }catch(Exception e) {
                 System.out.println(e.getMessage());
                 readCommend();
@@ -1051,7 +1067,31 @@ public class Shell {
             else if (command.length == 5) {
                 if (command[1].equals("-c")) {
                     try {
-                        processManager.newProcess(command[2], Integer.parseInt(command[4]), command[3]);
+                        processManager.newProcess(command[2], Integer.parseInt(command[4]), command[3], 200); //domslnie memSize=200
+                    } catch (Exception e) {
+                        System.out.println(e.getMessage());
+                        readCommend();
+                    }
+                }
+                //process –-groupCreate [nazwaProcesu] [nazwaPliku] [memSize]
+                else  if (command[1].equals("-g")) {
+                    try {
+                        processManager.newProcessGroup(command[2], command[3], Integer.parseInt(command[4]));
+                    } catch (Exception e) {
+                        System.out.println(e.getMessage());
+                        readCommend();
+                    }
+                }
+                        else {
+                    System.out.println("Bledna komenda");
+                    readCommend();
+                }
+            }
+            //process -–create [nazwaProcesu] [nazwaPliku][PGID] [memSize]
+            else if(command.length==6){
+                if (command[1].equals("-c")) {
+                    try {
+                        processManager.newProcess(command[2], Integer.parseInt(command[4]), command[3], Integer.parseInt(command[5]));
                     } catch (Exception e) {
                         System.out.println(e.getMessage());
                         readCommend();
@@ -1065,7 +1105,7 @@ public class Shell {
             else if (command.length==4){
                 if (command[1].equals("-g")) {
                     try {
-                        processManager.newProcessGroup(command[2], command[3]);
+                        processManager.newProcessGroup(command[2], command[3], 200); //domslnie memSize=200
                     } catch (Exception e) {
                         System.out.println(e.getMessage());
                         readCommend();
@@ -1080,7 +1120,6 @@ public class Shell {
             }
         }
     }
-
     private void pcbinfoD(String[] command) {
         //pcbinfo --active
         if (command.length == 2) {
@@ -1092,7 +1131,6 @@ public class Shell {
                     System.out.println(e.getMessage());
                     readCommend();
                 }
-
             }//pcbinfo --all
             else if (command[1].equals("-a")) {
                 try {
@@ -1138,17 +1176,11 @@ public class Shell {
     }
 
     private void meminfoD(String[] command){
-        // meminfo --print
+        // meminfo
         if(command.length==1){
-            if(true){
                 memory.writeRAM();
                 System.out.println();
                 memory.writeQueue();
-            }
-            else {
-                System.out.println("Bledna komenda");
-                readCommend();
-            }
         }else{
             System.out.println("Bledna komenda");
             readCommend();
