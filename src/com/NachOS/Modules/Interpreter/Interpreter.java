@@ -1,5 +1,6 @@
 package com.NachOS.Modules.Interpreter;
 
+import com.NachOS.Modules.Exceptions.ChangedToWaitingException;
 import com.NachOS.Modules.ProcessManager.IProcessManager;
 import com.NachOS.Modules.FileSystem.IFileSystem;
 import com.NachOS.Modules.Communication.IPC;
@@ -698,6 +699,8 @@ public class Interpreter implements IInterpreter {
         try {
             String filename = order[1];
             fileSystem.openFile(filename);
+        } catch (ChangedToWaitingException e){
+            PC--;
         } catch (Exception e) {
             throw e;
         } finally {
@@ -808,7 +811,12 @@ public class Interpreter implements IInterpreter {
     //RM  - zapisywanie otrzymanego komunikatu do RAM
     //Kuba metoda receiveMessage
     private void RM(int PC) {
-        communication.receiveMessage();
+        //Jeśli złapie ChangedToWaitingException to licznik się nie zmienia
+        try {
+            communication.receiveMessage();
+        } catch (ChangedToWaitingException e) {
+            PC--;
+        }
         PC++;
         processManager.getActivePCB().setCounter(PC);
     }

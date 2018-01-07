@@ -1,7 +1,9 @@
 package com.NachOS.Modules.FileSystem;
 
 import com.NachOS.Modules.ACL.User;
+import com.NachOS.Modules.Exceptions.ChangedToWaitingException;
 import com.NachOS.Modules.ProcessManager.IProcessManager;
+import com.NachOS.*;
 
 public class FileSystem implements IFileSystem {
     DiscDrive Drive = new DiscDrive();      //Dysk
@@ -36,6 +38,7 @@ public class FileSystem implements IFileSystem {
                 i++;
             }
             dir.updateFileContent(fileName, tmp);
+            throw new ChangedToWaitingException("");
         }
     }
 
