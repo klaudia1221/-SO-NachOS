@@ -144,16 +144,41 @@ public class RAM {
         }
     }
 
-    private void writeToRam(int index, char[] content) {
+    private void writeToRam(int pageInd, char[] content) {
         for (int i = 0; i < 16; i++) {
-            ram[index * 16 + i] = content[i];
+            ram[pageInd * 16 + i] = content[i];
         }
+
+    }
+
+    public void writeCharToRam(int processID, int logicalAddress, char content) {
+        char d = getCommand(logicalAddress, processID, pageTables.get(processID)); //sprowadzenie potrzebnej strony do RAMU
+        int c = Calc.whichPage(logicalAddress);
+        int e = Calc.calcIndex(logicalAddress);
+        int frameIndex = pageTables.get(processID).getPositionInRam(c);
+        System.out.println("zapisywanie do RAMU");
+        System.out.println("zamieniam znak " + ram[frameIndex * 16 + e] + " na znak " + content);
+        ram[frameIndex * 16 + e] = content; //zapisywanie pojedynczego znaku do RAM
+
     }
 
 
     // wypisanie aktualnego stanu kolejki fifo
     public void writeQueue() {
-        System.out.println("Kolejka FIFO: " + this.FIFO);
+        System.out.println("Kolejka FIFO: \nstrona=ID procesu");
+        System.out.println(this.FIFO);
+//     for(Pair<Integer,Integer> e:FIFO){
+//System.out.println(" "+e.getKey()+" procesu "+e.getValue() );    }
     }
+
+    public void printPageTables() {
+        for (Map.Entry<Integer, PageTable> entry : pageTables.entrySet()) {
+            entry.getValue().writePageTable();
+        }
+    }
+
+
 }
+
+
 
