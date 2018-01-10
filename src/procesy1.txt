@@ -1,1 +1,0 @@
-NP silnia;NG test;RP 6;KP 6;KG 7;SS 6 WAITING;EX;
