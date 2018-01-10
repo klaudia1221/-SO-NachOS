@@ -113,7 +113,7 @@ public class IPC
         }
     }
 
-    public void receiveMessage(int adr) throws ChangedToWaitingException //int senID, Sms sms)
+    public void receiveMessage() throws ChangedToWaitingException //int senID, Sms sms)
     {
         ArrayList<Sms> temp_list = pm.getActivePCB().getSmsList();
         if(temp_list.size()==0)//kontener wiadomości z PCB jest pusty
