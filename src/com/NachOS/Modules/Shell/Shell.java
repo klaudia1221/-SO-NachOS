@@ -305,7 +305,7 @@ public class Shell {
     private void uname() {
         //uname
         System.out.println("Autorzy systemu: ");
-        System.out.println("Klaudia Bartoszak        Zarzadzanie pamiecia");
+        System.out.println("Klaudia Bartoszczak        Zarzadzanie pamiecia");
         System.out.println("Kamila Urbaniak          Interpreter/Programy ");
         System.out.println("Agnieszka Rusin          Shell");
         System.out.println("Marcin Hilt              Zarzadzanie procesorem ");
@@ -847,6 +847,7 @@ public class Shell {
                memory.writeRAM();
                System.out.println();
                memory.writeQueue();
+               memory.printPageTables();
         }else{
             System.out.println("Bledna komenda");
             readCommend();

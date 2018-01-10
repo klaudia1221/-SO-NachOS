@@ -16,7 +16,6 @@ public class ExchangeFile {
         pageSize = 16;
         map = new HashMap<>();
     }
-
     public void writeToExchangeFile(int processID, char[] data) {
 
         int howManyPages = Calc.howManyPages(data.length, pageSize);
@@ -30,6 +29,33 @@ public class ExchangeFile {
             cList.add('#');
         }
         //  System.out.println(cList.toString());
+        ArrayList<Character> temp;
+        for (int i = 0; i < howManyPages; i++) {
+            temp = new ArrayList<>();
+            for (int j = 0; j < pageSize; j++) {
+                //   System.out.println(cList.get(i * pageSize + j));
+
+                temp.add(cList.get(i * pageSize + j));
+            }
+            exchangeFile.add(temp);
+            startIndex++;
+        }
+    }
+    public void writeToExchangeFile(int processID, char[] data, int additionalSpace) {
+
+        int howManyPages = Calc.howManyPages(data.length+additionalSpace, pageSize); //do dlugosci programu dodajemy pamiec żadaną przez usera
+        map.put(processID, startIndex);
+        System.out.println("do mapy wlozono: " + processID + " z ind " + startIndex);
+        List<Character> cList = new ArrayList<Character>();
+        for (char c : data) {
+            cList.add(c);
+        }
+        for (int i = 0; i < additionalSpace; i++) { //dodatkowa pamiec, ktorej chce user
+            cList.add('^');
+        }
+        while (cList.size() % 16 != 0) { //dopelniamy strone do 16
+            cList.add('#');
+        }
         ArrayList<Character> temp;
         for (int i = 0; i < howManyPages; i++) {
             temp = new ArrayList<>();
