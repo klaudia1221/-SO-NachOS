@@ -77,7 +77,6 @@ public class Shell {
         allCommands.put("users", "Wyświetla listę użytkowników ");
         allCommands.put("groups", "Wyświetla listę grup");
         allCommands.put("group", "Kontrola grup");
-        allCommands.put("cr", "Tworzenie wpisu");
         allCommands.put("cat", "wyswietlenie pliku/dodanie na koniec pliku");
         allCommands.put("ls", "Wyswietla zawartosc katalogow");
         allCommands.put("process", "Dzaialnia dotyczace procesu");
@@ -177,9 +176,6 @@ public class Shell {
                             case "group":
                                 group(separateCommand);
                                 break;
-                            case "cr":
-                                create(separateCommand);
-                                break;
                             case "cat":
                                 cat(separateCommand);
                                 break;
@@ -189,15 +185,8 @@ public class Shell {
                             case "ls":
                                 ls(separateCommand);
                                 break;
-
                             case "go":
                                 go(separateCommand);
-                                break;
-                            case "open":
-                                open(separateCommand);
-                                break;
-                            case "close":
-                                close(separateCommand);
                                 break;
                             case "cv":
                                 conditionVariable(separateCommand);
@@ -456,113 +445,14 @@ public class Shell {
         }
     }
     /**
-     * Metoda, ktora zostaje wywolalan gdy uzytkownik poda komende 'cr ...'
-     * Wywoływane sa tutaj metody ACLControllera oraz filesystem oraz loginService
-     * @param command
-     */
-    private void create(String[] command) {
-        if (command.length > 1) {
-            //cr [nazwa_pliku]
-            if (command.length == 2) {
-                if (ACLController.hasUserPremissionToOperation(fileSystem.getCatalog(), loginService.getLoggedUser(), OperationType.MODIFY)) { //sprawdzenie uprawnien
-                    //tworzenie pliku
-                    try {
-                        fileSystem.createFile(command[1], loginService.getLoggedUser(), processManager);
-                    } catch (Exception e) {
-                        System.out.println(e.getMessage());
-                        readCommend();
-                    }
-                    FileBase fileBase = null;
-                    try {
-                        fileBase = fileSystem.getFileBase(command[1]);
-                    } catch (Exception e) {
-                        System.out.println(e.getMessage());
-                        readCommend();
-                    }
-                    try {
-                        ACLController.setDefaultPremissionToFile(fileBase); //nadanie uprawnieni do utworzonego pliku
-                    } catch (Exception e) {
-                        System.out.println(e.getMessage());
-                        readCommend();
-                    }
-                } else {
-                    System.out.println("Brak uprawnien do katalogu");
-                    readCommend();
-                }
-            } else {
-                System.out.println("Bledna komenda");
-                readCommend();
-            }
-        } else {
-            System.out.println("Bledna komenda");
-            readCommend();
-        }
-    }
-    /**
      * Metoda, ktora zostanie wywolana gdy uzytkwonik poda komende 'cat ...'
      * Wywoływane sa tutaj metody ACLControllera oraz filesystem oraz loginService
      * Metoda readFile zwraca w Stringu zawartosc pliku zczytana z dysku
      * @param command
      */
     private void cat(String[] command) {
-        //cat > [nazwa_pliku]
-        // {zawartosc do dodania} // zakonczenie wpisywania danych -> "^D"
-        if (command.length == 3) {
-            if (command[1].equals(">")) {
-                FileBase fileBase = null;
-                try {
-                    fileBase = fileSystem.getFileBase(command[2]);
-                } catch (Exception e) {
-                    System.out.println(e.getMessage());
-                    readCommend();
-                }
-                if (ACLController.hasUserPremissionToOperation(fileBase, loginService.getLoggedUser(), OperationType.MODIFY)) {  //sprawdzenie uprawnien
-                    try {
-                        System.out.println("Podaj zawartosc do pliku : ");
-                        BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-                        StringBuilder out = new StringBuilder();
-                        Pattern pattern;
-                        Matcher matcher;
-                        String end = "(.)*\\^D";
-                        while (true) {
-                            String line = in.readLine();
-                            pattern = Pattern.compile(end);
-                            matcher = pattern.matcher(line);
-                            if (!matcher.lookingAt()) { // jesli nie zawiera linijka ^D to :
-                                out.append(line);
-                                out.append('\n');
-                            } else {
-                                //dodanie bez ^D // jesli dana linijka zawiera ^D
-                                int size = line.length();
-                                StringBuilder str = new StringBuilder(line);
-                                str.deleteCharAt(size - 2); //usuniecie D
-                                str.deleteCharAt(size - 2); // usuniecie ^
-                                out.append(str.toString());
-                                break;
-                            }
-                        }
-                        String content = new String(out.toString());
-                        try {
-                            fileSystem.appendFile(command[2], content);
-                        } catch (Exception e) {
-                            System.out.println(e.getMessage());
-                            readCommend();
-                        }
-                    } catch (Exception e) {
-                        System.out.println(e.getMessage());
-                        readCommend();
-                    }
-                } else {
-                    System.out.println("Brak uprawnien do pliku");
-                    readCommend();
-                }
-            } else {
-                System.out.println("Bledne parametry");
-                readCommend();
-            }
-        }
         //cat [nazwa_pliku] //wyswietla zawartosc pliku
-        else if (command.length == 2) {
+        if (command.length == 2) {
             FileBase fileBase = null;
             try {
                 fileBase = fileSystem.getFileBase(command[1]);
@@ -792,7 +682,6 @@ public class Shell {
                     System.out.println(e.getMessage());
                     readCommend();
                 }
-
             }//pcbinfo --all
             else if (command[1].equals("--all")) {
                 try {
@@ -942,47 +831,6 @@ public class Shell {
                 break;
         }
     return mask;
-
-    }
-    /**
-     *Metoda, ktora zostaje wywolanna gdy uzytkownik poda komende 'open ... '
-     * otwiera plik
-     * @param command
-     */
-    private void open(String[] command){
-        //open [nazwa_pliku]
-        if(command.length==2){
-            try {
-                //JAKAS INNA METODA MICHALA NA OTWOERANIE PLIKU
-               // fileSystem.openFile(command[1]);
-            }catch(Exception e) {
-                System.out.println(e.getMessage());
-                readCommend();
-            }
-        }else{
-            System.out.println("Bledna komenda");
-            readCommend();
-        }
-    }
-    /**
-     *Metoda, ktora zostaje wywolanna gdy uzytkownik poda komende 'close ..'
-     * zamuka plik
-     * @param command
-     */
-    private void close(String[] command){
-        //close [nazwa_pliku]
-        if(command.length==2){
-            try {
-                //JAKAS INNA METODA MICHALA NA ZAMYKANIE PLIKU
-               // fileSystem.closeFile(command[1]);
-            }catch(Exception e) {
-                System.out.println(e.getMessage());
-                readCommend();
-            }
-        }else{
-            System.out.println("Bledna komenda");
-            readCommend();
-        }
     }
     /**
      * Metoda, która sprawdza czy użytwkonik zalogoany jest adminem
@@ -1052,7 +900,6 @@ public class Shell {
     }
 
     /*Do debugu bo nie będę pisałe tego wszystkiego xd */
-
     private void processD(String[] command) {
         if (command.length > 1) {
             if (command.length == 3) {
@@ -1187,7 +1034,6 @@ public class Shell {
             readCommend();
         }
     }
-
     private void meminfoD(String[] command){
         // meminfo
         if(command.length==1){

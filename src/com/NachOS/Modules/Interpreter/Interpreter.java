@@ -35,8 +35,9 @@ public class Interpreter implements IInterpreter {
         PE reg - wyświetla wynik programu znajdujący się w podanym rejestrze,
 
         Procesy
-        KP file_name - usunięcie procesu o podanej nazwie,
-        RP file_name – uruchamia proces o danej nazwie,
+        CP file_name - tworzenie procesu o podanej nazwie,
+        KP file_name - usunięcie procesu po ID,
+        RP file_name – uruchamia proces o podanym ID
 
         Pliki
         CE file_name - tworzy pusty plik o podanej nazwie,
@@ -365,14 +366,13 @@ public class Interpreter implements IInterpreter {
     }
 
     //DV reg1 reg2 - dzieli zawartość rejestru1 przez zawartość rejestru2
-    //TODO sprawdzić czy działa
     private void DV(String[] order, int A, int B, int C, int PC) throws Exception {
         String reg_1 = order[1];
         String reg_2 = order[2];
 
         if (reg_2 == "0"){
             throw new DivideZeroException("Dzielenie przez zero");
-        }else {
+        } else {
             switch (reg_1) {
                 case "A":
                     switch (reg_2) {
@@ -567,10 +567,19 @@ public class Interpreter implements IInterpreter {
 
     //MZ address reg - zapisuje do pamięci zawartość rejestru pod wskazanym adresem,
     //TODO metoda do zapisywania do pamięci - Klaudia
-    private void MZ(String[] order, int A, int B, int C, int PC) throws Exception {
+    private void MZ(String[] order, int A, int B, int C, int PC) {
         String raw_address = order[1];
         String reg = order[2];
         String[] split_address = raw_address.split("");
+
+        /*int len = raw_address.length();
+
+        String left = split_address[0];
+        String right = split_address[len-1];
+
+        if((left.equals("[") ||(right.equals("]")){
+
+        }
 
         if ((!split_address[0].equals("[")) || (!split_address[raw_address.length() - 1].equals("]"))) {
             System.out.println("Incorrect address.");
@@ -591,6 +600,7 @@ public class Interpreter implements IInterpreter {
                     throw new IncorrectRegisterException("Nieprawidlowy rejestr");
             }
         }
+        */
         PC++;
         RegisterStatus(A,B,C,PC);
         SaveRegister(A,B,C,PC);
@@ -729,12 +739,12 @@ public class Interpreter implements IInterpreter {
 
     //---------------------------------PROCESY---------------------------------------
 
-    //TODO ogarnąć
-    //wykorzystywane przy komunikatach
-    private void DP(String[] order, int PC) throws Exception{
+    //CP file_name - tworzenie procesu o podanej nazwie i nazwie pliku
+    private void CP(String[] order, int PC) throws Exception{
+        String name = order[1];
         String fileName = order[2];
         try {
-            processManager.runNew(fileName);
+            processManager.runNew(name, fileName);
         } catch (Exception e){
             throw e;
         }
@@ -743,11 +753,16 @@ public class Interpreter implements IInterpreter {
         SaveTimer();
     }
 
-    //RP nazwa – uruchamia proces o danej nazwie
     //TODO ogarnąć
+    //KP file_name - usunięcie procesu po ID,
     //wykorzystywane przy komunikatach
-    private void RP(String[] order, int PC){
-
+    private void KP(String[] order, int PC) throws Exception{
+        int PID = Integer.parseInt(order[2]);
+        try {
+            processManager.killProcess(PID);
+        } catch (Exception e){
+            throw e;
+        }
         PC++;
         processManager.getActivePCB().setCounter(PC);
         SaveTimer();
@@ -893,7 +908,13 @@ public class Interpreter implements IInterpreter {
 
     //RM  - zapisywanie otrzymanego komunikatu do RAM
     //Kuba metoda receiveMessage
-    private void RM(int PC) {
+    private void RM(String[] order, int PC) {
+        int n = order.length;
+
+        String message = "";
+        for (int i = 1; i < n; i++) {
+            message += order[i];
+        }
         //Jeśli złapie ChangedToWaitingException to licznik się nie zmienia
         try {
             communication.receiveMessage();
@@ -918,6 +939,7 @@ public class Interpreter implements IInterpreter {
 
     //------------------------------------------------------------------------------
 
+    //EX - kończy program
     private void EX(int PC){
         processManager.setStateOfActivePCB(PCB.State.FINISHED);
         PC++;
@@ -992,11 +1014,11 @@ public class Interpreter implements IInterpreter {
                     PE(order, A, B, C, PC);
                     break;
                 //---------------------------------PROCESY---------------------------------------
-                case "DP":
-                    DP(order, PC);
+                case "CP":
+                    CP(order, PC);
                     break;
-                case "RP":
-                    RP(order, PC);
+                case "KP":
+                    KP(order, PC);
                     break;
                 //-----------------------------------PLIKI---------------------------------------
                 case "CE":
@@ -1025,7 +1047,7 @@ public class Interpreter implements IInterpreter {
                     break;
                 //-----------------------------KOMUNIKATY---------------------------------------
                 case "RM":
-                    RM(PC);
+                    RM(order, PC);
                     break;
                 case "SM":
                     SM(order, PC);
