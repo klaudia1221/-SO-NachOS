@@ -632,13 +632,13 @@ public class Interpreter implements IInterpreter {
 
         switch (reg){
             case "A":
-                    A = Integer.parseInt(processManager.getCommand(Address));
+                    A = Integer.parseInt(processManager.getSafeMemory(Address));
                 break;
             case "B":
-                    B = Integer.parseInt(processManager.getCommand(Address));
+                    B = Integer.parseInt(processManager.getSafeMemory(Address));
                     break;
                 case "C":
-                    C = Integer.parseInt(processManager.getCommand(Address));
+                    C = Integer.parseInt(processManager.getSafeMemory(Address));
                     break;
                 default:
                     throw new IncorrectRegisterException("Nieprawidlowy rejestr");
