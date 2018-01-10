@@ -1,4 +1,4 @@
-RM;
+RM 1;
 LM adres 1;
 RM;
 EX;

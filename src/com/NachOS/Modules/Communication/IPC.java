@@ -83,6 +83,9 @@ public class IPC
         //mergeMessage(sms);
         String mes="";
         mes+=sms.get_senID()+";"+sms.get_recID()+";"+sms.get_mes();
+
+        int adress = ram.indexOfFreeFrame();
+
         try
         {
             for(char c : mes.toCharArray())
@@ -90,7 +93,7 @@ public class IPC
                 ram.writeCharToRam(sms.get_recID(),adr,c);
                 adr++;
             }
-            ram.writeCharToRam(sms.get_recID(),adr,'#');
+            ram.writeCharToRam(sms.get_recID(),adress,'#');
         } catch(Exception e)
         {
             System.out.println("Blad zapisu wiadomosci");
@@ -171,6 +174,7 @@ public class IPC
     {
         Sms sms = new Sms(loadMessage(adr));
         sendMessage(recID, sms);
+
     }
 
     public void display_sent()
