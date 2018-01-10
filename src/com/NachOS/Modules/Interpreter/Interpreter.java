@@ -1,9 +1,8 @@
 package com.NachOS.Modules.Interpreter;
 
-import com.NachOS.Modules.Exceptions.ChangedToWaitingException;
-import com.NachOS.Modules.Exceptions.DivideZeroException;
-import com.NachOS.Modules.Exceptions.IncorrectRegisterException;
-import com.NachOS.Modules.Exceptions.UndefinedOrderException;
+import com.NachOS.Modules.Exceptions.*;
+import com.NachOS.Modules.FileSystem.File;
+import com.NachOS.Modules.FileSystem.FileSystem;
 import com.NachOS.Modules.ProcessManager.IProcessManager;
 import com.NachOS.Modules.FileSystem.IFileSystem;
 import com.NachOS.Modules.Communication.IPC;
@@ -42,7 +41,7 @@ public class Interpreter implements IInterpreter {
         Pliki
         CE file_name - tworzy pusty plik o podanej nazwie,
         OF file_name - otwiera plik o podanej nazwie
-        CL file_name - zamyka plik o podanej nazwie,
+        CF file_name - zamyka plik o podanej nazwie,
         AF file_name file_content - dodaje dane na końcu pliku,
         DF file_name - usuwa plik o danej nazwie,
         RF file_name - czyta plik o podanej nazwie,
@@ -567,8 +566,8 @@ public class Interpreter implements IInterpreter {
     }
 
     //MZ address reg - zapisuje do pamięci zawartość rejestru pod wskazanym adresem,
-    //TODO metoda do zapisywania do pamięci - Klaudia
     private void MZ(String[] order, int A, int B, int C, int PC) throws Exception {
+        String reg = order[2];
         String bAddress = order[1];
 
         int lenbAddress = bAddress.length();
@@ -582,7 +581,19 @@ public class Interpreter implements IInterpreter {
         String logicalAddress = bAddress.replaceAll("\\[", "").replaceAll("]", "");
         int Address = Integer.parseInt(logicalAddress);
 
-        //memory.
+        switch (reg){
+            case "A":
+                processManager.setSafeMemory(Address, (char) A);
+                break;
+            case "B":
+                processManager.setSafeMemory(Address, (char) B);
+                break;
+            case "C":
+                processManager.setSafeMemory(Address, (char) C);
+                break;
+            default:
+                throw new IncorrectRegisterException("Nieprawidlowy rejestr");
+        }
 
         PC++;
         RegisterStatus(A,B,C,PC);
@@ -650,7 +661,6 @@ public class Interpreter implements IInterpreter {
     }
 
     //JP counter - skacze do innego rozkazu poprzez zmianę licznika
-    //TODO rzucanie wyjątku gdy zły counter
     private void JP(String[] order, int A, int B, int C, int PC) {
         int counter = Integer.parseInt(order[1]);
         PC = counter;
@@ -751,8 +761,7 @@ public class Interpreter implements IInterpreter {
         try {
             String filename = order[1];
             fileSystem.createFile(filename, loginService.getLoggedUser(), processManager);
-        } catch (Exception e) {
-
+        } catch (FileSystemException e) {
             throw e;
         } finally {
             PC++;
@@ -768,7 +777,7 @@ public class Interpreter implements IInterpreter {
             fileSystem.openFile(filename);
         } catch (ChangedToWaitingException e){
             PC--;
-        } catch (Exception e) {
+        } catch (FileSystemException e) {
             throw e;
         } finally {
             PC++;
@@ -778,11 +787,11 @@ public class Interpreter implements IInterpreter {
     }
 
     //CL file_name - zamyka plik o podanej nazwie
-    private void CL(String[] order, int PC) throws Exception {
+    private void CF(String[] order, int PC) throws Exception {
         try {
             String filename = order[1];
             fileSystem.closeFile(filename);
-        } catch (Exception e) {
+        } catch (FileSystemException e) {
             throw e;
         } finally {
             PC++;
@@ -802,7 +811,7 @@ public class Interpreter implements IInterpreter {
                 fileContent += order[i];
             }
             fileSystem.appendFile(filename, fileContent);
-        } catch (Exception e) {
+        } catch (FileSystemException e) {
             throw e;
         } finally {
             PC++;
@@ -816,7 +825,7 @@ public class Interpreter implements IInterpreter {
         try {
             String filename = order[1];
             fileSystem.deleteFile(filename);
-        } catch (Exception e) {
+        } catch (FileSystemException e) {
             throw e;
         } finally {
             PC++;
@@ -832,7 +841,7 @@ public class Interpreter implements IInterpreter {
             String fileContent = fileSystem.readFile(filename);
             System.out.println("File content:");
             System.out.println(fileContent);
-        } catch (Exception e) {
+        } catch (FileSystemException e) {
             throw e;
         } finally {
             PC++;
@@ -847,7 +856,7 @@ public class Interpreter implements IInterpreter {
             String oldName = order[1];
             String newName = order[2];
             fileSystem.renameFile(oldName, newName);
-        } catch (Exception e) {
+        } catch (FileSystemException e) {
             throw e;
         } finally {
             PC++;
@@ -1007,8 +1016,8 @@ public class Interpreter implements IInterpreter {
                 case "OF":
                     OF(order, PC);
                     break;
-                case "CL":
-                    CL(order, PC);
+                case "CF":
+                    CF(order, PC);
                     break;
                 case "AF":
                     AF(order, PC);

@@ -4,6 +4,7 @@ package com.NachOS.Modules.Processor;
 import java.util.ArrayList;
 
 import com.NachOS.Modules.Exceptions.DivideZeroException;
+import com.NachOS.Modules.Exceptions.FileSystemException;
 import com.NachOS.Modules.Exceptions.InterpreterException;
 import com.NachOS.Modules.Interpreter.Interpreter;
 import com.NachOS.Modules.ProcessManager.IProcessManager;
@@ -78,7 +79,9 @@ public class Processor implements IProcessor {
             interpreter.Exe();
         }catch(InterpreterException e){
             processManager.killProcess(processManager.getActivePCB().getPID());
-        }catch (Exception e){
+        }catch(FileSystemException e){
+            processManager.killProcess(processManager.getActivePCB().getPID());
+        }catch(Exception e){
             System.out.println(e.getMessage());
         }
     }
