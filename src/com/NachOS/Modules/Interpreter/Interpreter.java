@@ -887,10 +887,10 @@ public class Interpreter implements IInterpreter {
 
         int lenbAddress = bAddress.length();
 
-        Character left = bAddress.charAt(0);
-        Character right = bAddress.charAt(lenbAddress-1);
+        char left = bAddress.charAt(0);
+        char right = bAddress.charAt(lenbAddress-1);
 
-        if((!left.equals("["))||(!right.equals("]"))){
+        if((left !='[')||(right != ']')){
             throw new Exception("Nieprawidlowy adres");
         }
 
