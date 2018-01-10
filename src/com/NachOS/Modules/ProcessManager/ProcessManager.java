@@ -125,7 +125,7 @@ public class ProcessManager implements IProcessManager {
 		throw new Exception("Brak grupy o podanym PGID");
 	}
 
-	private String readCommandFile(String relativePathToFile){
+	private String readCommandFile(String relativePathToFile) throws Exception{
 //		TODO
 //		Jak zrobisz.
 //		process --groupCreate nazwa programKtórynieistnieje
@@ -133,33 +133,32 @@ public class ProcessManager implements IProcessManager {
 
 		StringBuilder contentBuilder = new StringBuilder();
 		Stream<String> stream;
-		try{
-			stream = stream = Files.lines(Paths.get(relativePathToFile), StandardCharsets.UTF_8);
-			stream.forEach(s -> contentBuilder.append(s));
-			stream.close();
-		}catch(IOException e){
-			e.printStackTrace();
-		}finally {
-		}
+		stream = stream = Files.lines(Paths.get(relativePathToFile), StandardCharsets.UTF_8);
+		stream.forEach(s -> contentBuilder.append(s));
+		stream.close();
+
 		return contentBuilder.toString();
 	}
 	public PCB runNew() throws Exception {
 		return newProcess("P"+this.ProcessCounter, this.ActivePCB.getPGID());
 	}
-	public PCB runNew(String FileName) throws Exception {
-		return newProcess("P"+this.ProcessCounter, this.ActivePCB.getPGID(), FileName);
+	public PCB runNew(String name, String FileName) throws Exception {
+		return newProcess(name, this.ActivePCB.getPGID(), FileName);
 	}
-	public PCB runNew(String FileName, int memSize) throws Exception {
-		return newProcess("P"+this.ProcessCounter, this.ActivePCB.getPGID(), FileName, memSize);
+	public PCB runNew(String name, String FileName, int memSize) throws Exception {
+		return newProcess(name, this.ActivePCB.getPGID(), FileName, memSize);
 	}
 	//Usuwanie procesu
 	public void killProcess(int PID) throws Exception {
 		if(PID == 0) throw new Exception("Nie mo�lna zabi� procesu bezczynno�ci");
+		if(PID == ActivePCB.getPID()){
+			ActivePCB = checkIfProcessExists(0);
+			ActivePCB.setState(PCB.State.ACTIVE);
+		}
 		PCB temp = checkIfProcessExists(PID);
 		if(temp != null) {
 			ram.deleteProcessData(temp.getPID());
-			//TODO bo jak są dwa procesy to usunie wszystkie
-			//checkIfGroupExists(temp.getPGID()).remove(temp);
+			checkIfGroupExists(temp.getPGID()).remove(temp);
 			return;
 		}
 		throw new Exception("Brak procesu o podanym PID");
@@ -176,6 +175,10 @@ public class ProcessManager implements IProcessManager {
 	public void killProcessGroup(int PGID) throws Exception {
 			if(PGID == 0) throw new Exception("Brak dost�pu do grupy procesu bezczynno�ci");
 			ArrayList<PCB> temp = checkIfGroupExists(PGID);
+			if(PGID == ActivePCB.getPGID()){
+				ActivePCB = checkIfProcessExists(0);
+				ActivePCB.setState(PCB.State.ACTIVE);
+			}
 			if(temp != null) {
 				deleteDateForProcessesInGroup(temp);
 				ProcessGroups.remove(temp);
@@ -209,38 +212,43 @@ public class ProcessManager implements IProcessManager {
 	}
 
 	public PCB newProcessGroup(String ProcessName, String FileName) {
-		//PCB pcb = new PCB(this.ProcessCounter, ProcessName, this.GroupsCounter);
-		//PCB pcb = newProcess(ProcessName, this.GroupsCounter, FileName);
-		String textFileContent = readCommandFile("src/" + FileName + ".txt");
-		Map mapLine = new HashMap<Integer, Integer>();
-		System.out.println("Kod programu: "+ textFileContent);
-		mapLine.put(0,0);
-		for(int i = 0, j = 1; i != -1 && i+1 < textFileContent.length();j++){
-			i = textFileContent.indexOf(";", i+1);
-			if(i+1 < textFileContent.length()) {
-				mapLine.put(j, i + 1);
-				//System.out.println(j + " " + textFileContent.charAt(i + 1));
+		try {
+			//PCB pcb = new PCB(this.ProcessCounter, ProcessName, this.GroupsCounter);
+			//PCB pcb = newProcess(ProcessName, this.GroupsCounter, FileName);
+			String textFileContent = readCommandFile("src/" + FileName + ".txt");
+			Map mapLine = new HashMap<Integer, Integer>();
+			System.out.println("Kod programu: " + textFileContent);
+			mapLine.put(0, 0);
+			for (int i = 0, j = 1; i != -1 && i + 1 < textFileContent.length(); j++) {
+				i = textFileContent.indexOf(";", i + 1);
+				if (i + 1 < textFileContent.length()) {
+					mapLine.put(j, i + 1);
+					//System.out.println(j + " " + textFileContent.charAt(i + 1));
+				}
 			}
-		}
-		char[] code = textFileContent.toCharArray();
-		PageTable pt1 = new PageTable(this.ProcessCounter, code.length);
-		PCB pcb = new PCB(this.ProcessCounter, ProcessName, this.GroupsCounter, pt1, mapLine);
-		Map map = pcb.getMapLine();
-		System.out.println("Mapa konwersji");
+			char[] code = textFileContent.toCharArray();
+			PageTable pt1 = new PageTable(this.ProcessCounter, code.length);
+			PCB pcb = new PCB(this.ProcessCounter, ProcessName, this.GroupsCounter, pt1, mapLine);
+			Map map = pcb.getMapLine();
+			System.out.println("Mapa konwersji");
 //		for(Map.Entry<Integer, Integer> entry : map.){
 //			System.out.println(entry.getKey()+"\t"+entry.getValue());
 //		}
-		ram.pageTables.put(this.ProcessCounter, pt1);
-		ram.exchangeFile.writeToExchangeFile(this.ProcessCounter, code);
+			ram.pageTables.put(this.ProcessCounter, pt1);
+			ram.exchangeFile.writeToExchangeFile(this.ProcessCounter, code);
 
 
-		ArrayList<PCB> al = new ArrayList<PCB>();
-		al.add(pcb);
-		ProcessGroups.add(al);
-		ConditionVariables.add(new ConditionVariable(this, this.GroupsCounter));
-		this.ProcessCounter++;
-		this.GroupsCounter++;
-		return pcb;
+			ArrayList<PCB> al = new ArrayList<PCB>();
+			al.add(pcb);
+			ProcessGroups.add(al);
+			ConditionVariables.add(new ConditionVariable(this, this.GroupsCounter));
+			this.ProcessCounter++;
+			this.GroupsCounter++;
+			return pcb;
+		}catch (Exception e){
+			System.out.println(e.getMessage());
+		}
+		return null;
 	}
 
 	public PCB newProcessGroup(String ProcessName, String FileName, int memSize) throws Exception {
@@ -392,11 +400,10 @@ public class ProcessManager implements IProcessManager {
     }
 
     public char getMemory(int pointer){
-        return ram.getCommand(pointer,ActivePCB.getPID(), ActivePCB.pageTable);
+		return ram.getCommand(pointer,ActivePCB.getPID(), ActivePCB.pageTable);
     }
 
-    public void setMemory(int pointer){
-        //TODO
-        //Czekam na klaudię
+    public void setMemory(int pointer, char content){
+        ram.writeCharToRam(ActivePCB.getPID(), pointer, content);
     }
 }

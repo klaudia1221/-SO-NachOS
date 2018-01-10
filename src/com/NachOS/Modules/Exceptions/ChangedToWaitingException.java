@@ -8,3 +8,4 @@ public class ChangedToWaitingException extends Exception {
         super(message, throwable);
     }
 }
+

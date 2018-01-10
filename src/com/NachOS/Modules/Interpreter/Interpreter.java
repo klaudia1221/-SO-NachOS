@@ -1,6 +1,9 @@
 package com.NachOS.Modules.Interpreter;
 
 import com.NachOS.Modules.Exceptions.ChangedToWaitingException;
+import com.NachOS.Modules.Exceptions.DivideZeroException;
+import com.NachOS.Modules.Exceptions.IncorrectRegisterException;
+import com.NachOS.Modules.Exceptions.UndefinedOrderException;
 import com.NachOS.Modules.ProcessManager.IProcessManager;
 import com.NachOS.Modules.FileSystem.IFileSystem;
 import com.NachOS.Modules.Communication.IPC;
@@ -22,6 +25,7 @@ public class Interpreter implements IInterpreter {
         MX reg num – mnoży rejestr przez liczbę,
         DV reg1 reg2 - dzieli zawartość rejestru1 przez zawartość rejestru2,
         DX reg num – dzieli rejestr przez liczbę,
+        MD reg1 val reg2 - reszta z dzielenia reg1 przez val zapisywany do reg2
         MV reg1 reg2 – kopiuje zawartość rejestru 2 do rejestru 1,
         MZ address reg - zapisuje do pamięci zawartość rejestru pod wskazanym adresem,
         MO reg n – umieszcza w rejestrze wartość n,
@@ -31,8 +35,9 @@ public class Interpreter implements IInterpreter {
         PE reg - wyświetla wynik programu znajdujący się w podanym rejestrze,
 
         Procesy
-        KP nazwa - usunięcie procesu o podanej nazwie,
-        RP nazwa – uruchamia proces o danej nazwie,
+        CP file_name - tworzenie procesu o podanej nazwie,
+        KP file_name - usunięcie procesu po ID,
+        RP file_name – uruchamia proces o podanym ID
 
         Pliki
         CE file_name - tworzy pusty plik o podanej nazwie,
@@ -90,7 +95,7 @@ public class Interpreter implements IInterpreter {
     //------------------------ARYTMETYCZNO-LOGICZNE----------------------------------
 
     //AD reg1 reg2 - dodaje rejestr2 do rejestru1
-    private void AD(String[] order, int A, int B, int C, int PC){
+    private void AD(String[] order, int A, int B, int C, int PC) throws Exception {
         String reg_1 = order[1];
         String reg_2 = order[2];
 
@@ -104,8 +109,7 @@ public class Interpreter implements IInterpreter {
                         A += C;
                         break;
                     default:
-                        System.out.println("Incorrect register.");
-                        break;
+                        throw new IncorrectRegisterException("Nieprawidlowy rejestr");
                 }
                 break;
             case "B":
@@ -117,8 +121,7 @@ public class Interpreter implements IInterpreter {
                         B += C;
                         break;
                     default:
-                        System.out.println("Incorrect register.");
-                        break;
+                        throw new IncorrectRegisterException("Nieprawidlowy rejestr");
                 }
                 break;
             case "C":
@@ -130,13 +133,11 @@ public class Interpreter implements IInterpreter {
                         C += B;
                         break;
                     default:
-                        System.out.println("Incorrect register.");
-                        break;
+                        throw new IncorrectRegisterException("Nieprawidlowy rejestr");
                 }
                 break;
             default:
-                System.out.println("Incorrect register.");
-                break;
+                throw new IncorrectRegisterException("Nieprawidlowy rejestr");
         }
         PC++;
         RegisterStatus(A,B,C,PC);
@@ -145,7 +146,7 @@ public class Interpreter implements IInterpreter {
     }
 
     //AX reg num – dodaje liczbę do rejestru
-    private void AX(String[] order, int A, int B, int C, int PC){
+    private void AX(String[] order, int A, int B, int C, int PC) throws Exception {
         String reg = order[1];
         int val = Integer.parseInt(order[2]);
 
@@ -160,8 +161,7 @@ public class Interpreter implements IInterpreter {
                 C += val;
                 break;
             default:
-                System.out.println("Incorrect register.");
-                break;
+                throw new IncorrectRegisterException("Nieprawidlowy rejestr");
         }
         PC++;
         RegisterStatus(A,B,C,PC);
@@ -170,7 +170,7 @@ public class Interpreter implements IInterpreter {
     }
 
     //SB reg1 reg2 - odejmuje od rejestru1 zawartość rejestru2
-    private void SB(String[] order, int A, int B, int C, int PC){
+    private void SB(String[] order, int A, int B, int C, int PC) throws Exception {
         String reg_1 = order[1];
         String reg_2 = order[2];
 
@@ -184,8 +184,7 @@ public class Interpreter implements IInterpreter {
                         A -= C;
                         break;
                     default:
-                        System.out.println("Incorrect register.");
-                        break;
+                        throw new IncorrectRegisterException("Nieprawidlowy rejestr");
                 }
                 break;
             case "B":
@@ -197,8 +196,7 @@ public class Interpreter implements IInterpreter {
                         B -= C;
                         break;
                     default:
-                        System.out.println("Incorrect register.");
-                        break;
+                        throw new IncorrectRegisterException("Nieprawidlowy rejestr");
                 }
                 break;
             case "C":
@@ -210,13 +208,11 @@ public class Interpreter implements IInterpreter {
                         C -= B;
                         break;
                     default:
-                        System.out.println("Incorrect register.");
-                        break;
+                        throw new IncorrectRegisterException("Nieprawidlowy rejestr");
                 }
                 break;
             default:
-                System.out.println("Incorrect register.");
-                break;
+                throw new IncorrectRegisterException("Nieprawidlowy rejestr");
         }
         PC++;
         RegisterStatus(A,B,C,PC);
@@ -225,7 +221,7 @@ public class Interpreter implements IInterpreter {
     }
 
     //SX reg num – odejmuje liczbę od rejestru
-    private void SX(String[] order, int A, int B, int C, int PC){
+    private void SX(String[] order, int A, int B, int C, int PC) throws Exception {
         String reg = order[1];
         int val = Integer.parseInt(order[2]);
 
@@ -240,8 +236,7 @@ public class Interpreter implements IInterpreter {
                 C -= val;
                 break;
             default:
-                System.out.println("Incorrect register.");
-                break;
+                throw new IncorrectRegisterException("Nieprawidlowy rejestr");
         }
         PC++;
         RegisterStatus(A,B,C,PC);
@@ -250,7 +245,7 @@ public class Interpreter implements IInterpreter {
     }
 
     //DC reg - zmniejsza zawartość rejestru o 1
-    private void DC(String[] order, int A, int B, int C, int PC) {
+    private void DC(String[] order, int A, int B, int C, int PC) throws Exception{
         String reg = order[1];
 
         switch (reg) {
@@ -264,8 +259,7 @@ public class Interpreter implements IInterpreter {
                 C -= 1;
                 break;
             default:
-                System.out.println("Incorrect register.");
-                break;
+                throw new IncorrectRegisterException("Nieprawidlowy rejestr");
         }
         PC++;
         RegisterStatus(A,B,C,PC);
@@ -274,7 +268,7 @@ public class Interpreter implements IInterpreter {
     }
 
     //IC reg - zwiększa zawartość rejestru o 1
-    private void IC(String[] order, int A, int B, int C, int PC) {
+    private void IC(String[] order, int A, int B, int C, int PC) throws Exception {
         String reg = order[1];
 
         switch (reg) {
@@ -288,8 +282,7 @@ public class Interpreter implements IInterpreter {
                 C += 1;
                 break;
             default:
-                System.out.println("Incorrect register.");
-                break;
+                throw new IncorrectRegisterException("Nieprawidlowy rejestr");
         }
         PC++;
         RegisterStatus(A,B,C,PC);
@@ -298,7 +291,7 @@ public class Interpreter implements IInterpreter {
     }
 
     //MU reg1 reg2 – mnoży rejestr 1 przez rejestr 2
-    private void MU(String[] order, int A, int B, int C, int PC) {
+    private void MU(String[] order, int A, int B, int C, int PC) throws Exception {
         String reg_1 = order[1];
         String reg_2 = order[2];
 
@@ -312,8 +305,7 @@ public class Interpreter implements IInterpreter {
                         A *= C;
                         break;
                     default:
-                        System.out.println("Incorrect register.");
-                        break;
+                        throw new IncorrectRegisterException("Nieprawidlowy rejestr");
                 }
                 break;
             case "B":
@@ -325,8 +317,7 @@ public class Interpreter implements IInterpreter {
                         B *= C;
                         break;
                     default:
-                        System.out.println("Incorrect register.");
-                        break;
+                        throw new IncorrectRegisterException("Nieprawidlowy rejestr");
                 }
                 break;
             case "C":
@@ -338,13 +329,11 @@ public class Interpreter implements IInterpreter {
                         C *= B;
                         break;
                     default:
-                        System.out.println("Incorrect register.");
-                        break;
+                        throw new IncorrectRegisterException("Nieprawidlowy rejestr");
                 }
                 break;
             default:
-                System.out.println("Incorrect register.");
-                break;
+                throw new IncorrectRegisterException("Nieprawidlowy rejestr");
         }
         PC++;
         RegisterStatus(A,B,C,PC);
@@ -353,7 +342,7 @@ public class Interpreter implements IInterpreter {
     }
 
     //MX reg num – mnoży rejestr przez liczbę
-    private void MX(String[] order, int A, int B, int C, int PC) {
+    private void MX(String[] order, int A, int B, int C, int PC) throws Exception {
         String reg = order[1];
         int val = Integer.parseInt(order[2]);
 
@@ -368,8 +357,7 @@ public class Interpreter implements IInterpreter {
                 C *= val;
                 break;
             default:
-                System.out.println("Incorrect register.");
-                break;
+                throw new IncorrectRegisterException("Nieprawidlowy rejestr");
         }
         PC++;
         RegisterStatus(A,B,C,PC);
@@ -378,54 +366,53 @@ public class Interpreter implements IInterpreter {
     }
 
     //DV reg1 reg2 - dzieli zawartość rejestru1 przez zawartość rejestru2
-    //TODO ogarnąć gdy rowne 0
-    private void DV(String[] order, int A, int B, int C, int PC) {
+    private void DV(String[] order, int A, int B, int C, int PC) throws Exception {
         String reg_1 = order[1];
         String reg_2 = order[2];
 
-        switch (reg_1) {
-            case "A":
-                switch (reg_2) {
-                    case "B":
-                        A /= B;
-                        break;
-                    case "C":
-                        A /= C;
-                        break;
-                    default:
-                        System.out.println("Incorrect register.");
-                        break;
-                }
-                break;
-            case "B":
-                switch (reg_2) {
-                    case "A":
-                        B /= A;
-                        break;
-                    case "C":
-                        B /= C;
-                        break;
-                    default:
-                        System.out.println("Incorrect register.");
-                        break;
-                }
-                break;
-            case "C":
-                switch (reg_2) {
-                    case "A":
-                        C /= A;
-                        break;
-                    case "B":
-                        C /= B;
-                        break;
-                    default:
-                        System.out.println("Incorrect register.");
-                        break;
-                }
-                break;
-            default:
-                System.out.println("Incorrect register.");
-                break;
+        if (reg_2 == "0"){
+            throw new DivideZeroException("Dzielenie przez zero");
+        } else {
+            switch (reg_1) {
+                case "A":
+                    switch (reg_2) {
+                        case "B":
+                            A /= B;
+                            break;
+                        case "C":
+                            A /= C;
+                            break;
+                        default:
+                            throw new IncorrectRegisterException("Nieprawidlowy rejestr");
+                    }
+                    break;
+                case "B":
+                    switch (reg_2) {
+                        case "A":
+                            B /= A;
+                            break;
+                        case "C":
+                            B /= C;
+                            break;
+                        default:
+                            throw new IncorrectRegisterException("Nieprawidlowy rejestr");
+                    }
+                    break;
+                case "C":
+                    switch (reg_2) {
+                        case "A":
+                            C /= A;
+                            break;
+                        case "B":
+                            C /= B;
+                            break;
+                        default:
+                            throw new IncorrectRegisterException("Nieprawidlowy rejestr");
+                    }
+                    break;
+                default:
+                    throw new IncorrectRegisterException("Nieprawidlowy rejestr");
+            }
         }
         PC++;
         RegisterStatus(A,B,C,PC);
@@ -434,11 +421,13 @@ public class Interpreter implements IInterpreter {
     }
 
     //DX reg num – dzieli rejestr przez liczbę
-    private void DX(String[] order, int A, int B, int C, int PC) {
+    private void DX(String[] order, int A, int B, int C, int PC) throws Exception {
         String reg = order[1];
         int val = Integer.parseInt(order[2]);
 
-        if (val != 0) {
+        if (val == 0) {
+            throw new DivideZeroException("Dzielenie przez zero.");
+        } else {
             switch (reg) {
                 case "A":
                     A /= val;
@@ -450,11 +439,74 @@ public class Interpreter implements IInterpreter {
                     C /= val;
                     break;
                 default:
-                    System.out.println("Incorrect register.");
-                    break;
+                    throw new IncorrectRegisterException("Nieprawidlowy rejestr");
             }
-        }else{
-            System.out.println("Division by zero");
+        }
+        PC++;
+        RegisterStatus(A,B,C,PC);
+        SaveRegister(A,B,C,PC);
+        SaveTimer();
+    }
+
+    //DM reg1 val reg2 - reszta z dzielenia reg1 przez val zapisywany do reg2
+    private void MD(String[] order, int A, int B, int C, int PC) throws Exception {
+        String reg_1 = order[1];
+        int val = Integer.parseInt(order[2]);
+        String reg_2 = order[3];
+
+        if(val == 0){
+            throw new DivideZeroException("Dzielenie przez zero");
+        }
+        else {
+            switch (reg_1) {
+                case "A":
+                    switch (reg_2){
+                        case "A":
+                            A = A % val;
+                            break;
+                        case "B":
+                            B = A % val;
+                            break;
+                        case "C":
+                            C = A % val;
+                            break;
+                        default:
+                            throw new IncorrectRegisterException("Nieprawidlowy rejestr");
+                    }
+                    break;
+                case "B":
+                    switch (reg_2){
+                        case "A":
+                            A = B % val;
+                            break;
+                        case "B":
+                            B = B % val;
+                            break;
+                        case "C":
+                            C = B % val;
+                            break;
+                        default:
+                            throw new IncorrectRegisterException("Nieprawidlowy rejestr");
+                    }
+                    break;
+                case "C":
+                    switch (reg_2){
+                        case "A":
+                            A = C % val;
+                            break;
+                        case "B":
+                            B = C % val;
+                            break;
+                        case "C":
+                            C = C % val;
+                            break;
+                        default:
+                            throw new IncorrectRegisterException("Nieprawidlowy rejestr");
+                    }
+                    break;
+                default:
+                    throw new IncorrectRegisterException("Nieprawidlowy rejestr");
+            }
         }
         PC++;
         RegisterStatus(A,B,C,PC);
@@ -463,7 +515,7 @@ public class Interpreter implements IInterpreter {
     }
 
     //MV reg1 reg2 – kopiuje zawartość rejestru 2 do rejestru 1
-    private void MV(String[] order, int A, int B, int C, int PC) {
+    private void MV(String[] order, int A, int B, int C, int PC) throws Exception {
         String reg_1 = order[1];
         String reg_2 = order[2];
 
@@ -477,8 +529,7 @@ public class Interpreter implements IInterpreter {
                         A = C;
                         break;
                     default:
-                        System.out.println("Incorrect register.");
-                        break;
+                        throw new IncorrectRegisterException("Nieprawidlowy rejestr");
                 }
                 break;
             case "B":
@@ -490,8 +541,7 @@ public class Interpreter implements IInterpreter {
                         B = C;
                         break;
                     default:
-                        System.out.println("Incorrect register.");
-                        break;
+                        throw new IncorrectRegisterException("Nieprawidlowy rejestr");
                 }
                 break;
             case "C":
@@ -503,13 +553,11 @@ public class Interpreter implements IInterpreter {
                         C = B;
                         break;
                     default:
-                        System.out.println("Incorrect register.");
-                        break;
+                        throw new IncorrectRegisterException("Nieprawidlowy rejestr");
                 }
                 break;
             default:
-                System.out.println("Incorrect register.");
-                break;
+                throw new IncorrectRegisterException("Nieprawidlowy rejestr");
         }
         PC++;
         RegisterStatus(A,B,C,PC);
@@ -523,6 +571,15 @@ public class Interpreter implements IInterpreter {
         String raw_address = order[1];
         String reg = order[2];
         String[] split_address = raw_address.split("");
+
+        /*int len = raw_address.length();
+
+        String left = split_address[0];
+        String right = split_address[len-1];
+
+        if((left.equals("[") ||(right.equals("]")){
+
+        }
 
         if ((!split_address[0].equals("[")) || (!split_address[raw_address.length() - 1].equals("]"))) {
             System.out.println("Incorrect address.");
@@ -540,10 +597,10 @@ public class Interpreter implements IInterpreter {
                     //memory.writeMemory((char) C, address);
                     break;
                 default:
-                    System.out.println("Incorrect register.");
-                    break;
+                    throw new IncorrectRegisterException("Nieprawidlowy rejestr");
             }
         }
+        */
         PC++;
         RegisterStatus(A,B,C,PC);
         SaveRegister(A,B,C,PC);
@@ -551,7 +608,7 @@ public class Interpreter implements IInterpreter {
     }
 
     //MO reg n – umieszcza w rejestrze wartość n,
-    private void MO(String[] order, int A, int B, int C, int PC){
+    private void MO(String[] order, int A, int B, int C, int PC) throws Exception {
         String reg = order[1];
         int val = Integer.parseInt(order[2]);
 
@@ -566,8 +623,7 @@ public class Interpreter implements IInterpreter {
                 C = val;
                 break;
             default:
-                System.out.println("Incorrect register.");
-                break;
+                throw new IncorrectRegisterException("Nieprawidlowy rejestr");
         }
         PC++;
         RegisterStatus(A,B,C,PC);
@@ -626,7 +682,7 @@ public class Interpreter implements IInterpreter {
     }
 
     //JZ reg n - skok przy zerowej zawartości rejestru będącego argumentem,
-    private void JZ(String[] order, int A, int B, int C, int PC) {
+    private void JZ(String[] order, int A, int B, int C, int PC) throws Exception {
             String reg = order[1];
             int counter = Integer.parseInt(order[2]);
 
@@ -653,9 +709,7 @@ public class Interpreter implements IInterpreter {
                     }
                     break;
                 default:
-                    System.out.println("Incorrect register");
-                    PC++;
-                    break;
+                    throw new IncorrectRegisterException("Nieprawidlowy rejestr");
             }
         processManager.getActivePCB().setCounter(PC);
         RegisterStatus(A,B,C,PC);
@@ -663,22 +717,21 @@ public class Interpreter implements IInterpreter {
     }
 
     //PE reg - wyświetla wynik programu znajdujący się w podanym rejestrze,
-    private void PE(String[] order, int A, int B, int C, int PC) {
+    private void PE(String[] order, int A, int B, int C, int PC) throws Exception {
         String reg = order[1];
         switch (reg) {
             case "A":
-                    System.out.println("Result: " + A);
-                    break;
+                System.out.println("Result: " + A);
+                break;
             case "B":
-                    System.out.println("Result: " + B);
-                    break;
+                System.out.println("Result: " + B);
+                break;
             case "C":
-                    System.out.println("Result: " + C);
-                    break;
+                System.out.println("Result: " + C);
+                break;
             default:
-                    System.out.println("Incorrect register.");
-                    break;
-                }
+                throw new IncorrectRegisterException("Nieprawidlowy rejestr");
+        }
         PC++;
         SaveRegister(A,B,C,PC);
         SaveTimer();
@@ -686,19 +739,30 @@ public class Interpreter implements IInterpreter {
 
     //---------------------------------PROCESY---------------------------------------
 
-    //KP nazwa - usunięcie procesu o podanej nazwie
-    //TODO ogarnąć
-    //wykorzystywane przy komunikatach
-    private void DP(String[] order, int PC){
+    //CP file_name - tworzenie procesu o podanej nazwie i nazwie pliku
+    private void CP(String[] order, int PC) throws Exception{
+        String name = order[1];
+        String fileName = order[2];
+        try {
+            processManager.runNew(name, fileName);
+        } catch (Exception e){
+            throw e;
+        }
         PC++;
         processManager.getActivePCB().setCounter(PC);
         SaveTimer();
     }
 
-    //RP nazwa – uruchamia proces o danej nazwie
     //TODO ogarnąć
+    //KP file_name - usunięcie procesu po ID,
     //wykorzystywane przy komunikatach
-    private void RP(String[] order, int PC){
+    private void KP(String[] order, int PC) throws Exception{
+        int PID = Integer.parseInt(order[2]);
+        try {
+            processManager.killProcess(PID);
+        } catch (Exception e){
+            throw e;
+        }
         PC++;
         processManager.getActivePCB().setCounter(PC);
         SaveTimer();
@@ -844,7 +908,13 @@ public class Interpreter implements IInterpreter {
 
     //RM  - zapisywanie otrzymanego komunikatu do RAM
     //Kuba metoda receiveMessage
-    private void RM(int PC) {
+    private void RM(String[] order, int PC) {
+        int n = order.length;
+
+        String message = "";
+        for (int i = 1; i < n; i++) {
+            message += order[i];
+        }
         //Jeśli złapie ChangedToWaitingException to licznik się nie zmienia
         try {
             communication.receiveMessage();
@@ -869,6 +939,7 @@ public class Interpreter implements IInterpreter {
 
     //------------------------------------------------------------------------------
 
+    //EX - kończy program
     private void EX(int PC){
         processManager.setStateOfActivePCB(PCB.State.FINISHED);
         PC++;
@@ -943,11 +1014,11 @@ public class Interpreter implements IInterpreter {
                     PE(order, A, B, C, PC);
                     break;
                 //---------------------------------PROCESY---------------------------------------
-                case "DP":
-                    DP(order, PC);
+                case "CP":
+                    CP(order, PC);
                     break;
-                case "RP":
-                    RP(order, PC);
+                case "KP":
+                    KP(order, PC);
                     break;
                 //-----------------------------------PLIKI---------------------------------------
                 case "CE":
@@ -976,21 +1047,16 @@ public class Interpreter implements IInterpreter {
                     break;
                 //-----------------------------KOMUNIKATY---------------------------------------
                 case "RM":
-                    RM(PC);
+                    RM(order, PC);
                     break;
                 case "SM":
                     SM(order, PC);
                     break;
-
                 case "EX":
                     EX(PC);
                     break;
                 default:
-                    System.out.println("Undefined order.");
-                    PC++;
-                    processManager.getActivePCB().setCounter(PC);
-                    SaveTimer();
-                    break;
+                   throw new UndefinedOrderException("Niepoprawny rozkaz");
             }
         } catch (Exception e) {
             throw e;

@@ -41,7 +41,7 @@ public class Main{
             ram = new RAM();
             processManager = new ProcessManager(ram);
             processManager.setStartingActivePCB();
-            ipc = new IPC(processManager);
+            ipc = new IPC(processManager, ram);
 
             userController = new UserController();
             loginService = new LoginService(userController);
