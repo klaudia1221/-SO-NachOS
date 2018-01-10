@@ -18,7 +18,7 @@ public class FileSystem implements IFileSystem {
 
     public FileBase getFileBase(String name) throws FileNameException{
         if(!nameExists(name)){
-            throw new FileNameException("Name dosen't exist.");
+            throw new FileNameException("Plik o takiej nazwie nie istnieje.");
         }
         return dir.getFileByName(name);
     }
