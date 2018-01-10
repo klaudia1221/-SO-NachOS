@@ -38,7 +38,7 @@ public class PCB {
 	private int ecounter;
 	//Mapa konwertujaca etykiety na konkretną komórkę w pamięci
 	private Map<Integer,Integer> mapLine = new HashMap<>();
-	//Licznik komorki pamieci
+	//Licznik ostatniej zajętej pamieci (kod programu)
 	private int mcounter;
 	private int Timer;
 	private double Tau;
@@ -183,4 +183,8 @@ public class PCB {
 	public void setMapLine(Map<Integer, Integer> mapLine) {
 		this.mapLine = mapLine;
 	}
+
+	public int getMcounter(){return mcounter;}
+
+	public void setMcounter(int m){this.mcounter = m;}
 }
