@@ -118,8 +118,8 @@ public class ProcessManager implements IProcessManager {
 			if (code.length >= memSize){
 				throw new Exception("Przydzielona pamięć jest za mała dla tego programu");
 			}
-			System.out.println("Pamięć: "+code.length+" + "+memSize+" = "+ code.length+memSize);
-			PageTable pt1 = new PageTable(this.ProcessCounter, code.length);
+			System.out.println("Pamięć: "+code.length+" + "+memSize);
+			PageTable pt1 = new PageTable(this.ProcessCounter, code.length+memSize);
 			PCB pcb = new PCB(this.ProcessCounter, ProcessName, PGID, pt1, mapLine);
 			pcb.setTimer(j);
 			pcb.setMcounter(code.length);
@@ -280,13 +280,13 @@ public class ProcessManager implements IProcessManager {
 		if (code.length >= memSize){
 			throw new Exception("Przydzielona pamięć jest za mała dla tego programu");
 		}
-		PageTable pt1 = new PageTable(this.ProcessCounter, code.length);
-		System.out.println("Pamięć: "+code.length+" + "+memSize+" = "+ code.length+memSize);
+		PageTable pt1 = new PageTable(this.ProcessCounter, code.length+memSize);
+		System.out.println("Pamięć: "+code.length+" + "+memSize);
 		PCB pcb = new PCB(this.ProcessCounter, ProcessName, this.GroupsCounter, pt1, mapLine);
 		pcb.setTimer(j);
 		pcb.setMcounter(code.length);
 		Map map = pcb.getMapLine();
-		System.out.println("Mapa konwersji");
+//		System.out.println("Mapa konwersji");
 //		for(Map.Entry<Integer, Integer> entry : map.){
 //			System.out.println(entry.getKey()+"\t"+entry.getValue());
 //		}
