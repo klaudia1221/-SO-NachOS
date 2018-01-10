@@ -673,7 +673,6 @@ public class Interpreter implements IInterpreter {
         //SaveTimer();
     }
 
-
     //JP counter - skacze do innego rozkazu poprzez zmianę licznika
     private void JP(String[] order, int A, int B, int C, int PC) {
         int counter = Integer.parseInt(order[1]);
@@ -908,7 +907,6 @@ public class Interpreter implements IInterpreter {
     //-----------------------------KOMUNIKATY---------------------------------------
 
     //RM  - zapisywanie otrzymanego komunikatu do RAM
-    //Kuba metoda receiveMessage
     private void RM(String[] order, int PC) throws Exception{
         String bAddress = order[1];
 
@@ -948,7 +946,6 @@ public class Interpreter implements IInterpreter {
     }
 
     //SM  - wysłanie komunikatu
-    //Kuba metoda sendMessage
     private void SM(String[] order, int PC) {
         int PID = Integer.parseInt(order[1]);
         Sms sms = new Sms(order[2]);
