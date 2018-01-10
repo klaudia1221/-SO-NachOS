@@ -63,7 +63,7 @@ public class Shell {
         logo();
         loginLoad(); // zalogowanie sie uzytkownika
         while (true) {
-            readCommend();
+           readCommend();
         }
     }
     /**
@@ -236,8 +236,7 @@ public class Shell {
      * @return zwraca ture, gdy jest, false gdy nie ma
      */
     private boolean isCommandGood(String command) {
-        if (allCommands.containsKey(command)) return true;
-        return false;
+        return allCommands.containsKey(command);
     }
     /**
      * Metoda, ktora zostaje wywolana, gdy uzytkownik poda komende 'man' : Wyswietla ona wszystkie komendy dostepne

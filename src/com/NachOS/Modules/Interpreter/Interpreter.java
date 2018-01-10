@@ -36,9 +36,8 @@ public class Interpreter implements IInterpreter {
         PE reg - wyświetla wynik programu znajdujący się w podanym rejestrze,
 
         Procesy
-        CP file_name - tworzenie procesu o podanej nazwie,
-        KP file_name - usunięcie procesu po ID,
-        RP file_name – uruchamia proces o podanym ID
+        CP name file_name - tworzenie procesu o podanej nazwie,
+        KP PID - usunięcie procesu po ID,
 
         Pliki
         CE file_name - tworzy pusty plik o podanej nazwie,
@@ -569,50 +568,22 @@ public class Interpreter implements IInterpreter {
 
     //MZ address reg - zapisuje do pamięci zawartość rejestru pod wskazanym adresem,
     //TODO metoda do zapisywania do pamięci - Klaudia
-    private void MZ(String[] order, int A, int B, int C, int PC) {
+    private void MZ(String[] order, int A, int B, int C, int PC) throws Exception {
         String bAddress = order[1];
 
         int lenbAddress = bAddress.length();
 
-        String reg = order[2];
+        char left = bAddress.charAt(0);
+        char right = bAddress.charAt(lenbAddress-1);
 
-        Character left = bAddress.charAt(0);
-        Character right = bAddress.charAt(lenbAddress-1);
-
-        String logicalAddress ="";
-
-        for(int i=1;i<lenbAddress-1;i++){
-            logicalAddress += bAddress.charAt(i);
-        }
-
-        int Address = Integer.parseInt(logicalAddress);
-
-        int PID = processManager.getActivePCB().getPID();
-/*
-        if((!left.equals("["))||(!right.equals("]"))){
+        if((left == '[')||((right == ']'))){
             throw new Exception("Nieprawidlowy adres");
         }
-        else {
-            raw_address = raw_address.replaceAll("\\[", "").replaceAll("]", "");
-            int address = Integer.parseInt(raw_address);
-            switch (reg){
-                case "A":
-                    for (int i=0; i<lenStringA; i++) {
-                        memory.writeCharToRam(PID, address, stringA.charAt(i));
-                        address++;
-                    }
-                    break;
-                case "B":
-                    //memory.writeMemory((char) B, address);
-                    break;
-                case "C":
-                    //memory.writeMemory((char) C, address);
-                    break;
-                default:
-                    throw new IncorrectRegisterException("Nieprawidlowy rejestr");
-            }
-        }
-        */
+        String logicalAddress = bAddress.replaceAll("\\[", "").replaceAll("]", "");
+        int Address = Integer.parseInt(logicalAddress);
+
+        //memory.
+
         PC++;
         RegisterStatus(A,B,C,PC);
         SaveRegister(A,B,C,PC);
@@ -673,6 +644,7 @@ public class Interpreter implements IInterpreter {
     }
 
     //JP counter - skacze do innego rozkazu poprzez zmianę licznika
+    //TODO rzucanie wyjątku gdy zły counter
     private void JP(String[] order, int A, int B, int C, int PC) {
         int counter = Integer.parseInt(order[1]);
         PC = counter;
@@ -740,7 +712,7 @@ public class Interpreter implements IInterpreter {
     //---------------------------------PROCESY---------------------------------------
 
     //CP file_name - tworzenie procesu o podanej nazwie i nazwie pliku
-    private void CP(String[] order, int PC) throws Exception{
+    private void CP(String[] order, int PC) throws Exception {
         String name = order[1];
         String fileName = order[2];
         try {
@@ -754,8 +726,8 @@ public class Interpreter implements IInterpreter {
     }
 
     //KP file_name - usunięcie procesu po ID
-    private void KP(String[] order, int PC) throws Exception{
-        int PID = Integer.parseInt(order[2]);
+    private void KP(String[] order, int PC) throws Exception {
+        int PID = Integer.parseInt(order[1]);
         try {
             processManager.killProcess(PID);
         } catch (Exception e){
@@ -763,7 +735,6 @@ public class Interpreter implements IInterpreter {
         }
         PC++;
         processManager.getActivePCB().setCounter(PC);
-
         //SaveTimer();
     }
 
@@ -881,34 +852,22 @@ public class Interpreter implements IInterpreter {
 
     //-----------------------------KOMUNIKATY---------------------------------------
 
-    //RM - zapisywanie otrzymanego komunikatu do RAM
+    //RM - zapisywanie otrzymanego komunikatu do RAM,
     private void RM(String[] order, int PC) throws Exception {
         String bAddress = order[1];
 
         int lenbAddress = bAddress.length();
 
-        int lenMessage = order[2].length();
+        char left = bAddress.charAt(0);
+        char right = bAddress.charAt(lenbAddress-1);
 
-        Character left = bAddress.charAt(0);
-        Character right = bAddress.charAt(lenbAddress-1);
-
-        String logicalAddress ="";
-
-        for(int i=1;i<lenbAddress-1;i++){
-            logicalAddress += bAddress.charAt(i);
-        }
-
-        int Address = Integer.parseInt(logicalAddress);
-
-        if((!left.equals("["))||(!right.equals("]"))){
+        if((left == '[')||((right == ']'))){
             throw new Exception("Nieprawidlowy adres");
         }
-        else {
-            String message = "";
-            for (int i = 0; i < lenMessage; i++) {
-                message += order[i];
-            }
-        }
+
+        String logicalAddress = bAddress.replaceAll("\\[", "").replaceAll("]", "");
+        int Address = Integer.parseInt(logicalAddress);
+
         //Jeśli złapie ChangedToWaitingException to licznik się nie zmienia
         try {
             communication.receiveMessage(Address);
@@ -1004,6 +963,9 @@ public class Interpreter implements IInterpreter {
                 case "DX":
                     DX(order, A, B, C, PC);
                     break;
+                case "MD":
+                    MD(order, A, B, C, PC);
+                    break;
                 case "MV":
                     MV(order, A, B, C, PC);
                     break;
@@ -1041,9 +1003,6 @@ public class Interpreter implements IInterpreter {
                     break;
                 case "CL":
                     CL(order, PC);
-                    break;
-                case "CF":
-                    CF(order, PC);
                     break;
                 case "AF":
                     AF(order, PC);

@@ -1,6 +1,6 @@
 package com.NachOS.Modules.Exceptions;
 
-public class UndefinedOrderException extends Exception{
+public class UndefinedOrderException extends InterpreterException{
     public UndefinedOrderException(String message){
         super(message);
     }

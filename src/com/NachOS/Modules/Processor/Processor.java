@@ -3,6 +3,8 @@ package com.NachOS.Modules.Processor;
 
 import java.util.ArrayList;
 
+import com.NachOS.Modules.Exceptions.DivideZeroException;
+import com.NachOS.Modules.Exceptions.InterpreterException;
 import com.NachOS.Modules.Interpreter.Interpreter;
 import com.NachOS.Modules.ProcessManager.IProcessManager;
 import com.NachOS.Modules.ProcessManager.PCB;
@@ -24,25 +26,12 @@ public class Processor implements IProcessor {
     public void setInterpreter(Interpreter interpreter){
         this.interpreter = interpreter;
     }
-    /*
-    Jak działa ten algorytm:
-    1. Sprawdzamy czy proces aktywny ma stan FINISED || WAITING && czy lista porceós gotowych jest większa od zero(czy jest jakiś proces w liście procesów gotowy &&
-    i czy aktywny proces to nie proces bezczyności. Jeśli tak:
-        I. Sprawdź czy aktwnyny PCB nie ma stanu Finished:
-            a. Ustaw pole time na wartość Process Countera aktywnego PCB
-            b. Zabij proces.
-        II. Oblicz Thau dla każdego gotowego procesu.
-        III. Posortuj liste gotowych proceós(proces o najmniejszym Thau pierwszy)
-        IV. Ustaw pierwszy element listy jako aktywny proces.
-        V. Ustaw stan wybranego procesu na aktywny.
-    2. Jeśli lista jest pusta, a wybrany proces ma stan FINISED lub WAITING:
-        I. Ustaw stan aktywny jako stan bezczynny.
-     */
-    //TODO NK zweryfikuje to
+
     public void Scheduler() {
+        PCB active = processManager.getActivePCB();
         ArrayList<PCB> processReadyList = processManager.getReadyProcesses();
         if(processManager.getActivePCB().getState() == PCB.State.WAITING || processManager.getActivePCB().getState() == PCB.State.FINISHED ||
-                (processReadyList.size() > 0 && processManager.getActivePCB().getPID() == 0)){
+                (processReadyList.size() > 0 && processManager.getActivePCB().getPGID() == 0)){
             if(processManager.getActivePCB().getState() == PCB.State.FINISHED){
                 time = processManager.getActivePCB().getTimer();
                 try{
@@ -70,7 +59,7 @@ public class Processor implements IProcessor {
             if (time == 0) {
                 pcb.setTau(10.0d);
             } else {
-                pcb.setTau(alpha * time + (1.0d - alpha) * processManager.getActivePCB().getTau());
+                pcb.setTau(alpha * processManager.getActivePCB().getTimer() + alpha * time);
             }
         }
     }
@@ -83,10 +72,12 @@ public class Processor implements IProcessor {
         });
     }
 
-    public void exe() {   //
+    public void exe() throws Exception {   //
         Scheduler();
         try{
             interpreter.Exe();
+        }catch(InterpreterException e){
+            processManager.killProcess(processManager.getActivePCB().getPID());
         }catch (Exception e){
             System.out.println(e.getMessage());
         }
