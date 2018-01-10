@@ -617,22 +617,28 @@ public class Interpreter implements IInterpreter {
     //MY reg address - umieszcza w rejestrze zawartość pamiętaną pod wskazanym adresem,
     private void MY(String[] order, int A, int B, int C, int PC) throws Exception {
         String reg = order[1];
-
         String bAddress = order[2];
 
-        int logicalAddress = Integer.parseInt(bAddress);
+        int lenbAddress = bAddress.length();
 
-        int PID = processManager.getActivePCB().getPID();
+        char left = bAddress.charAt(0);
+        char right = bAddress.charAt(lenbAddress-1);
+
+        if((left == '[')||((right == ']'))){
+            throw new Exception("Nieprawidlowy adres");
+        }
+        String logicalAddress = bAddress.replaceAll("\\[", "").replaceAll("]", "");
+        int Address = Integer.parseInt(logicalAddress);
 
         switch (reg){
             case "A":
-                    A = Integer.parseInt(processManager.getCommand(logicalAddress));
+                    A = Integer.parseInt(processManager.getCommand(Address));
                 break;
             case "B":
-                    B = Integer.parseInt(processManager.getCommand(logicalAddress));
+                    B = Integer.parseInt(processManager.getCommand(Address));
                     break;
                 case "C":
-                    C = Integer.parseInt(processManager.getCommand(logicalAddress));
+                    C = Integer.parseInt(processManager.getCommand(Address));
                     break;
                 default:
                     throw new IncorrectRegisterException("Nieprawidlowy rejestr");
