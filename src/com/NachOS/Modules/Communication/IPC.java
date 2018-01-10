@@ -2,22 +2,27 @@ package com.NachOS.Modules.Communication;
 
 import com.NachOS.Modules.Exceptions.ChangedToWaitingException;
 import com.NachOS.Modules.ProcessManager.ProcessManager;
+import com.NachOS.Modules.MemoryManagment.RAM;
+
 
 import java.util.ArrayList;
 
 public class IPC
 {
     private ProcessManager pm;
+    private RAM ram;
 
     private static final int maxSmsSize = 8;
 
     private ArrayList<Sms> allSent = new ArrayList<>();
     private ArrayList<Sms> allReceived = new ArrayList<>();
 
-    public IPC(ProcessManager pm)
+    public IPC(ProcessManager pm, RAM ram)
     {
         this.pm=pm;
+        this.ram=ram;
     }
+
 
     public void sendMessage(int recID, Sms sms)
     {
@@ -65,7 +70,27 @@ public class IPC
 
         System.out.println("Nie znaleziono procesu o ID "+recID);
     }
-    //ogarnąć te kontenery wiadomości czy dla grupy czy nie
+
+    /*private String mergeMessage(Sms sms)
+    {
+        String str="";
+        str+=sms.get_senID()+";"+sms.get_recID()+";"+sms.get_mes();
+        return str;
+    }*/
+
+    public void saveMessage(Sms sms, int adr) //do wywołania w receiveMessage bo zapisuje recID
+    {
+        //mergeMessage(sms);
+        String mes="";
+        mes+=sms.get_senID()+";"+sms.get_recID()+";"+sms.get_mes();
+        for(char c : mes.toCharArray())
+        {
+            ram.writeCharToRam(sms.get_recID(),adr,c);
+        }
+    }
+
+
+
     public void receiveMessage() throws ChangedToWaitingException //int senID, Sms sms)
     {
         ArrayList<Sms> temp_list = pm.getActivePCB().getSmsList();
