@@ -152,7 +152,8 @@ public class ProcessManager implements IProcessManager {
 	public void killProcess(int PID) throws Exception {
 		if(PID == 0) throw new Exception("Nie mo�lna zabi� procesu bezczynno�ci");
 		if(PID == ActivePCB.getPID()){
-			checkIfProcessExists(0).setState(PCB.State.ACTIVE);
+			ActivePCB = checkIfProcessExists(0);
+			ActivePCB.setState(PCB.State.ACTIVE);
 		}
 		PCB temp = checkIfProcessExists(PID);
 		if(temp != null) {
@@ -175,7 +176,8 @@ public class ProcessManager implements IProcessManager {
 			if(PGID == 0) throw new Exception("Brak dost�pu do grupy procesu bezczynno�ci");
 			ArrayList<PCB> temp = checkIfGroupExists(PGID);
 			if(PGID == ActivePCB.getPGID()){
-				checkIfProcessExists(0).setState(PCB.State.ACTIVE);
+				ActivePCB = checkIfProcessExists(0);
+				ActivePCB.setState(PCB.State.ACTIVE);
 			}
 			if(temp != null) {
 				deleteDateForProcessesInGroup(temp);
