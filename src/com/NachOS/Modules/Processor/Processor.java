@@ -26,22 +26,9 @@ public class Processor implements IProcessor {
     public void setInterpreter(Interpreter interpreter){
         this.interpreter = interpreter;
     }
-    /*
-    Jak działa ten algorytm:
-    1. Sprawdzamy czy proces aktywny ma stan FINISED || WAITING && czy lista porceós gotowych jest większa od zero(czy jest jakiś proces w liście procesów gotowy &&
-    i czy aktywny proces to nie proces bezczyności. Jeśli tak:
-        I. Sprawdź czy aktwnyny PCB nie ma stanu Finished:
-            a. Ustaw pole time na wartość Process Countera aktywnego PCB
-            b. Zabij proces.
-        II. Oblicz Thau dla każdego gotowego procesu.
-        III. Posortuj liste gotowych proceós(proces o najmniejszym Thau pierwszy)
-        IV. Ustaw pierwszy element listy jako aktywny proces.
-        V. Ustaw stan wybranego procesu na aktywny.
-    2. Jeśli lista jest pusta, a wybrany proces ma stan FINISED lub WAITING:
-        I. Ustaw stan aktywny jako stan bezczynny.
-     */
-    //TODO NK zweryfikuje to
+
     public void Scheduler() {
+        PCB active = processManager.getActivePCB();
         ArrayList<PCB> processReadyList = processManager.getReadyProcesses();
         if(processManager.getActivePCB().getState() == PCB.State.WAITING || processManager.getActivePCB().getState() == PCB.State.FINISHED ||
                 (processReadyList.size() > 0 && processManager.getActivePCB().getPGID() == 0)){

@@ -37,7 +37,8 @@ public class Interpreter implements IInterpreter {
 
         Procesy
         CP file_name - tworzenie procesu o podanej nazwie,
-        KP PID- usunięcie procesu po ID,
+        KP file_name - usunięcie procesu po ID,
+        RP file_name – uruchamia proces o podanym ID
 
         Pliki
         CE file_name - tworzy pusty plik o podanej nazwie,
@@ -725,7 +726,7 @@ public class Interpreter implements IInterpreter {
 
     //KP file_name - usunięcie procesu po ID
     private void KP(String[] order, int PC) throws Exception{
-        int PID = Integer.parseInt(order[1]);
+        int PID = Integer.parseInt(order[2]);
         try {
             processManager.killProcess(PID);
         } catch (Exception e){
@@ -856,10 +857,10 @@ public class Interpreter implements IInterpreter {
 
         int lenbAddress = bAddress.length();
 
-        char left = bAddress.charAt(0);
-        char right = bAddress.charAt(lenbAddress-1);
+        Character left = bAddress.charAt(0);
+        Character right = bAddress.charAt(lenbAddress-1);
 
-        if((left !='[')||(right != ']')){
+        if((!left.equals("["))||(!right.equals("]"))){
             throw new Exception("Nieprawidlowy adres");
         }
 
