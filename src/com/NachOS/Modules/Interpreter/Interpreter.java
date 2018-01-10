@@ -727,7 +727,7 @@ public class Interpreter implements IInterpreter {
 
     //---------------------------------PROCESY---------------------------------------
 
-    //CP file_name - tworzenie procesu o podanej nazwie i nazwie pliku
+    //CP name file_name - tworzenie procesu o podanej nazwie i nazwie pliku
     private void CP(String[] order, int PC) throws Exception {
         String name = order[1];
         String fileName = order[2];
@@ -741,7 +741,7 @@ public class Interpreter implements IInterpreter {
         //SaveTimer();
     }
 
-    //KP file_name - usunięcie procesu po ID
+    //KP ID - usunięcie procesu po ID
     private void KP(String[] order, int PC) throws Exception {
         int PID = Integer.parseInt(order[1]);
         try {
@@ -804,7 +804,7 @@ public class Interpreter implements IInterpreter {
     private void AF(String[] order, int PC) throws Exception {
         try {
             String filename = order[1];
-            int n = order[2].length();
+            int n = order.length;
 
             String fileContent = "";
             for (int i = 2; i < n; i++) {
@@ -881,10 +881,17 @@ public class Interpreter implements IInterpreter {
     }
 
     //SM PID message - wysłanie komunikatu
-    private void SM(String[] order, int PC) throws Exception {
+    private void SM(String[] order, int PC) throws IPCException {
+        int n = order.length;
+        int PID = Integer.parseInt(order[1]);
+
+        String message ="";
+
+        for (int i=2;i<n;i++) {
+            message += order[i] + " ";
+        }
+        Sms sms = new Sms(message);
         try {
-            int PID = Integer.parseInt(order[1]);
-            Sms sms = new Sms(order[2]);
             communication.sendMessage(PID, sms);
         } catch (IPCException e){
             throw e;
