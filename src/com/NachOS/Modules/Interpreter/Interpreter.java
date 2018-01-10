@@ -567,8 +567,8 @@ public class Interpreter implements IInterpreter {
     }
 
     //MZ address reg - zapisuje do pamięci zawartość rejestru pod wskazanym adresem,
-    //TODO metoda do zapisywania do pamięci - Klaudia
     private void MZ(String[] order, int A, int B, int C, int PC) throws Exception {
+        String reg = order[2];
         String bAddress = order[1];
 
         int lenbAddress = bAddress.length();
@@ -582,7 +582,19 @@ public class Interpreter implements IInterpreter {
         String logicalAddress = bAddress.replaceAll("\\[", "").replaceAll("]", "");
         int Address = Integer.parseInt(logicalAddress);
 
-        //memory.
+        switch (reg){
+            case "A":
+                processManager.setSafeMemory(Address, (char) A);
+                break;
+            case "B":
+                processManager.setSafeMemory(Address, (char) B);
+                break;
+            case "C":
+                processManager.setSafeMemory(Address, (char) C);
+                break;
+            default:
+                throw new IncorrectRegisterException("Nieprawidlowy rejestr");
+        }
 
         PC++;
         RegisterStatus(A,B,C,PC);
