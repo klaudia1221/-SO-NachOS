@@ -1,7 +1,7 @@
 package com.NachOS.Modules.FileSystem;
 
 import com.NachOS.Modules.ACL.User;
-import com.NachOS.Modules.Exceptions.ChangedToWaitingException;
+import com.NachOS.Modules.Exceptions.*;
 import com.NachOS.Modules.ProcessManager.IProcessManager;
 import com.NachOS.*;
 
@@ -16,15 +16,15 @@ public class FileSystem implements IFileSystem {
         this.processManager = processManager;
     }
 
-    public FileBase getFileBase(String name) throws Exception{
+    public FileBase getFileBase(String name) throws FileNameException{
         if(!nameExists(name)){
-            throw new Exception("Name dosen't exist.");
+            throw new FileNameException("Name dosen't exist.");
         }
         return dir.getFileByName(name);
     }
 
-    public void openFile(String fileName) throws Exception {
-        if (!nameExists(fileName)) { throw new Exception("Plik o takiej nazwie nie istnieje."); }
+    public void openFile(String fileName) throws FileNameException, ChangedToWaitingException {
+        if (!nameExists(fileName)) { throw new FileNameException("Plik o takiej nazwie nie istnieje."); }
         else {
             // TODO otoczyc try catch, łapać wyjatek ChangedToWaitingException i propagowac dalej gdzie bedzie przejety przez interpreter
             try{
@@ -46,18 +46,18 @@ public class FileSystem implements IFileSystem {
         }
     }
 
-    public void closeFile(String fileName) throws Exception {
-        if (!nameExists(fileName)) { throw new Exception("Plik o takiej nazwie nie istnieje."); }
-        else if (!dir.open_check(fileName)) { throw new Exception("Plik o takiej nazwie nie jest otwarty."); }
+    public void closeFile(String fileName) throws FileNameException, FileNotOpenException {
+        if (!nameExists(fileName)) { throw new FileNameException("Plik o takiej nazwie nie istnieje."); }
+        else if (!dir.open_check(fileName)) { throw new FileNotOpenException("Plik o takiej nazwie nie jest otwarty."); }
         else {
             dir.close_file(fileName);
             dir.getFileByName(fileName).cv.signal();
         }
     }
 
-    public void createFile(String fileName, User user, IProcessManager processManager) throws Exception{
-        if (nameExists(fileName)) { throw new Exception("Plik o takiej nazwie istnieje.");}
-        else if (Drive.FREE_BLOCKS==0) { throw new Exception("Za mało miejsca na dysku."); }
+    public void createFile(String fileName, User user, IProcessManager processManager) throws FileNameException, FileSizeException{
+        if (nameExists(fileName)) { throw new FileNameException("Plik o takiej nazwie istnieje.");}
+        else if (Drive.FREE_BLOCKS==0) { throw new FileSizeException("Za mało miejsca na dysku."); }
         else {
             int index = firstFreeBlock();
             Drive.bitVec[index] = false;
@@ -67,10 +67,10 @@ public class FileSystem implements IFileSystem {
         }
     }
 
-    public void appendFile(String fileName, String content) throws Exception {
-        if (!nameExists(fileName)) { throw new Exception("Plik o takiej nazwie nie istnieje."); }
-        else if (!dir.open_check(fileName)) { throw new Exception("Plik o takiej nazwie nie jest otwarty."); }
-        else if (((double)content.length()/31.0)>=Drive.FREE_BLOCKS) { throw new Exception("Za mało miejsca na dysku."); }
+    public void appendFile(String fileName, String content) throws FileNameException, FileNotOpenException, FileSizeException {
+        if (!nameExists(fileName)) { throw new FileNameException("Plik o takiej nazwie nie istnieje."); }
+        else if (!dir.open_check(fileName)) { throw new FileNotOpenException("Plik o takiej nazwie nie jest otwarty."); }
+        else if (((double)content.length()/31.0)>=Drive.FREE_BLOCKS) { throw new FileSizeException("Za mało miejsca na dysku."); }
         else {
             dir.updateFileContent(fileName, content);
             int current_block, i;
@@ -108,9 +108,9 @@ public class FileSystem implements IFileSystem {
         }
             }
 
-    public void deleteContent(String fileName) throws Exception {
-        if (!nameExists(fileName)) {throw new Exception("Plik o takiej nazwie nie istnieje."); }
-        else if (!dir.open_check(fileName)) { throw new Exception("Plik o takiej nazwie nie jest otwarty.");  }
+    public void deleteContent(String fileName) throws FileNameException, FileNotOpenException {
+        if (!nameExists(fileName)) {throw new FileNameException("Plik o takiej nazwie nie istnieje."); }
+        else if (!dir.open_check(fileName)) { throw new FileNotOpenException("Plik o takiej nazwie nie jest otwarty.");  }
         else {
             int block = dir.getFirstBlock(fileName);
             dir.changeLast(fileName, block);
@@ -126,15 +126,15 @@ public class FileSystem implements IFileSystem {
         }
     }
 
-    public String readFile(String fileName) throws Exception {
-        if (!nameExists(fileName)) { throw new Exception("Plik o takiej nazwie nie istnieje."); }
-        else if (!dir.open_check(fileName)) { throw new Exception("Plik o takiej nazwie nie jest otwarty."); }
+    public String readFile(String fileName) throws FileNameException, FileNotOpenException {
+        if (!nameExists(fileName)) { throw new FileNameException("Plik o takiej nazwie nie istnieje."); }
+        else if (!dir.open_check(fileName)) { throw new FileNotOpenException("Plik o takiej nazwie nie jest otwarty."); }
         else { return dir.getContent(fileName); }
     }
 
-    public String readFileShell(String fileName) throws Exception {
+    public String readFileShell(String fileName) throws FileNameException {
         String tmp = new String();
-        if (!nameExists(fileName)) { throw new Exception("Plik o takiej nazwie nie istnieje."); }
+        if (!nameExists(fileName)) { throw new FileNameException("Plik o takiej nazwie nie istnieje."); }
         else {
             int block = dir.getFirstBlock(fileName), i=0;
             while (tmp.length()<dir.getSize(fileName)) {
@@ -149,8 +149,8 @@ public class FileSystem implements IFileSystem {
         return tmp;
     }
 
-    public void deleteFile(String fileName) throws Exception {
-        if (!nameExists(fileName)) { throw new Exception("Plik o takiej nazwie nie istnieje.");  }
+    public void deleteFile(String fileName) throws FileNameException {
+        if (!nameExists(fileName)) { throw new FileNameException("Plik o takiej nazwie nie istnieje.");  }
         else {
             int block = dir.getFirstBlock(fileName);
             while (block != 32){
@@ -162,9 +162,9 @@ public class FileSystem implements IFileSystem {
         }
     }
 
-    public void renameFile(String oldName, String newName) throws Exception {
-        if (!nameExists(oldName)) { throw new Exception("Plik o takiej nazwie nie istnieje."); }
-        if (nameExists(newName)) { throw new Exception("Plik o takiej nazwie już istnieje."); }
+    public void renameFile(String oldName, String newName) throws FileNameException {
+        if (!nameExists(oldName)) { throw new FileNameException("Plik o takiej nazwie nie istnieje."); }
+        if (nameExists(newName)) { throw new FileNameException("Plik o takiej nazwie już istnieje."); }
         else { dir.changeName(oldName, newName); }
     }
 
@@ -176,9 +176,9 @@ public class FileSystem implements IFileSystem {
         return dir_list;
     }
 
-    public File getFile(String fileName)throws Exception{
+    public File getFile(String fileName)throws FileNameException{
         if(!nameExists(fileName)){
-            throw new Exception("Plik o takiej nazwie nie istnieje.");
+            throw new FileNameException("Plik o takiej nazwie nie istnieje.");
         }else {
             return dir.getFileByName(fileName);
         }

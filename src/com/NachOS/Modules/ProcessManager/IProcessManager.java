@@ -21,4 +21,6 @@ public interface IProcessManager {
     ArrayList<PCB> getReadyProcesses();
     String getCommand(int pointer);
     void setStateOfActivePCB(PCB.State state);
+    char getSafeMemory(int pointer);
+    void setSafeMemory(int pointer, char content);
 }
