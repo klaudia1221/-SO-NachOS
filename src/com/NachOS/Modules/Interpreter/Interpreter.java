@@ -567,10 +567,19 @@ public class Interpreter implements IInterpreter {
 
     //MZ address reg - zapisuje do pamięci zawartość rejestru pod wskazanym adresem,
     //TODO metoda do zapisywania do pamięci - Klaudia
-    private void MZ(String[] order, int A, int B, int C, int PC) throws Exception {
+    private void MZ(String[] order, int A, int B, int C, int PC) {
         String raw_address = order[1];
         String reg = order[2];
         String[] split_address = raw_address.split("");
+
+        /*int len = raw_address.length();
+
+        String left = split_address[0];
+        String right = split_address[len-1];
+
+        if((left.equals("[") ||(right.equals("]")){
+
+        }
 
         if ((!split_address[0].equals("[")) || (!split_address[raw_address.length() - 1].equals("]"))) {
             System.out.println("Incorrect address.");
@@ -591,6 +600,7 @@ public class Interpreter implements IInterpreter {
                     throw new IncorrectRegisterException("Nieprawidlowy rejestr");
             }
         }
+        */
         PC++;
         RegisterStatus(A,B,C,PC);
         SaveRegister(A,B,C,PC);
@@ -729,11 +739,12 @@ public class Interpreter implements IInterpreter {
 
     //---------------------------------PROCESY---------------------------------------
 
-    //CP file_name - tworzenie procesu o podanej nazwie,
+    //CP file_name - tworzenie procesu o podanej nazwie i nazwie pliku
     private void CP(String[] order, int PC) throws Exception{
+        String name = order[1];
         String fileName = order[2];
         try {
-            processManager.runNew(fileName);
+            processManager.runNew(name, fileName);
         } catch (Exception e){
             throw e;
         }
@@ -741,6 +752,7 @@ public class Interpreter implements IInterpreter {
         processManager.getActivePCB().setCounter(PC);
         SaveTimer();
     }
+
     //TODO ogarnąć
     //KP file_name - usunięcie procesu po ID,
     //wykorzystywane przy komunikatach
@@ -897,7 +909,12 @@ public class Interpreter implements IInterpreter {
     //RM  - zapisywanie otrzymanego komunikatu do RAM
     //Kuba metoda receiveMessage
     private void RM(String[] order, int PC) {
-        String message = order[1];
+        int n = order.length;
+
+        String message = "";
+        for (int i = 1; i < n; i++) {
+            message += order[i];
+        }
         //Jeśli złapie ChangedToWaitingException to licznik się nie zmienia
         try {
             communication.receiveMessage();
@@ -1030,7 +1047,7 @@ public class Interpreter implements IInterpreter {
                     break;
                 //-----------------------------KOMUNIKATY---------------------------------------
                 case "RM":
-                    RM(PC);
+                    RM(order, PC);
                     break;
                 case "SM":
                     SM(order, PC);
