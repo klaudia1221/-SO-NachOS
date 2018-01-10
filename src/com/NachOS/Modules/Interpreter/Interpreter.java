@@ -48,9 +48,9 @@ public class Interpreter implements IInterpreter {
         RN old_file_name new_file_name - zmienia nazwę pliku
 
         Komunikaty
-        RM  - zapisywanie otrzymanego komunikatu do RAM,
-        SM  - wysłanie komunikatu 
-        LM - wczytywanie i wysyłanie wiadomości z RAM,
+        RM - zapisywanie otrzymanego komunikatu do RAM,
+        SM PID message - wysłanie komunikatu 
+        LM address- wczytywanie i wysyłanie wiadomości z RAM,
 
         EX - kończy program
      **/
@@ -804,11 +804,11 @@ public class Interpreter implements IInterpreter {
     private void AF(String[] order, int PC) throws Exception {
         try {
             String filename = order[1];
-            int n = order.length;
+            int n = order[2].length();
 
             String fileContent = "";
             for (int i = 2; i < n; i++) {
-                fileContent += order[i];
+                fileContent += order[i] + " ";
             }
             fileSystem.appendFile(filename, fileContent);
         } catch (FileSystemException e) {
@@ -867,9 +867,37 @@ public class Interpreter implements IInterpreter {
 
     //-----------------------------KOMUNIKATY---------------------------------------
 
-    //RM - zapisywanie otrzymanego komunikatu do RAM,
-    private void RM(String[] order, int PC) throws Exception {
-        String bAddress = order[1];
+    //RM - odbieranie i zapisywanie otrzymanego komunikatu do RAM
+    private void RM(String[] order, int PC) {
+        //Jeśli złapie ChangedToWaitingException to licznik się nie zmienia
+        try {
+            communication.receiveMessage();
+        } catch (ChangedToWaitingException e) {
+            PC--;
+        }
+        PC++;
+        processManager.getActivePCB().setCounter(PC);
+        //SaveTimer();
+    }
+
+    //SM PID message - wysłanie komunikatu
+    private void SM(String[] order, int PC) {
+        try {
+            int PID = Integer.parseInt(order[1]);
+            Sms sms = new Sms(order[2]);
+            communication.sendMessage(PID, sms);
+        } catch (Exception e){
+            throw e;
+        }
+        PC++;
+        processManager.getActivePCB().setCounter(PC);
+        //SaveTimer();
+    }
+
+    //LM PID adres- wczytywanie i wysyłanie wiadomości z RAM
+    private void LM(String[] order, int PC) throws Exception {
+        String bAddress = order[2];
+        int PID = Integer.parseInt(order[1]);
 
         int lenbAddress = bAddress.length();
 
@@ -883,33 +911,6 @@ public class Interpreter implements IInterpreter {
         String logicalAddress = bAddress.replaceAll("\\[", "").replaceAll("]", "");
         int Address = Integer.parseInt(logicalAddress);
 
-        //Jeśli złapie ChangedToWaitingException to licznik się nie zmienia
-        try {
-            communication.receiveMessage(Address);
-        } catch (ChangedToWaitingException e) {
-            PC--;
-        }
-        PC++;
-        processManager.getActivePCB().setCounter(PC);
-        //SaveTimer();
-    }
-
-    //SM - wysłanie komunikatu
-    private void SM(String[] order, int PC) {
-        int PID = Integer.parseInt(order[1]);
-        Sms sms = new Sms(order[2]);
-        communication.sendMessage(PID, sms);
-        PC++;
-        processManager.getActivePCB().setCounter(PC);
-        //SaveTimer();
-    }
-
-    //LM - wczytywanie i wysyłanie wiadomości z RAM
-    private void LM(String[] order, int PC) {
-        String s_PID = order[1];
-        String bAddress = order[2];
-
-        int PID = Integer.parseInt(s_PID);
         int address = Integer.parseInt(bAddress);
 
         try {
