@@ -857,10 +857,10 @@ public class Shell {
     private void conditionVariable(String[] command){
         //cv --file [nazwaPliku]
         if(command.length==3){
-            if(command[2].equals("--file")) {
+            if(command[1].equals("--file")) {
                 File file = null;
                 try {
-                    file = fileSystem.getFile(command[1]);
+                    file = fileSystem.getFile(command[2]);
                     file.cv.printInfo();
                 } catch (Exception e) {
                     System.out.println(e.getMessage());

@@ -10,6 +10,7 @@ import com.NachOS.Modules.Communication.IPC;
 import com.NachOS.Modules.Communication.Sms;
 import com.NachOS.Modules.ACL.Interfaces.ILoginService;
 import com.NachOS.Modules.ProcessManager.PCB;
+import com.NachOS.Modules.MemoryManagment.RAM;
 
 public class Interpreter implements IInterpreter {
     /**
@@ -52,6 +53,7 @@ public class Interpreter implements IInterpreter {
         Komunikaty
         RM  - zapisywanie otrzymanego komunikatu do RAM,
         SM  - wysłanie komunikatu 
+        LM - wczytywanie i wysyłanie wiadomości z RAM,
 
         EX - kończy program
      **/
@@ -60,6 +62,7 @@ public class Interpreter implements IInterpreter {
     private IFileSystem fileSystem;
     private IPC communication;
     private ILoginService loginService;
+    private RAM memory;
 
     public Interpreter(IProcessManager processManager,
                        IFileSystem fileSystem,
@@ -567,28 +570,34 @@ public class Interpreter implements IInterpreter {
 
     //MZ address reg - zapisuje do pamięci zawartość rejestru pod wskazanym adresem,
     //TODO metoda do zapisywania do pamięci - Klaudia
-    private void MZ(String[] order, int A, int B, int C, int PC) {
+    private void MZ(String[] order, int A, int B, int C, int PC) throws Exception {
         String raw_address = order[1];
         String reg = order[2];
+
         String[] split_address = raw_address.split("");
 
-        /*int len = raw_address.length();
+        int len = raw_address.length();
 
         String left = split_address[0];
         String right = split_address[len-1];
 
-        if((left.equals("[") ||(right.equals("]")){
+        String stringA = Integer.toString(A);
+        int lenStringA = stringA.length();
 
+        int PID = processManager.getActivePCB().getPID();
+
+        if((left == "[") || (right == "]")){
+            throw new Exception("Nieprawidlowy adres");
         }
-
-        if ((!split_address[0].equals("[")) || (!split_address[raw_address.length() - 1].equals("]"))) {
-            System.out.println("Incorrect address.");
-        } else {
+        else {
             raw_address = raw_address.replaceAll("\\[", "").replaceAll("]", "");
             int address = Integer.parseInt(raw_address);
             switch (reg){
                 case "A":
-                    //memory.writeMemory((char) A, address);
+                    for (int i=0; i<lenStringA; i++) {
+                        memory.writeCharToRam(PID, address, stringA.charAt(i));
+                        address++;
+                    }
                     break;
                 case "B":
                     //memory.writeMemory((char) B, address);
@@ -600,7 +609,6 @@ public class Interpreter implements IInterpreter {
                     throw new IncorrectRegisterException("Nieprawidlowy rejestr");
             }
         }
-        */
         PC++;
         RegisterStatus(A,B,C,PC);
         SaveRegister(A,B,C,PC);
@@ -908,16 +916,36 @@ public class Interpreter implements IInterpreter {
 
     //RM  - zapisywanie otrzymanego komunikatu do RAM
     //Kuba metoda receiveMessage
-    private void RM(String[] order, int PC) {
-        int n = order.length;
+    private void RM(String[] order, int PC) throws Exception{
+        String bAddress = order[1];
 
-        String message = "";
-        for (int i = 1; i < n; i++) {
-            message += order[i];
+        int lenbAddress = bAddress.length();
+
+        int lenMessage = order[2].length();
+
+        Character left = bAddress.charAt(0);
+        Character right = bAddress.charAt(lenbAddress-1);
+
+        String logicalAddress ="";
+
+        for(int i=1;i<lenbAddress-1;i++){
+            logicalAddress += bAddress.charAt(i);
+        }
+
+        int Address = Integer.parseInt(logicalAddress);
+
+        if((!left.equals("["))||(!right.equals("]"))){
+            throw new Exception("Nieprawidlowy adres");
+        }
+        else {
+            String message = "";
+            for (int i = 0; i < lenMessage; i++) {
+                message += order[i];
+            }
         }
         //Jeśli złapie ChangedToWaitingException to licznik się nie zmienia
         try {
-            communication.receiveMessage();
+            communication.receiveMessage(Address);
         } catch (ChangedToWaitingException e) {
             PC--;
         }
@@ -936,6 +964,22 @@ public class Interpreter implements IInterpreter {
         processManager.getActivePCB().setCounter(PC);
         SaveTimer();
     }
+
+    private void LM(String[] order, int PC) {
+        String s_PID = order[0];
+        String bAddress = order[1];
+
+        int PID = Integer.parseInt(s_PID);
+        int address = Integer.parseInt(bAddress);
+
+        communication.loadMessage(PID, address);
+
+        PC++;
+        processManager.getActivePCB().setCounter(PC);
+        SaveTimer();
+    }
+
+
 
     //------------------------------------------------------------------------------
 
