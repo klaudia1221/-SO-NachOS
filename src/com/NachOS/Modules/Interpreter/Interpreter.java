@@ -881,34 +881,22 @@ public class Interpreter implements IInterpreter {
 
     //-----------------------------KOMUNIKATY---------------------------------------
 
-    //RM - zapisywanie otrzymanego komunikatu do RAM
+    //RM - zapisywanie otrzymanego komunikatu do RAM,
     private void RM(String[] order, int PC) throws Exception {
         String bAddress = order[1];
 
         int lenbAddress = bAddress.length();
 
-        int lenMessage = order[2].length();
-
         Character left = bAddress.charAt(0);
         Character right = bAddress.charAt(lenbAddress-1);
-
-        String logicalAddress ="";
-
-        for(int i=1;i<lenbAddress-1;i++){
-            logicalAddress += bAddress.charAt(i);
-        }
-
-        int Address = Integer.parseInt(logicalAddress);
 
         if((!left.equals("["))||(!right.equals("]"))){
             throw new Exception("Nieprawidlowy adres");
         }
-        else {
-            String message = "";
-            for (int i = 0; i < lenMessage; i++) {
-                message += order[i];
-            }
-        }
+
+        String logicalAddress = bAddress.replaceAll("\\[", "").replaceAll("]", "");
+        int Address = Integer.parseInt(logicalAddress);
+
         //Jeśli złapie ChangedToWaitingException to licznik się nie zmienia
         try {
             communication.receiveMessage(Address);
@@ -1041,9 +1029,6 @@ public class Interpreter implements IInterpreter {
                     break;
                 case "CL":
                     CL(order, PC);
-                    break;
-                case "CF":
-                    CF(order, PC);
                     break;
                 case "AF":
                     AF(order, PC);
