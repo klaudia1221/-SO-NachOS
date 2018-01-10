@@ -11,8 +11,11 @@ import java.util.Map;
 
 public class IPC
 {
-    public static final char zs = '-'; //znak oddzielajacy fragmenty wiadomosci w ramie
-    public static final char zk = '$'; //znak konca wiadomosci w ramie
+    //public static final char zs = '-'; //znak oddzielajacy fragmenty wiadomosci w ramie
+    //public static final char zk = '$'; //znak konca wiadomosci w ramie
+
+    public static final String zs = "-";
+    public static final String zk = "$";
 
     private Map<Integer, Integer> firstFree = new HashMap<>(); //<PID,pierwsze wolne miejsce w RAMie>
 
@@ -94,6 +97,7 @@ public class IPC
         }
         try
         {
+            System.out.println("MESSAGE: "+mes);
             for(char c : mes.toCharArray())
             {
                 pm.setSafeMemory(firstFree.get(PID),c);
@@ -102,7 +106,7 @@ public class IPC
                 temp++;
                 firstFree.put(PID,temp);
             }
-            pm.setSafeMemory(firstFree.get(PID),zk);
+            pm.setSafeMemory(firstFree.get(PID),zk.charAt(0));
         } catch(Exception e)
         {
             System.out.println("Blad zapisu wiadomosci");
@@ -167,12 +171,15 @@ public class IPC
         char c;
         //c=ram.getFromRam(adr);
         c=pm.getSafeMemory(adr);
-        while(c!=zk)
+        while(c!=zk.charAt(0))
         {
             str+=c;
             c=pm.getSafeMemory(adr);
         }
-        parts=str.split(Character.toString(zs));
+
+        //parts=str.split(Character.toString(zs));
+        parts=str.split(zs);
+
         //Sms sms = new Sms(parts[2]);
         //sms.set_senID(Integer.parseInt(parts[0]));
         //sms.set_recID(Integer.parseInt(parts[1]));
