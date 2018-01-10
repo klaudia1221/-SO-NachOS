@@ -568,50 +568,21 @@ public class Interpreter implements IInterpreter {
 
     //MZ address reg - zapisuje do pamięci zawartość rejestru pod wskazanym adresem,
     //TODO metoda do zapisywania do pamięci - Klaudia
-    private void MZ(String[] order, int A, int B, int C, int PC) {
+    private void MZ(String[] order, int A, int B, int C, int PC) throws Exception {
         String bAddress = order[1];
 
         int lenbAddress = bAddress.length();
 
-        String reg = order[2];
+        char left = bAddress.charAt(0);
+        char right = bAddress.charAt(lenbAddress-1);
 
-        Character left = bAddress.charAt(0);
-        Character right = bAddress.charAt(lenbAddress-1);
-
-        String logicalAddress ="";
-
-        for(int i=1;i<lenbAddress-1;i++){
-            logicalAddress += bAddress.charAt(i);
-        }
-
-        int Address = Integer.parseInt(logicalAddress);
-
-        int PID = processManager.getActivePCB().getPID();
-/*
-        if((!left.equals("["))||(!right.equals("]"))){
+        if((left !='[')||(right != ']')){
             throw new Exception("Nieprawidlowy adres");
         }
-        else {
-            raw_address = raw_address.replaceAll("\\[", "").replaceAll("]", "");
-            int address = Integer.parseInt(raw_address);
-            switch (reg){
-                case "A":
-                    for (int i=0; i<lenStringA; i++) {
-                        memory.writeCharToRam(PID, address, stringA.charAt(i));
-                        address++;
-                    }
-                    break;
-                case "B":
-                    //memory.writeMemory((char) B, address);
-                    break;
-                case "C":
-                    //memory.writeMemory((char) C, address);
-                    break;
-                default:
-                    throw new IncorrectRegisterException("Nieprawidlowy rejestr");
-            }
-        }
-        */
+
+        String logicalAddress = bAddress.replaceAll("\\[", "").replaceAll("]", "");
+        int Address = Integer.parseInt(logicalAddress);
+
         PC++;
         RegisterStatus(A,B,C,PC);
         SaveRegister(A,B,C,PC);
@@ -762,7 +733,6 @@ public class Interpreter implements IInterpreter {
         }
         PC++;
         processManager.getActivePCB().setCounter(PC);
-
         //SaveTimer();
     }
 
