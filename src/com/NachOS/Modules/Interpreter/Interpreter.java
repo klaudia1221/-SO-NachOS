@@ -966,10 +966,13 @@ public class Interpreter implements IInterpreter {
     }
 
     private void LM(String[] order, int PC) {
-        String PID = order[0];
-        String address = order[1];
+        String s_PID = order[0];
+        String bAddress = order[1];
 
-        //communication.loadMessage()
+        int PID = Integer.parseInt(s_PID);
+        int address = Integer.parseInt(bAddress);
+
+        communication.loadMessage(PID, address);
 
         PC++;
         processManager.getActivePCB().setCounter(PC);
