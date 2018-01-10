@@ -60,11 +60,11 @@ public class ConditionVariable implements IConditionVariable {
             PCB activePCB = this.processManager.getActivePCB();
             this.processManager.setStateOfActivePCB(PCB.State.WAITING); // zmien stan aktywnego procesu na WAITING
             this.waiting.addLast(activePCB); // dodaj do kolejki
-            System.out.println("ConVar: Zmieniam stan aktywnego procesu o id " + Integer.toString(activePCB.getPID()) + " na `WAITING`");
+            System.out.println("CV: Zmieniam stan aktywnego procesu o id " + Integer.toString(activePCB.getPID()) + " na `WAITING`");
             throw new ChangedToWaitingException("Stan zmieniony na waiting.");
         } else {
             this.busy = true;
-            System.out.println("ConVar: Zablokowalem zasob.");
+            System.out.println("CV: Zablokowalem zasob.");
         }
     }
 
@@ -76,13 +76,13 @@ public class ConditionVariable implements IConditionVariable {
      */
     public void signal() {
         this.busy = false; // "uwolnij" zasób
-        System.out.println("ConVar: Uwolnilem zasob.");
+        System.out.println("CV: Uwolnilem zasob.");
 
         if(!this.waiting.isEmpty()) { // jezeli są procesy oczeujace to wyrzuć pierwszy i zmien na `ready`
             PCB pcb = this.waiting.getFirst(); // weź pierwszy z kolejki (bufora)
             pcb.setState(PCB.State.READY); // zmien stan procesu na READY i wywolaj planiste
             this.waiting.removeFirst(); // usuń z początku kolejki oczekujących (ten ktorego stan zmienilismy)
-            System.out.println("ConVar: Zmieniam stan procesu o id " + Integer.toString(pcb.getPID()) + " na `READY`");
+            System.out.println("CV: Zmieniam stan procesu o id " + Integer.toString(pcb.getPID()) + " na `READY`");
         }
     }
 

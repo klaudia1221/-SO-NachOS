@@ -1,1 +1,1 @@
-MO A 5;MO B 3;MO C 8;MD A 3 B;MZ [30] A;PE B;EX;
+MO A 25;MO B 3;MO C 8;MZ [30] A;MY B [30];PE B;EX;
