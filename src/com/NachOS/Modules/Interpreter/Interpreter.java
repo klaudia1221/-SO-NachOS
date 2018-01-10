@@ -906,7 +906,7 @@ public class Interpreter implements IInterpreter {
 
     //-----------------------------KOMUNIKATY---------------------------------------
 
-    //RM  - zapisywanie otrzymanego komunikatu do RAM
+    //RM - zapisywanie otrzymanego komunikatu do RAM
     private void RM(String[] order, int PC) throws Exception{
         String bAddress = order[1];
 
@@ -945,7 +945,7 @@ public class Interpreter implements IInterpreter {
         //SaveTimer();
     }
 
-    //SM  - wysłanie komunikatu
+    //SM - wysłanie komunikatu
     private void SM(String[] order, int PC) {
         int PID = Integer.parseInt(order[1]);
         Sms sms = new Sms(order[2]);
@@ -955,6 +955,7 @@ public class Interpreter implements IInterpreter {
         //SaveTimer();
     }
 
+    //LM - wczytywanie i wysyłanie wiadomości z RAM
     private void LM(String[] order, int PC) {
         String s_PID = order[1];
         String bAddress = order[2];
@@ -972,8 +973,6 @@ public class Interpreter implements IInterpreter {
         processManager.getActivePCB().setCounter(PC);
         //SaveTimer();
     }
-
-
 
     //------------------------------------------------------------------------------
 
@@ -1089,6 +1088,9 @@ public class Interpreter implements IInterpreter {
                     break;
                 case "SM":
                     SM(order, PC);
+                    break;
+                case "LM":
+                    LM(order, PC);
                     break;
                 case "EX":
                     EX(PC);
