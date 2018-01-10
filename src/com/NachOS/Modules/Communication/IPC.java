@@ -32,27 +32,26 @@ public class IPC
         this.ram=ram;
     }
 
-    public void sendMessage(int recID, Sms sms) throws WrongGroupException, WrongProcessIDException, SenderReceiverException, TooLongException
-    {
+    public void sendMessage(int recID, Sms sms) throws WrongGroupException, WrongProcessIDException, SenderReceiverException, TooLongException, NoReceiverException {
         sms.set_recID(recID);
         sms.set_senID(pm.getActivePCB().getPID());
         if(pm.getActivePCB().getPID()==recID) //sprawdza czy nadawca nie jest odbiorca
         {
-            throw new SenderReceiverException("");
+            throw new SenderReceiverException("Nadawca nie moze byc jednoczesnie odbiorca");
         }
         if(sms.get_mesSize()>maxSmsSize) //sprawdza czy wiadomosc nie przekracza max rozmiaru
         {
-            throw new TooLongException("");
+            throw new TooLongException("Wiadomosc jest zbyt dluga");
         }
 
         if(pm.checkIfProcessExists(recID)==null) //sprawdza czy istnieje proces o ID==recID
         {
-            throw new WrongProcessIDException("");
+            throw new NoReceiverException("Nie znaleziono procesu odbiorcy");
         }
 
             if(pm.getActivePCB().getPGID()!=pm.checkIfProcessExists(recID).getPGID()) //sprawdza czy procesy sa w tej samej grupie
             {
-                throw new WrongGroupException("");
+                throw new WrongGroupException("Odbiorca w innej grupie niz nadawca");
             }
             //zapisz w odpowiednim polu PCB danego procesu wiadomość
             ArrayList<Sms> temp_list = pm.getPCB(recID).getSmsList();
@@ -110,7 +109,7 @@ public class IPC
         }
     }
 
-    public void receiveMessage() throws ChangedToWaitingException //int senID, Sms sms)
+    public void receiveMessage() throws ChangedToWaitingException
     {
         ArrayList<Sms> temp_list = pm.getActivePCB().getSmsList();
         if(temp_list.size()==0)//kontener wiadomości z PCB jest pusty
@@ -181,8 +180,7 @@ public class IPC
         return parts[2];
     }
 
-    public void loadAndSend(int recID, int adr) throws TooLongException, WrongProcessIDException, SenderReceiverException, WrongGroupException
-    {
+    public void loadAndSend(int recID, int adr) throws TooLongException, WrongProcessIDException, SenderReceiverException, WrongGroupException, NoReceiverException {
         Sms sms = new Sms(loadMessage(adr));
         sendMessage(recID, sms);
     }
