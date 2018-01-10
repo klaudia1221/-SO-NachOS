@@ -167,6 +167,13 @@ public class IPC
         return parts[2];
     }
 
+    void loadAndSend(int adr, int recID)
+    {
+        Sms sms = new Sms(loadMessage(adr));
+        sendMessage(recID, sms);
+
+    }
+
     public void display_sent()
     {
         for(Sms sms : allSent)//przegląda historie wyslanych
