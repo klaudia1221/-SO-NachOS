@@ -726,7 +726,7 @@ public class Interpreter implements IInterpreter {
 
     //KP file_name - usunięcie procesu po ID
     private void KP(String[] order, int PC) throws Exception{
-        int PID = Integer.parseInt(order[2]);
+        int PID = Integer.parseInt(order[1]);
         try {
             processManager.killProcess(PID);
         } catch (Exception e){
