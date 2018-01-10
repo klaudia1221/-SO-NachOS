@@ -645,45 +645,34 @@ public class Interpreter implements IInterpreter {
     }
 
     //MY reg address - umieszcza w rejestrze zawartość pamiętaną pod wskazanym adresem,
-    //TODO metoda do czytania z pamięci - Klaudia
-    private void MY(String[] order, int A, int B, int C, int PC) {
+    private void MY(String[] order, int A, int B, int C, int PC) throws Exception {
         String reg = order[1];
-        String raw_address = order[2];
-        String[] split_address = raw_address.split("");
 
-        if ((!split_address[0].equals("[")) || (!split_address[raw_address.length() - 1].equals("]"))) {
-            System.out.println("Incorrect address.");
-        } else {
-            raw_address = raw_address.replaceAll("\\[", "").replaceAll("]", "");
-            int address = Integer.parseInt(raw_address);
-            /*
-            char pom = memory.readMemory(address);
+        String bAddress = order[2];
 
-            if (pom != '#') {
-                switch (reg) {
-                    case "A":
-                        A = memory.readMemory(address);
-                        break;
-                    case "B":
-                        B = memory.readMemory(address);
-                        break;
-                    case "C":
-                        C = memory.readMemory(address);
-                        break;
-                    default:
-                        System.out.println("Incorrect register.");
-                        break;
-                }
-            } else {
-                System.out.println("Address is empty.");
+        int logicalAddress = Integer.parseInt(bAddress);
+
+        int PID = processManager.getActivePCB().getPID();
+
+        switch (reg){
+            case "A":
+                    A = Integer.parseInt(processManager.getCommand(logicalAddress));
+                break;
+            case "B":
+                    B = Integer.parseInt(processManager.getCommand(logicalAddress));
+                    break;
+                case "C":
+                    C = Integer.parseInt(processManager.getCommand(logicalAddress));
+                    break;
+                default:
+                    throw new IncorrectRegisterException("Nieprawidlowy rejestr");
             }
-            */
-        }
         PC++;
         RegisterStatus(A,B,C,PC);
         SaveRegister(A,B,C,PC);
         //SaveTimer();
     }
+
 
     //JP counter - skacze do innego rozkazu poprzez zmianę licznika
     private void JP(String[] order, int A, int B, int C, int PC) {
