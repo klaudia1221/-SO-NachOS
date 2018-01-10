@@ -44,7 +44,6 @@ public class Interpreter implements IInterpreter {
         CE file_name - tworzy pusty plik o podanej nazwie,
         OF file_name - otwiera plik o podanej nazwie
         CL file_name - zamyka plik o podanej nazwie,
-        CF file_name file_content - tworzy plik z zawartością,
         AF file_name file_content - dodaje dane na końcu pliku,
         DF file_name - usuwa plik o danej nazwie,
         RF file_name - czyta plik o podanej nazwie,
@@ -815,30 +814,6 @@ public class Interpreter implements IInterpreter {
         }
     }
 
-    //CF file_name file_content - tworzy plik z zawartością
-    private void CF(String[] order, int PC) throws Exception {
-        try {
-            String filename = order[1];
-            int n = order.length;
-
-            String fileContent = "";
-            for (int i = 2; i < n; i++) {
-                fileContent += order[i];
-            }
-
-            fileSystem.createFile(filename, loginService.getLoggedUser(), processManager);
-            fileSystem.openFile(filename);
-            fileSystem.appendFile(filename, fileContent);
-            fileSystem.closeFile(filename);
-        } catch (Exception e) {
-            throw e;
-        } finally {
-            PC++;
-            processManager.getActivePCB().setCounter(PC);
-            //SaveTimer();
-        }
-    }
-
     //AF file_name file_content - dodaje dane na końcu pliku
     private void AF(String[] order, int PC) throws Exception {
         try {
@@ -906,8 +881,8 @@ public class Interpreter implements IInterpreter {
 
     //-----------------------------KOMUNIKATY---------------------------------------
 
-    //RM  - zapisywanie otrzymanego komunikatu do RAM
-    private void RM(String[] order, int PC) throws Exception{
+    //RM - zapisywanie otrzymanego komunikatu do RAM
+    private void RM(String[] order, int PC) throws Exception {
         String bAddress = order[1];
 
         int lenbAddress = bAddress.length();
@@ -945,7 +920,7 @@ public class Interpreter implements IInterpreter {
         //SaveTimer();
     }
 
-    //SM  - wysłanie komunikatu
+    //SM - wysłanie komunikatu
     private void SM(String[] order, int PC) {
         int PID = Integer.parseInt(order[1]);
         Sms sms = new Sms(order[2]);
@@ -955,6 +930,7 @@ public class Interpreter implements IInterpreter {
         //SaveTimer();
     }
 
+    //LM - wczytywanie i wysyłanie wiadomości z RAM
     private void LM(String[] order, int PC) {
         String s_PID = order[1];
         String bAddress = order[2];
@@ -972,8 +948,6 @@ public class Interpreter implements IInterpreter {
         processManager.getActivePCB().setCounter(PC);
         //SaveTimer();
     }
-
-
 
     //------------------------------------------------------------------------------
 
@@ -1089,6 +1063,9 @@ public class Interpreter implements IInterpreter {
                     break;
                 case "SM":
                     SM(order, PC);
+                    break;
+                case "LM":
+                    LM(order, PC);
                     break;
                 case "EX":
                     EX(PC);
