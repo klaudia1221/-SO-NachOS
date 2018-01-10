@@ -118,6 +118,7 @@ public class ProcessManager implements IProcessManager {
 			if (code.length >= memSize){
 				throw new Exception("Przydzielona pamięć jest za mała dla tego programu");
 			}
+			System.out.println("Pamięć: "+code.length+" + "+memSize+" = "+ code.length+memSize);
 			PageTable pt1 = new PageTable(this.ProcessCounter, code.length);
 			PCB pcb = new PCB(this.ProcessCounter, ProcessName, PGID, pt1, mapLine);
 			pcb.setTimer(j);
@@ -280,6 +281,7 @@ public class ProcessManager implements IProcessManager {
 			throw new Exception("Przydzielona pamięć jest za mała dla tego programu");
 		}
 		PageTable pt1 = new PageTable(this.ProcessCounter, code.length);
+		System.out.println("Pamięć: "+code.length+" + "+memSize+" = "+ code.length+memSize);
 		PCB pcb = new PCB(this.ProcessCounter, ProcessName, this.GroupsCounter, pt1, mapLine);
 		pcb.setTimer(j);
 		pcb.setMcounter(code.length);
