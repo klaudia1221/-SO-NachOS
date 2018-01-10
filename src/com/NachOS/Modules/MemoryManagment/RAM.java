@@ -99,7 +99,7 @@ public class RAM {
                 return (getFromRam(ind * 16 + Calc.calcIndex(programCounter)));
             }
         } catch (ArrayIndexOutOfBoundsException e) {
-            System.out.println("Podano niepoprawna wartosc licznika rozkazow dla danego procesu- wyjscie poza zakres");
+            System.out.println("Podano niepoprawna wartosc licznika rozkazow dla danego procesu- wyjscie poza zakres. Licznik : "+programCounter);
             return '&';
         }
 
