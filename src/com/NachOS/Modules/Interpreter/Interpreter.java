@@ -806,9 +806,11 @@ public class Interpreter implements IInterpreter {
             String filename = order[1];
             int n = order.length;
 
-            String fileContent = "";
-            for (int i = 2; i < n; i++) {
-                fileContent += order[i] + " ";
+            String fileContent = order[2];
+            if(n>2) {
+                for (int i = 3; i < n; i++) {
+                    fileContent += " " + order[i];
+                }
             }
             fileSystem.appendFile(filename, fileContent);
         } catch (FileSystemException e) {
@@ -835,6 +837,7 @@ public class Interpreter implements IInterpreter {
     }
 
     //RF file_name - czyta plik o podanej nazwie
+    //TODO sprawdzić dlaczego dodaje znak na poczatku
     private void RF(String[] order, int PC) throws Exception {
         try {
             String filename = order[1];

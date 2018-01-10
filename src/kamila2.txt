@@ -1,0 +1,1 @@
+CE plik1;OF plik1;AF plik1 ty kurwo;RN plik1 plik2;RF plik2;CF plik2;DF plik2;EX;
