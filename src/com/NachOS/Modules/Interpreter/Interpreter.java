@@ -37,8 +37,7 @@ public class Interpreter implements IInterpreter {
 
         Procesy
         CP file_name - tworzenie procesu o podanej nazwie,
-        KP file_name - usunięcie procesu po ID,
-        RP file_name – uruchamia proces o podanym ID
+        KP PID- usunięcie procesu po ID,
 
         Pliki
         CE file_name - tworzy pusty plik o podanej nazwie,
@@ -755,7 +754,7 @@ public class Interpreter implements IInterpreter {
 
     //KP file_name - usunięcie procesu po ID
     private void KP(String[] order, int PC) throws Exception{
-        int PID = Integer.parseInt(order[2]);
+        int PID = Integer.parseInt(order[1]);
         try {
             processManager.killProcess(PID);
         } catch (Exception e){
