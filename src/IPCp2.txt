@@ -1,3 +1,3 @@
-RM [1];
+RM;
 SM 3 P2doP3;
 EX;

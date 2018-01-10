@@ -34,10 +34,6 @@ public class Interpreter implements IInterpreter {
         JZ reg n - skok przy zerowej zawartości rejestru będącego argumentem,
         PE reg - wyświetla wynik programu znajdujący się w podanym rejestrze,
 
-        Procesy
-        CP name file_name - tworzenie procesu o podanej nazwie,
-        KP PID - usunięcie procesu po ID,
-
         Pliki
         CE file_name - tworzy pusty plik o podanej nazwie,
         OF file_name - otwiera plik o podanej nazwie
@@ -46,6 +42,10 @@ public class Interpreter implements IInterpreter {
         DF file_name - usuwa plik o danej nazwie,
         RF file_name - czyta plik o podanej nazwie,
         RN old_file_name new_file_name - zmienia nazwę pliku
+
+        Procesy
+        CP name file_name - tworzenie procesu o podanej nazwie,
+        KP PID - usunięcie procesu po ID,
 
         Komunikaty
         RM - zapisywanie otrzymanego komunikatu do RAM,
@@ -1064,46 +1064,47 @@ public class Interpreter implements IInterpreter {
     }
 
     public void PrintOrderAryt(){
-        /*AD reg1 reg2 - dodaje rejestr2 do rejestru1,
-                AX reg num – dodaje liczbę do rejestru,
-                SB reg1 reg2 - odejmuje od rejestru1 zawartość rejestru2,
-        SX reg num – odejmuje liczbę od rejestru,
-        DC reg - zmniejsza zawartość rejestru o 1,
-                IC reg - zwiększa zawartość rejestru o 1,
-                MU reg1 reg2 – mnoży rejestr 1 przez rejestr 2,
-                MX reg num – mnoży rejestr przez liczbę,
-        DV reg1 reg2 - dzieli zawartość rejestru1 przez zawartość rejestru2,
-                DX reg num – dzieli rejestr przez liczbę,
-        MD reg1 val reg2 - reszta z dzielenia reg1 przez val zapisywany do reg2
-        MV reg1 reg2 – kopiuje zawartość rejestru 2 do rejestru 1,
-                MZ address reg - zapisuje do pamięci zawartość rejestru pod wskazanym adresem,
-        MO reg n – umieszcza w rejestrze wartość n,
-                MY reg address - umieszcza w rejestrze zawartość pamiętaną pod wskazanym adresem,
-                JP counter - skacze do innego rozkazu poprzez zmianę licznika,
-                JZ reg n - skok przy zerowej zawartości rejestru będącego argumentem,
-        PE reg - wyświetla wynik programu znajdujący się w podanym rejestrze,
-        */
-        System.out.println("Dzialania arytmetyczno-logiczne");
+        System.out.println("Operacje arytmetyczno-logiczne:");
         System.out.println("AD reg1 reg2 - dodawanie zawartosci reg2 do reg1");
         System.out.println("AX reg num - dodawanie num do reg");
-        System.out.println("SB reg1 reg2 - odejmuje od reg1 zawartosc reg2");
-        System.out.println("SX reg num – odejmuje num od reg");
+        System.out.println("SB reg1 reg2 - odejmowanie od reg1 zawartosc reg2");
+        System.out.println("SX reg num – odejmowanie num od reg");
         System.out.println("DC reg - zmniejszanie zawartosci reg o 1");
         System.out.println("IC reg - zwiekszanie zawartosci reg o 1");
         System.out.println("MU reg1 reg2 – mnozenie reg1 razy reg2");
-        System.out.println("MX reg num – mnozy reg razy num");
-        System.out.println("DV reg1 reg2 - dzieli zawartosc reg1 przez zawartosc reg2");
-        System.out.println("DX reg num – dzieli rejestr przez num");
-
+        System.out.println("MX reg num – mnozenie reg razy num");
+        System.out.println("DV reg1 reg2 - dzielenie zawartosci reg1 przez zawartosc reg2");
+        System.out.println("DX reg num – dzielenie zawartosci reg przez num");
+        System.out.println("MD reg1 val reg2 - reszta z dzielenia zawartosci reg1 przez val zapisywana do reg2");
+        System.out.println("MV reg1 reg2 – kopiowanie zawartosci reg2 do reg1");
+        System.out.println("MZ address reg - zapisywanie w address zawartosci reg");
+        System.out.println("MO reg n – umieszczanie w reg wartosci n");
+        System.out.println("MY reg address - umieszczanie w reg zawartosci address");
+        System.out.println("JP counter - skok do innego rozkazu poprzez zmiane counter");
+        System.out.println("JZ reg counter - skok przy zerowej zawartoci reg do innego rozkazu poprzez zmiane counter");
+        System.out.println("PE reg - wyswietlanie wyniku programu znajdujacego sie w reg");
+        System.out.println("EX - koniec programu");
     }
 
     public void PrintOrderFiles(){
         System.out.println("Operacje na plikach");
-        System.out.println();
+        System.out.println("CE file_name - tworzenie pustego pliku o nazwie file_name");
+        System.out.println("OF file_name - otwieranie pliku o podanej nazwie");
+        System.out.println("CF file_name - zamykanie pliku o podanej nazwie,");
+        System.out.println("AF file_name file_content - dodawanie danych na koncu pliku o nazwie file_name");
+        System.out.println("DF file_name - usuwanie pliku o nazwie file_name");
+        System.out.println("RF file_name - czytanie zawartosci pliku o nazwie file_name");
+        System.out.println("RN old_file_name new_file_name - zmienia nazwę pliku old_file_name na new_file_name");
+        System.out.println("EX - koniec programu");
     }
 
     public void PrintOrderProcessAndCommunication(){
         System.out.println("Operacje na procesach oraz komunikacja miedzyprocesorowa");
-        System.out.println();
+        System.out.println("CP name file_name - tworzenie procesu o podanej nazwie");
+        System.out.println("KP PID - usuwanie procesu po PID");
+        System.out.println("RM - odbieranie oraz zapisywanie otrzymanego komunikatu do RAM");
+        System.out.println("SM PID message - wyslanie komunikatu do procesu o PID");
+        System.out.println("LM address PID- wczytywanie i wysyłanie wiadomości z RAM do procesu o PID");
+        System.out.println("EX - koniec programu");
     }
 }
