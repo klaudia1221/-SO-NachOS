@@ -74,7 +74,7 @@ public class ProcessManager implements IProcessManager {
 		if(temp != null) {
 			String textFileContent = readCommandFile("src/" + FileName + ".txt");
 			Map mapLine = new HashMap<Integer, Integer>();
-			//Podejrzane w pizdu.
+            System.out.println("Kod programu: "+ textFileContent);
 			mapLine.put(0,0);
 			for(int i = 0, j = 1; i != -1 && i+1 < textFileContent.length();j++){
 				i = textFileContent.indexOf(";", i+1);
@@ -101,7 +101,7 @@ public class ProcessManager implements IProcessManager {
 		if(temp != null) {
 			String textFileContent = readCommandFile("src/" + FileName + ".txt");
 			Map mapLine = new HashMap<Integer, Integer>();
-			//Podejrzane w pizdu.
+            System.out.println("Kod programu: "+ textFileContent);
 			mapLine.put(0,0);
 			for(int i = 0, j = 1; i != -1 && i+1 < textFileContent.length();j++){
 				i = textFileContent.indexOf(";", i+1);
@@ -118,7 +118,7 @@ public class ProcessManager implements IProcessManager {
 			PCB pcb = new PCB(this.ProcessCounter, ProcessName, PGID, pt1, mapLine);
 			temp.add(pcb);
 			ram.pageTables.put(this.ProcessCounter, pt1);
-			ram.exchangeFile.writeToExchangeFile(this.ProcessCounter, code);
+			ram.exchangeFile.writeToExchangeFile(this.ProcessCounter, code, memSize);
 			this.ProcessCounter++;
 			return pcb;
 		}
@@ -130,11 +130,16 @@ public class ProcessManager implements IProcessManager {
 //		Jak zrobisz.
 //		process --groupCreate nazwa programKtórynieistnieje
 //		wyrzuci exception a process i tak się utworzy.
+
 		StringBuilder contentBuilder = new StringBuilder();
-		try(Stream<String> stream = Files.lines(Paths.get(relativePathToFile), StandardCharsets.UTF_8)){
+		Stream<String> stream;
+		try{
+			stream = stream = Files.lines(Paths.get(relativePathToFile), StandardCharsets.UTF_8);
 			stream.forEach(s -> contentBuilder.append(s));
+			stream.close();
 		}catch(IOException e){
 			e.printStackTrace();
+		}finally {
 		}
 		return contentBuilder.toString();
 	}
@@ -256,7 +261,7 @@ public class ProcessManager implements IProcessManager {
 		if (code.length >= memSize){
 			throw new Exception("Przydzielona pamięć jest za mała dla tego programu");
 		}
-		PageTable pt1 = new PageTable(this.ProcessCounter, memSize);
+		PageTable pt1 = new PageTable(this.ProcessCounter, code.length);
 		PCB pcb = new PCB(this.ProcessCounter, ProcessName, this.GroupsCounter, pt1, mapLine);
 		Map map = pcb.getMapLine();
 		System.out.println("Mapa konwersji");
@@ -264,7 +269,7 @@ public class ProcessManager implements IProcessManager {
 //			System.out.println(entry.getKey()+"\t"+entry.getValue());
 //		}
 		ram.pageTables.put(this.ProcessCounter, pt1);
-		ram.exchangeFile.writeToExchangeFile(this.ProcessCounter, code);
+		ram.exchangeFile.writeToExchangeFile(this.ProcessCounter, code, memSize);
 
 
 		ArrayList<PCB> al = new ArrayList<PCB>();
