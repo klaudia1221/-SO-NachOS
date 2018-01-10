@@ -72,6 +72,7 @@ public class Interpreter implements IInterpreter {
     }
 
     private void RegisterStatus(int A, int B, int C, int PC) {
+        System.out.println("Interpreter: ");
         System.out.println("Register A: " + A);
         System.out.println("Register B: " + B);
         System.out.println("Register C: " + C);
@@ -566,6 +567,7 @@ public class Interpreter implements IInterpreter {
     }
 
     //MZ address reg - zapisuje do pamięci zawartość rejestru pod wskazanym adresem,
+    //TODO sprawdzic czy dziala
     private void MZ(String[] order, int A, int B, int C, int PC) throws Exception {
         String reg = order[2];
         String bAddress = order[1];
@@ -625,6 +627,7 @@ public class Interpreter implements IInterpreter {
         //SaveTimer();
     }
 
+    //TODO sprawdzic czy dziala
     //MY reg address - umieszcza w rejestrze zawartość pamiętaną pod wskazanym adresem,
     private void MY(String[] order, int A, int B, int C, int PC) throws Exception {
         String reg = order[1];
@@ -891,7 +894,7 @@ public class Interpreter implements IInterpreter {
         String message =order[2];
 
         if(n>2) {
-            for (int i = 2; i < n; i++) {
+            for (int i = 3; i < n; i++) {
                 message += " " + order[i];
             }
         }
@@ -1060,5 +1063,42 @@ public class Interpreter implements IInterpreter {
         } catch (Exception e) {
             throw e;
         }
+    }
+
+    public void PrintOrderAryt(){
+        /*AD reg1 reg2 - dodaje rejestr2 do rejestru1,
+                AX reg num – dodaje liczbę do rejestru,
+                SB reg1 reg2 - odejmuje od rejestru1 zawartość rejestru2,
+        SX reg num – odejmuje liczbę od rejestru,
+        DC reg - zmniejsza zawartość rejestru o 1,
+                IC reg - zwiększa zawartość rejestru o 1,
+                MU reg1 reg2 – mnoży rejestr 1 przez rejestr 2,
+                MX reg num – mnoży rejestr przez liczbę,
+        DV reg1 reg2 - dzieli zawartość rejestru1 przez zawartość rejestru2,
+                DX reg num – dzieli rejestr przez liczbę,
+        MD reg1 val reg2 - reszta z dzielenia reg1 przez val zapisywany do reg2
+        MV reg1 reg2 – kopiuje zawartość rejestru 2 do rejestru 1,
+                MZ address reg - zapisuje do pamięci zawartość rejestru pod wskazanym adresem,
+        MO reg n – umieszcza w rejestrze wartość n,
+                MY reg address - umieszcza w rejestrze zawartość pamiętaną pod wskazanym adresem,
+                JP counter - skacze do innego rozkazu poprzez zmianę licznika,
+                JZ reg n - skok przy zerowej zawartości rejestru będącego argumentem,
+        PE reg - wyświetla wynik programu znajdujący się w podanym rejestrze,
+        */
+        System.out.println("Dzialania arytmetyczno-logiczne");
+        System.out.println("AD reg1 reg2 - dodawanie zawartosci reg2 do reg1");
+        System.out.println("AD reg1 reg2 - dodawanie zawartosci reg2 do reg1");
+        System.out.println("AD reg1 reg2 - dodawanie zawartosci reg2 do reg1");
+        System.out.println("AD reg1 reg2 - dodawanie zawartosci reg2 do reg1");
+    }
+
+    public void PrintOrderFiles(){
+        System.out.println("Operacje na plikach");
+        System.out.println();
+    }
+
+    public void PrintOrderProcessAndCommunication(){
+        System.out.println("Operacje na procesach oraz komunikacja miedzyprocesorowa");
+        System.out.println();
     }
 }
