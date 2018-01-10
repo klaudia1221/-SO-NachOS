@@ -133,12 +133,12 @@ public class IPC
         }
     }
 
-    public Sms loadSms(int adr) //odczytuje wiadomosc (SMS) z podanego adresu w RAMie
+    /*public Sms loadSms(int adr) //odczytuje wiadomosc (SMS) z podanego adresu w RAMie
     {
         String str="", parts[];
         char c;
         c=ram.getFromRam(adr);
-        while(c!='^')
+        while(c!='$')
         {
             str+=c;
         }
@@ -148,14 +148,14 @@ public class IPC
         sms.set_recID(Integer.parseInt(parts[1]));
 
         return sms;
-    }
+    }*/
 
     public String loadMessage(int adr) //odczytuje tresc wiadomosci z podanego adresu w RAMie
     {
         String str="", parts[];
         char c;
         c=ram.getFromRam(adr);
-        while(c!='^')
+        while(c!='$')
         {
             str+=c;
         }
@@ -167,11 +167,10 @@ public class IPC
         return parts[2];
     }
 
-    void loadAndSend(int recID, int adr)
+    public void loadAndSend(int recID, int adr)
     {
         Sms sms = new Sms(loadMessage(adr));
         sendMessage(recID, sms);
-
     }
 
     public void display_sent()
