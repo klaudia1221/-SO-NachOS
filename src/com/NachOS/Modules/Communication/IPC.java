@@ -83,15 +83,22 @@ public class IPC
         //mergeMessage(sms);
         String mes="";
         mes+=sms.get_senID()+";"+sms.get_recID()+";"+sms.get_mes();
-        for(char c : mes.toCharArray())
+        try
         {
-            ram.writeCharToRam(sms.get_recID(),adr,c);
+            for(char c : mes.toCharArray())
+            {
+                ram.writeCharToRam(sms.get_recID(),adr,c);
+                adr++;
+            }
+            ram.writeCharToRam(sms.get_recID(),adr,'#');
+        } catch(Exception e)
+        {
+            System.out.println("Blad zapisu wiadomosci");
         }
+
     }
 
-
-
-    public void receiveMessage() throws ChangedToWaitingException //int senID, Sms sms)
+    public void receiveMessage(int adr) throws ChangedToWaitingException //int senID, Sms sms)
     {
         ArrayList<Sms> temp_list = pm.getActivePCB().getSmsList();
         if(temp_list.size()==0)//kontener wiadomości z PCB jest pusty
@@ -121,7 +128,43 @@ public class IPC
             //usuwa z kontenera w PCB pierwszą wiadomość
             temp_list.remove(0);
             pm.getActivePCB().setSmsList(temp_list);
+
+            saveMessage(sms, adr);
         }
+    }
+
+    public Sms loadSms(int adr) //odczytuje wiadomosc (SMS) z podanego adresu w RAMie
+    {
+        String str="", parts[];
+        char c;
+        c=ram.getFromRam(adr);
+        while(c!='#')
+        {
+            str+=c;
+        }
+        parts=str.split(";");
+        Sms sms = new Sms(parts[2]);
+        sms.set_senID(Integer.parseInt(parts[0]));
+        sms.set_recID(Integer.parseInt(parts[1]));
+
+        return sms;
+    }
+
+    public String loadMessage(int adr) //odczytuje tresc wiadomosci z podanego adresu w RAMie
+    {
+        String str="", parts[];
+        char c;
+        c=ram.getFromRam(adr);
+        while(c!='#')
+        {
+            str+=c;
+        }
+        parts=str.split(";");
+        //Sms sms = new Sms(parts[2]);
+        //sms.set_senID(Integer.parseInt(parts[0]));
+        //sms.set_recID(Integer.parseInt(parts[1]));
+
+        return parts[2];
     }
 
     public void display_sent()
