@@ -76,7 +76,8 @@ public class ProcessManager implements IProcessManager {
 			Map mapLine = new HashMap<Integer, Integer>();
             System.out.println("Kod programu: "+ textFileContent);
 			mapLine.put(0,0);
-			for(int i = 0, j = 1; i != -1 && i+1 < textFileContent.length();j++){
+			int j = 1;
+			for(int i = 0; i != -1 && i+1 < textFileContent.length();j++){
 				i = textFileContent.indexOf(";", i+1);
 				if(i+1 < textFileContent.length()) {
 					mapLine.put(j, i + 1);
@@ -86,6 +87,7 @@ public class ProcessManager implements IProcessManager {
 			char[] code = textFileContent.toCharArray();
 			PageTable pt1 = new PageTable(this.ProcessCounter, code.length);
 			PCB pcb = new PCB(this.ProcessCounter, ProcessName, PGID, pt1, mapLine);
+			pcb.setTimer(j);
 			temp.add(pcb);
 			ram.pageTables.put(this.ProcessCounter, pt1);
 			ram.exchangeFile.writeToExchangeFile(this.ProcessCounter, code);
@@ -103,7 +105,8 @@ public class ProcessManager implements IProcessManager {
 			Map mapLine = new HashMap<Integer, Integer>();
             System.out.println("Kod programu: "+ textFileContent);
 			mapLine.put(0,0);
-			for(int i = 0, j = 1; i != -1 && i+1 < textFileContent.length();j++){
+			int j = 1;
+			for(int i = 0; i != -1 && i+1 < textFileContent.length();j++){
 				i = textFileContent.indexOf(";", i+1);
 				if(i+1 < textFileContent.length()) {
 					mapLine.put(j, i + 1);
@@ -116,6 +119,7 @@ public class ProcessManager implements IProcessManager {
 			}
 			PageTable pt1 = new PageTable(this.ProcessCounter, code.length);
 			PCB pcb = new PCB(this.ProcessCounter, ProcessName, PGID, pt1, mapLine);
+			pcb.setTimer(j);
 			temp.add(pcb);
 			ram.pageTables.put(this.ProcessCounter, pt1);
 			ram.exchangeFile.writeToExchangeFile(this.ProcessCounter, code, memSize);
@@ -219,7 +223,8 @@ public class ProcessManager implements IProcessManager {
 			Map mapLine = new HashMap<Integer, Integer>();
 			System.out.println("Kod programu: " + textFileContent);
 			mapLine.put(0, 0);
-			for (int i = 0, j = 1; i != -1 && i + 1 < textFileContent.length(); j++) {
+			int j = 1;
+			for (int i = 0; i != -1 && i + 1 < textFileContent.length(); j++) {
 				i = textFileContent.indexOf(";", i + 1);
 				if (i + 1 < textFileContent.length()) {
 					mapLine.put(j, i + 1);
@@ -229,6 +234,7 @@ public class ProcessManager implements IProcessManager {
 			char[] code = textFileContent.toCharArray();
 			PageTable pt1 = new PageTable(this.ProcessCounter, code.length);
 			PCB pcb = new PCB(this.ProcessCounter, ProcessName, this.GroupsCounter, pt1, mapLine);
+			pcb.setTimer(j);
 			Map map = pcb.getMapLine();
 			System.out.println("Mapa konwersji");
 //		for(Map.Entry<Integer, Integer> entry : map.){
@@ -258,7 +264,8 @@ public class ProcessManager implements IProcessManager {
 		Map mapLine = new HashMap<Integer, Integer>();
 		System.out.println("Kod programu: "+ textFileContent);
 		mapLine.put(0,0);
-		for(int i = 0, j = 1; i != -1 && i+1 < textFileContent.length();j++){
+		int j = 1;
+		for(int i = 0; i != -1 && i+1 < textFileContent.length();j++){
 			i = textFileContent.indexOf(";", i+1);
 			if(i+1 < textFileContent.length()) {
 				mapLine.put(j, i + 1);
@@ -271,6 +278,7 @@ public class ProcessManager implements IProcessManager {
 		}
 		PageTable pt1 = new PageTable(this.ProcessCounter, code.length);
 		PCB pcb = new PCB(this.ProcessCounter, ProcessName, this.GroupsCounter, pt1, mapLine);
+		pcb.setTimer(j);
 		Map map = pcb.getMapLine();
 		System.out.println("Mapa konwersji");
 //		for(Map.Entry<Integer, Integer> entry : map.){
