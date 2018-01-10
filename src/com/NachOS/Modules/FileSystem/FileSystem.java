@@ -132,6 +132,23 @@ public class FileSystem implements IFileSystem {
         else { return dir.getContent(fileName); }
     }
 
+    public String readFileShell(String fileName) throws Exception {
+        String tmp = new String();
+        if (!nameExists(fileName)) { throw new Exception("Plik o takiej nazwie nie istnieje."); }
+        else {
+            int block = dir.getFirstBlock(fileName), i=0;
+            while (tmp.length()<dir.getSize(fileName)) {
+                if (i == 31) {
+                    block = Drive.lastByte(block);
+                    i = 0;
+                }
+                tmp += Drive.getAt(i + block * 32);
+                i++;
+            }
+        }
+        return tmp;
+    }
+
     public void deleteFile(String fileName) throws Exception {
         if (!nameExists(fileName)) { throw new Exception("Plik o takiej nazwie nie istnieje.");  }
         else {
