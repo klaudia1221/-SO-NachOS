@@ -36,9 +36,8 @@ public class Interpreter implements IInterpreter {
         PE reg - wyświetla wynik programu znajdujący się w podanym rejestrze,
 
         Procesy
-        CP file_name - tworzenie procesu o podanej nazwie,
-        KP file_name - usunięcie procesu po ID,
-        RP file_name – uruchamia proces o podanym ID
+        CP name file_name - tworzenie procesu o podanej nazwie,
+        KP PID - usunięcie procesu po ID,
 
         Pliki
         CE file_name - tworzy pusty plik o podanej nazwie,
@@ -577,12 +576,13 @@ public class Interpreter implements IInterpreter {
         char left = bAddress.charAt(0);
         char right = bAddress.charAt(lenbAddress-1);
 
-        if((left !='[')||(right != ']')){
+        if((left == '[')||((right == ']'))){
             throw new Exception("Nieprawidlowy adres");
         }
-
         String logicalAddress = bAddress.replaceAll("\\[", "").replaceAll("]", "");
         int Address = Integer.parseInt(logicalAddress);
+
+        //memory.
 
         PC++;
         RegisterStatus(A,B,C,PC);
@@ -617,22 +617,28 @@ public class Interpreter implements IInterpreter {
     //MY reg address - umieszcza w rejestrze zawartość pamiętaną pod wskazanym adresem,
     private void MY(String[] order, int A, int B, int C, int PC) throws Exception {
         String reg = order[1];
-
         String bAddress = order[2];
 
-        int logicalAddress = Integer.parseInt(bAddress);
+        int lenbAddress = bAddress.length();
 
-        int PID = processManager.getActivePCB().getPID();
+        char left = bAddress.charAt(0);
+        char right = bAddress.charAt(lenbAddress-1);
+
+        if((left == '[')||((right == ']'))){
+            throw new Exception("Nieprawidlowy adres");
+        }
+        String logicalAddress = bAddress.replaceAll("\\[", "").replaceAll("]", "");
+        int Address = Integer.parseInt(logicalAddress);
 
         switch (reg){
             case "A":
-                    A = Integer.parseInt(processManager.getCommand(logicalAddress));
+                    A = processManager.getSafeMemory(Address);
                 break;
             case "B":
-                    B = Integer.parseInt(processManager.getCommand(logicalAddress));
+                    B = processManager.getSafeMemory(Address);
                     break;
                 case "C":
-                    C = Integer.parseInt(processManager.getCommand(logicalAddress));
+                    C = processManager.getSafeMemory(Address);
                     break;
                 default:
                     throw new IncorrectRegisterException("Nieprawidlowy rejestr");
@@ -644,6 +650,7 @@ public class Interpreter implements IInterpreter {
     }
 
     //JP counter - skacze do innego rozkazu poprzez zmianę licznika
+    //TODO rzucanie wyjątku gdy zły counter
     private void JP(String[] order, int A, int B, int C, int PC) {
         int counter = Integer.parseInt(order[1]);
         PC = counter;
@@ -711,7 +718,7 @@ public class Interpreter implements IInterpreter {
     //---------------------------------PROCESY---------------------------------------
 
     //CP file_name - tworzenie procesu o podanej nazwie i nazwie pliku
-    private void CP(String[] order, int PC) throws Exception{
+    private void CP(String[] order, int PC) throws Exception {
         String name = order[1];
         String fileName = order[2];
         try {
@@ -725,7 +732,7 @@ public class Interpreter implements IInterpreter {
     }
 
     //KP file_name - usunięcie procesu po ID
-    private void KP(String[] order, int PC) throws Exception{
+    private void KP(String[] order, int PC) throws Exception {
         int PID = Integer.parseInt(order[1]);
         try {
             processManager.killProcess(PID);
@@ -857,10 +864,10 @@ public class Interpreter implements IInterpreter {
 
         int lenbAddress = bAddress.length();
 
-        Character left = bAddress.charAt(0);
-        Character right = bAddress.charAt(lenbAddress-1);
+        char left = bAddress.charAt(0);
+        char right = bAddress.charAt(lenbAddress-1);
 
-        if((!left.equals("["))||(!right.equals("]"))){
+        if((left == '[')||((right == ']'))){
             throw new Exception("Nieprawidlowy adres");
         }
 
@@ -961,6 +968,9 @@ public class Interpreter implements IInterpreter {
                     break;
                 case "DX":
                     DX(order, A, B, C, PC);
+                    break;
+                case "MD":
+                    MD(order, A, B, C, PC);
                     break;
                 case "MV":
                     MV(order, A, B, C, PC);
