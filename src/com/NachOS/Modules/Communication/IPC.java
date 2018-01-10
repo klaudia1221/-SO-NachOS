@@ -167,7 +167,7 @@ public class IPC
         return parts[2];
     }
 
-    void loadAndSend(int adr, int recID)
+    void loadAndSend(int recID, int adr)
     {
         Sms sms = new Sms(loadMessage(adr));
         sendMessage(recID, sms);
