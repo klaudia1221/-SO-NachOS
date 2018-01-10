@@ -53,6 +53,7 @@ public class Interpreter implements IInterpreter {
         Komunikaty
         RM  - zapisywanie otrzymanego komunikatu do RAM,
         SM  - wysłanie komunikatu 
+        LM - wczytywanie i wysyłanie wiadomości z RAM,
 
         EX - kończy program
      **/
@@ -594,7 +595,7 @@ public class Interpreter implements IInterpreter {
             switch (reg){
                 case "A":
                     for (int i=0; i<lenStringA; i++) {
-                        //memory.writeCharToRam(PID, address, stringA[i]);
+                        memory.writeCharToRam(PID, address, stringA.charAt(i));
                         address++;
                     }
                     break;
@@ -915,31 +916,32 @@ public class Interpreter implements IInterpreter {
 
     //RM  - zapisywanie otrzymanego komunikatu do RAM
     //Kuba metoda receiveMessage
-    private void RM(String[] order, int PC) {
+    private void RM(String[] order, int PC) throws Exception{
         String bAddress = order[1];
 
-        int len = bAddress.length();
+        int lenbAddress = bAddress.length();
 
-        char left = bAddress.charAt(0);
-        char right = bAddress.charAt(len-1);
+        int lenMessage = order[2].length();
+
+        Character left = bAddress.charAt(0);
+        Character right = bAddress.charAt(lenbAddress-1);
 
         String logicalAddress ="";
 
-        for(int i=1;i<len-1;i++){
+        for(int i=1;i<lenbAddress-1;i++){
             logicalAddress += bAddress.charAt(i);
         }
 
         int Address = Integer.parseInt(logicalAddress);
 
-        /*
-        if((left == "[")||(right == ("]")){
+        if((!left.equals("["))||(!right.equals("]"))){
             throw new Exception("Nieprawidlowy adres");
         }
-        */
-
-        String message = "";
-        for (int i = 1; i < len; i++) {
-            message += order[i];
+        else {
+            String message = "";
+            for (int i = 0; i < lenMessage; i++) {
+                message += order[i];
+            }
         }
         //Jeśli złapie ChangedToWaitingException to licznik się nie zmienia
         try {
@@ -962,6 +964,19 @@ public class Interpreter implements IInterpreter {
         processManager.getActivePCB().setCounter(PC);
         SaveTimer();
     }
+
+    private void LM(String[] order, int PC) {
+        String PID = order[0];
+        String address = order[1];
+
+        //communication.loadMessage()
+
+        PC++;
+        processManager.getActivePCB().setCounter(PC);
+        SaveTimer();
+    }
+
+
 
     //------------------------------------------------------------------------------
 
