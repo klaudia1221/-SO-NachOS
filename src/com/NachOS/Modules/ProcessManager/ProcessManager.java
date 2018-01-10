@@ -130,11 +130,16 @@ public class ProcessManager implements IProcessManager {
 //		Jak zrobisz.
 //		process --groupCreate nazwa programKtórynieistnieje
 //		wyrzuci exception a process i tak się utworzy.
+
 		StringBuilder contentBuilder = new StringBuilder();
-		try(Stream<String> stream = Files.lines(Paths.get(relativePathToFile), StandardCharsets.UTF_8)){
+		Stream<String> stream;
+		try{
+			stream = stream = Files.lines(Paths.get(relativePathToFile), StandardCharsets.UTF_8);
 			stream.forEach(s -> contentBuilder.append(s));
+			stream.close();
 		}catch(IOException e){
 			e.printStackTrace();
+		}finally {
 		}
 		return contentBuilder.toString();
 	}
