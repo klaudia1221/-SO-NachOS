@@ -757,7 +757,7 @@ public class Interpreter implements IInterpreter {
     //-----------------------------------PLIKI---------------------------------------
 
     //CE file_name - tworzy pusty plik o podanej nazwie
-    private void CE(String[] order, int PC) throws Exception {
+    private void CE(String[] order, int PC) throws FileSystemException {
         try {
             String filename = order[1];
             fileSystem.createFile(filename, loginService.getLoggedUser(), processManager);
@@ -771,7 +771,7 @@ public class Interpreter implements IInterpreter {
     }
 
     //OF file_name - otwiera plik o podanej nazwie
-    private void OF(String[] order, int PC) throws Exception {
+    private void OF(String[] order, int PC) throws FileSystemException {
         try {
             String filename = order[1];
             fileSystem.openFile(filename);
@@ -787,7 +787,7 @@ public class Interpreter implements IInterpreter {
     }
 
     //CL file_name - zamyka plik o podanej nazwie
-    private void CF(String[] order, int PC) throws Exception {
+    private void CF(String[] order, int PC) throws FileSystemException {
         try {
             String filename = order[1];
             fileSystem.closeFile(filename);
@@ -801,7 +801,7 @@ public class Interpreter implements IInterpreter {
     }
 
     //AF file_name file_content - dodaje dane na końcu pliku
-    private void AF(String[] order, int PC) throws Exception {
+    private void AF(String[] order, int PC) throws FileSystemException{
         try {
             String filename = order[1];
             int n = order.length;
@@ -823,7 +823,7 @@ public class Interpreter implements IInterpreter {
     }
 
     //DF file_name - usuwa plik o danej nazwie
-    private void DF(String[] order, int PC) throws Exception {
+    private void DF(String[] order, int PC) throws FileSystemException{
         try {
             String filename = order[1];
             fileSystem.deleteFile(filename);
@@ -838,7 +838,7 @@ public class Interpreter implements IInterpreter {
 
     //RF file_name - czyta plik o podanej nazwie
     //TODO sprawdzić dlaczego dodaje znak na poczatku
-    private void RF(String[] order, int PC) throws Exception {
+    private void RF(String[] order, int PC) throws FileSystemException {
         try {
             String filename = order[1];
             String fileContent = fileSystem.readFile(filename);
@@ -854,7 +854,7 @@ public class Interpreter implements IInterpreter {
     }
 
     //RN old_file_name new_file_name - zmienia nazwę pliku
-    private void RN(String[] order, int PC) throws Exception {
+    private void RN(String[] order, int PC) throws FileSystemException {
         try {
             String oldName = order[1];
             String newName = order[2];
@@ -888,10 +888,12 @@ public class Interpreter implements IInterpreter {
         int n = order.length;
         int PID = Integer.parseInt(order[1]);
 
-        String message ="";
+        String message =order[2];
 
-        for (int i=2;i<n;i++) {
-            message += order[i] + " ";
+        if(n>2) {
+            for (int i = 2; i < n; i++) {
+                message += " " + order[i];
+            }
         }
         Sms sms = new Sms(message);
         try {
