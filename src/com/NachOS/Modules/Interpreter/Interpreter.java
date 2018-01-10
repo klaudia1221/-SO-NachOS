@@ -44,7 +44,6 @@ public class Interpreter implements IInterpreter {
         CE file_name - tworzy pusty plik o podanej nazwie,
         OF file_name - otwiera plik o podanej nazwie
         CL file_name - zamyka plik o podanej nazwie,
-        CF file_name file_content - tworzy plik z zawartością,
         AF file_name file_content - dodaje dane na końcu pliku,
         DF file_name - usuwa plik o danej nazwie,
         RF file_name - czyta plik o podanej nazwie,
@@ -815,30 +814,6 @@ public class Interpreter implements IInterpreter {
         }
     }
 
-    //CF file_name file_content - tworzy plik z zawartością
-    private void CF(String[] order, int PC) throws Exception {
-        try {
-            String filename = order[1];
-            int n = order.length;
-
-            String fileContent = "";
-            for (int i = 2; i < n; i++) {
-                fileContent += order[i];
-            }
-
-            fileSystem.createFile(filename, loginService.getLoggedUser(), processManager);
-            fileSystem.openFile(filename);
-            fileSystem.appendFile(filename, fileContent);
-            fileSystem.closeFile(filename);
-        } catch (Exception e) {
-            throw e;
-        } finally {
-            PC++;
-            processManager.getActivePCB().setCounter(PC);
-            //SaveTimer();
-        }
-    }
-
     //AF file_name file_content - dodaje dane na końcu pliku
     private void AF(String[] order, int PC) throws Exception {
         try {
@@ -907,7 +882,7 @@ public class Interpreter implements IInterpreter {
     //-----------------------------KOMUNIKATY---------------------------------------
 
     //RM - zapisywanie otrzymanego komunikatu do RAM
-    private void RM(String[] order, int PC) throws Exception{
+    private void RM(String[] order, int PC) throws Exception {
         String bAddress = order[1];
 
         int lenbAddress = bAddress.length();
