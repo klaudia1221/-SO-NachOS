@@ -929,6 +929,8 @@ public class Interpreter implements IInterpreter {
             logicalAddress += bAddress.charAt(i);
         }
 
+        int Address = Integer.parseInt(logicalAddress);
+
         /*
         if((left == "[")||(right == ("]")){
             throw new Exception("Nieprawidlowy adres");
@@ -941,7 +943,7 @@ public class Interpreter implements IInterpreter {
         }
         //Jeśli złapie ChangedToWaitingException to licznik się nie zmienia
         try {
-            communication.receiveMessage(message);
+            communication.receiveMessage(Address);
         } catch (ChangedToWaitingException e) {
             PC--;
         }
