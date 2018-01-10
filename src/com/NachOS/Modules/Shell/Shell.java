@@ -8,10 +8,13 @@ import com.NachOS.Modules.ACL.Mask;
 import com.NachOS.Modules.ACL.User;
 import com.NachOS.Modules.Communication.IPC;
 import com.NachOS.Modules.ConditionVariable.ConditionVariable;
+import com.NachOS.Modules.Exceptions.FileNameException;
 import com.NachOS.Modules.FileSystem.Catalog;
 import com.NachOS.Modules.FileSystem.File;
 import com.NachOS.Modules.FileSystem.FileBase;
 import com.NachOS.Modules.FileSystem.IFileSystem;
+import com.NachOS.Modules.Interpreter.IInterpreter;
+import com.NachOS.Modules.Interpreter.Interpreter;
 import com.NachOS.Modules.MemoryManagment.RAM;
 import com.NachOS.Modules.ProcessManager.PCB;
 import com.NachOS.Modules.ProcessManager.ProcessManager;
@@ -23,8 +26,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+
 
 
 public class Shell {
@@ -36,6 +38,7 @@ public class Shell {
     private IUserController userController;
     private IACLController ACLController;
     private IPC ipc;
+    private Interpreter interpreter;
     private Map<String, String> allCommands; //Mapa z wszystkimi komednami w shellu
 
     public Shell(IUserController userController,
@@ -43,7 +46,7 @@ public class Shell {
                  IProcessor processor,
                  IACLController ACLController,
                  ProcessManager processManager,
-                 ILoginService loginService, IPC ipc) {
+                 ILoginService loginService, IPC ipc, Interpreter interpreter) {
         this.userController = userController;
         this.fileSystem = fileSystem;
         this.memory = memory;
@@ -52,6 +55,7 @@ public class Shell {
         this.processManager = processManager;
         this.loginService = loginService;
         this.ipc=ipc;
+        this.interpreter=interpreter;
 
         allCommands = new HashMap<>();
     }
@@ -93,6 +97,7 @@ public class Shell {
         allCommands.put("p", "DEBUG Dzaialnia dotyczace procesu");
         allCommands.put("i", "DEBUG Blok kontrolny");
         allCommands.put("m", "DEBUG Wyswietlenie RAM");
+        allCommands.put("inter", "Komendy interpretera");
     }
     private void logo() {
 
@@ -216,6 +221,8 @@ public class Shell {
                             case "m": //meminfo
                                 meminfoD(separateCommand);
                                 break;
+                            case "inter":
+                                inter(separateCommand);
                         }
                     } else if (!isCommandGood(separateCommand[0])) {
                         System.out.println("Bledna komenda");
@@ -230,6 +237,8 @@ public class Shell {
             readCommend();
         }
     }
+
+
     /**
      * Metoda, ktora sprawdza, czy komenda podana przez uzytkownika, znajduje sie wsrod komend zapisanych w mapie shella
      * @param command
@@ -455,14 +464,14 @@ public class Shell {
             FileBase fileBase = null;
             try {
                 fileBase = fileSystem.getFileBase(command[1]);
-            } catch (Exception e) {
+            } catch (FileNameException e) {
                 System.out.println(e.getMessage());
                 readCommend();
             }
             if (ACLController.hasUserPremissionToOperation(fileBase, loginService.getLoggedUser(), OperationType.READ)) {  //sprawdzenie uprawnien
                 try {
-                    System.out.println(fileSystem.readFile(command[1]));
-                } catch (Exception e) {
+                    System.out.println(fileSystem.readFileShell(command[1]));
+                } catch (FileNameException e) {
                     System.out.println(e.getMessage());
                     readCommend();
                 }
@@ -517,7 +526,7 @@ public class Shell {
                     FileBase fileBase = null;
                     try {
                         fileBase = fileSystem.getFileBase(command[1]);
-                    } catch (Exception e) {
+                    } catch (FileNameException e) {
                         System.out.println(e.getMessage());
                         readCommend();
                     }
@@ -532,7 +541,7 @@ public class Shell {
                         FileBase fileBase = null;
                         try {
                             fileBase = fileSystem.getFileBase(command[1]);
-                        } catch (Exception e) {
+                        } catch (FileNameException e) {
                             System.out.println(e.getMessage());
                             readCommend();
                         }
@@ -560,7 +569,7 @@ public class Shell {
                 FileBase fileBase = null;
                 try {
                     fileBase = fileSystem.getFileBase(command[1]);
-                } catch (Exception e) {
+                } catch (FileNameException e) {
                     System.out.println(e.getMessage());
                     readCommend();
                 }
@@ -861,22 +870,22 @@ public class Shell {
                 try {
                     file = fileSystem.getFile(command[2]);
                     file.cv.printInfo();
-                } catch (Exception e) {
+                } catch (FileNameException e) {
                     System.out.println(e.getMessage());
                     readCommend();
                 }
             }
-        }
-        // cv --group [PGID]
-        //wyswietlanie zmiennej warunkowej dla konkrentej grupy procesow
-        else if(command.length==2){
-            ConditionVariable cv=null;
-            try {
-                cv=processManager.findConditionVariable(Integer.parseInt(command[2]));
-                cv.printInfo();
-            } catch (Exception e) {
-                System.out.println(e.getMessage());
-                readCommend();
+            // cv --group [PGID]
+            //wyswietlanie zmiennej warunkowej dla konkrentej grupy procesow
+            else if(command[1].equals(("--group"))){
+                ConditionVariable cv=null;
+                try {
+                    cv=processManager.findConditionVariable(Integer.parseInt(command[2]));
+                    cv.printInfo();
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
+                    readCommend();
+                }
             }
         }
         else {
@@ -1044,5 +1053,49 @@ public class Shell {
             readCommend();
         }
     }
+
+    /**
+     * Metdoa, ktora wywoala sie gdy uzytkownik poda komende 'inter ..'
+     * @param command
+     */
+    private void inter(String[] command) {
+        //inter --a
+        if (command.length == 2) {
+            if (command[1].equals("--a")) {
+
+                try {
+                    interpreter.PrintOrderAryt();
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
+                    readCommend();
+                }
+            }
+            // inter --pc
+            else if (command[1].equals("--pc")) {
+                try {
+                    interpreter.PrintOrderProcessAndCommunication();
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
+                    readCommend();
+                }
+            }
+            // inter --pliki
+            else if (command[1].equals("--pliki")) {
+                try {
+                    interpreter.PrintOrderFiles();
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
+                    readCommend();
+                }
+            } else {
+                System.out.println("Bledna komenda");
+                readCommend();
+            }
+        } else {
+            System.out.println("Bledna komenda");
+            readCommend();
+        }
+    }
+
 
 }

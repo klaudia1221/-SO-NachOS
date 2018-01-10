@@ -56,7 +56,7 @@ public class Main{
             IProcessor processor = new Processor(processManager, interpreter);
             processor.setInterpreter(interpreter);
 
-            Shell shell = new Shell(userController, fileSystem, ram, processor, aclController, processManager, loginService, ipc);
+            Shell shell = new Shell(userController, fileSystem, ram, processor, aclController, processManager, loginService, ipc, interpreter);
             shell.start();
         }
         private static void CreateDefaultUsers(){
