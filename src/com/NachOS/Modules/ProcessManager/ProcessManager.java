@@ -158,8 +158,7 @@ public class ProcessManager implements IProcessManager {
 		PCB temp = checkIfProcessExists(PID);
 		if(temp != null) {
 			ram.deleteProcessData(temp.getPID());
-			//TODO bo jak są dwa procesy to usunie wszystkie
-			//checkIfGroupExists(temp.getPGID()).remove(temp);
+			checkIfGroupExists(temp.getPGID()).remove(temp);
 			return;
 		}
 		throw new Exception("Brak procesu o podanym PID");
@@ -392,11 +391,10 @@ public class ProcessManager implements IProcessManager {
     }
 
     public char getMemory(int pointer){
-        return ram.getCommand(pointer,ActivePCB.getPID(), ActivePCB.pageTable);
+		return ram.getCommand(pointer,ActivePCB.getPID(), ActivePCB.pageTable);
     }
 
-    public void setMemory(int pointer){
-        //TODO
-        //Czekam na klaudię
+    public void setMemory(int pointer, char content){
+        ram.writeCharToRam(ActivePCB.getPID(), pointer, content);
     }
 }
