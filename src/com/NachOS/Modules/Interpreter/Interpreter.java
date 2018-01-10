@@ -48,9 +48,9 @@ public class Interpreter implements IInterpreter {
         RN old_file_name new_file_name - zmienia nazwę pliku
 
         Komunikaty
-        RM  - zapisywanie otrzymanego komunikatu do RAM,
-        SM  - wysłanie komunikatu 
-        LM - wczytywanie i wysyłanie wiadomości z RAM,
+        RM - zapisywanie otrzymanego komunikatu do RAM,
+        SM PID message - wysłanie komunikatu 
+        LM address- wczytywanie i wysyłanie wiadomości z RAM,
 
         EX - kończy program
      **/
@@ -575,7 +575,7 @@ public class Interpreter implements IInterpreter {
         char left = bAddress.charAt(0);
         char right = bAddress.charAt(lenbAddress-1);
 
-        if((left == '[')||((right == ']'))){
+        if((left != '[')||((right != ']'))){
             throw new Exception("Nieprawidlowy adres");
         }
         String logicalAddress = bAddress.replaceAll("\\[", "").replaceAll("]", "");
@@ -635,7 +635,7 @@ public class Interpreter implements IInterpreter {
         char left = bAddress.charAt(0);
         char right = bAddress.charAt(lenbAddress-1);
 
-        if((left == '[')||((right == ']'))){
+        if((left != '[')||((right != ']'))){
             throw new Exception("Nieprawidlowy adres");
         }
         String logicalAddress = bAddress.replaceAll("\\[", "").replaceAll("]", "");
@@ -727,7 +727,7 @@ public class Interpreter implements IInterpreter {
 
     //---------------------------------PROCESY---------------------------------------
 
-    //CP file_name - tworzenie procesu o podanej nazwie i nazwie pliku
+    //CP name file_name - tworzenie procesu o podanej nazwie i nazwie pliku
     private void CP(String[] order, int PC) throws Exception {
         String name = order[1];
         String fileName = order[2];
@@ -741,7 +741,7 @@ public class Interpreter implements IInterpreter {
         //SaveTimer();
     }
 
-    //KP file_name - usunięcie procesu po ID
+    //KP ID - usunięcie procesu po ID
     private void KP(String[] order, int PC) throws Exception {
         int PID = Integer.parseInt(order[1]);
         try {
@@ -806,9 +806,11 @@ public class Interpreter implements IInterpreter {
             String filename = order[1];
             int n = order.length;
 
-            String fileContent = "";
-            for (int i = 2; i < n; i++) {
-                fileContent += order[i];
+            String fileContent = order[2];
+            if(n>2) {
+                for (int i = 3; i < n; i++) {
+                    fileContent += " " + order[i];
+                }
             }
             fileSystem.appendFile(filename, fileContent);
         } catch (FileSystemException e) {
@@ -835,6 +837,7 @@ public class Interpreter implements IInterpreter {
     }
 
     //RF file_name - czyta plik o podanej nazwie
+    //TODO sprawdzić dlaczego dodaje znak na poczatku
     private void RF(String[] order, int PC) throws Exception {
         try {
             String filename = order[1];
@@ -867,25 +870,11 @@ public class Interpreter implements IInterpreter {
 
     //-----------------------------KOMUNIKATY---------------------------------------
 
-    //RM - zapisywanie otrzymanego komunikatu do RAM,
-    private void RM(String[] order, int PC) throws Exception {
-        String bAddress = order[1];
-
-        int lenbAddress = bAddress.length();
-
-        char left = bAddress.charAt(0);
-        char right = bAddress.charAt(lenbAddress-1);
-
-        if((left == '[')||((right == ']'))){
-            throw new Exception("Nieprawidlowy adres");
-        }
-
-        String logicalAddress = bAddress.replaceAll("\\[", "").replaceAll("]", "");
-        int Address = Integer.parseInt(logicalAddress);
-
+    //RM - odbieranie i zapisywanie otrzymanego komunikatu do RAM
+    private void RM(String[] order, int PC) {
         //Jeśli złapie ChangedToWaitingException to licznik się nie zmienia
         try {
-            communication.receiveMessage(Address);
+            communication.receiveMessage();
         } catch (ChangedToWaitingException e) {
             PC--;
         }
@@ -894,30 +883,49 @@ public class Interpreter implements IInterpreter {
         //SaveTimer();
     }
 
-    //SM - wysłanie komunikatu
-    private void SM(String[] order, int PC) {
+    //SM PID message - wysłanie komunikatu
+    private void SM(String[] order, int PC) throws IPCException {
+        int n = order.length;
         int PID = Integer.parseInt(order[1]);
-        Sms sms = new Sms(order[2]);
-        communication.sendMessage(PID, sms);
+
+        String message ="";
+
+        for (int i=2;i<n;i++) {
+            message += order[i] + " ";
+        }
+        Sms sms = new Sms(message);
+        try {
+            communication.sendMessage(PID, sms);
+        } catch (IPCException e){
+            throw e;
+        }
         PC++;
         processManager.getActivePCB().setCounter(PC);
         //SaveTimer();
     }
 
-    //LM - wczytywanie i wysyłanie wiadomości z RAM
-    private void LM(String[] order, int PC) {
-        String s_PID = order[1];
+    //LM PID adres- wczytywanie i wysyłanie wiadomości z RAM
+    private void LM(String[] order, int PC) throws Exception {
         String bAddress = order[2];
+        int PID = Integer.parseInt(order[1]);
 
-        int PID = Integer.parseInt(s_PID);
-        int address = Integer.parseInt(bAddress);
+        int lenbAddress = bAddress.length();
 
-        try {
-            communication.loadAndSend(PID, address);
-        } catch (Exception e){
-            throw e;
+        char left = bAddress.charAt(0);
+        char right = bAddress.charAt(lenbAddress-1);
+
+        if((left != '[')||((right != ']'))){
+            throw new Exception("Nieprawidlowy adres");
         }
 
+        String logicalAddress = bAddress.replaceAll("\\[", "").replaceAll("]", "");
+        int Address = Integer.parseInt(logicalAddress);
+
+        try {
+            communication.loadAndSend(PID, Address);
+        } catch (IPCException e){
+            throw e;
+        }
         PC++;
         processManager.getActivePCB().setCounter(PC);
         //SaveTimer();

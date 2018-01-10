@@ -1,0 +1,1 @@
+MO A 5;MO B 3;MO C 8;MD A 3 B;MZ [0] A;PE B;EX;
