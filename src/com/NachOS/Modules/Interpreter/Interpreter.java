@@ -1064,7 +1064,7 @@ public class Interpreter implements IInterpreter {
     }
 
     public void PrintOrderAryt(){
-        System.out.println("Dzialania arytmetyczno-logiczne");
+        System.out.println("Operacje arytmetyczno-logiczne:");
         System.out.println("AD reg1 reg2 - dodawanie zawartosci reg2 do reg1");
         System.out.println("AX reg num - dodawanie num do reg");
         System.out.println("SB reg1 reg2 - odejmowanie od reg1 zawartosc reg2");
