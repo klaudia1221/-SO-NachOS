@@ -1,1 +1,4 @@
-RM;MO A 2;EX;
+RM;
+SM 3 P2doP3;
+SM 2 P2doP2;
+EX;

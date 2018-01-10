@@ -1,3 +1,5 @@
-SM 1 P2doP1;
-MO A 3;
+SM 2 P1doP2;
+SM 3 P1doP3;
+RM;
+SM 2 zadlugawiadomosc;
 EX;

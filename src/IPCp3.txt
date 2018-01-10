@@ -1,3 +1,4 @@
 RM;
-SM 2 od3do2;
+LM adres 1;
+RM;
 EX;
