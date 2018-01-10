@@ -146,11 +146,11 @@ public class ProcessManager implements IProcessManager {
 	public PCB runNew() throws Exception {
 		return newProcess("P"+this.ProcessCounter, this.ActivePCB.getPGID());
 	}
-	public PCB runNew(String FileName) throws Exception {
-		return newProcess("P"+this.ProcessCounter, this.ActivePCB.getPGID(), FileName);
+	public PCB runNew(String name, String FileName) throws Exception {
+		return newProcess(name, this.ActivePCB.getPGID(), FileName);
 	}
-	public PCB runNew(String FileName, int memSize) throws Exception {
-		return newProcess("P"+this.ProcessCounter, this.ActivePCB.getPGID(), FileName, memSize);
+	public PCB runNew(String name, String FileName, int memSize) throws Exception {
+		return newProcess(name, this.ActivePCB.getPGID(), FileName, memSize);
 	}
 	//Usuwanie procesu
 	public void killProcess(int PID) throws Exception {
