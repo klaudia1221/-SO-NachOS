@@ -9,6 +9,10 @@ import java.util.ArrayList;
 
 public class IPC
 {
+    public static final char zs = '-'; //znak oddzielajacy fragmenty wiadomosci w ramie
+    public static final char zk = '$'; //znak konca wiadomosci w ramie
+
+
     private ProcessManager pm;
     private RAM ram;
 
@@ -82,7 +86,7 @@ public class IPC
     {
         //mergeMessage(sms);
         String mes="";
-        mes+=sms.get_senID()+";"+sms.get_recID()+";"+sms.get_mes();
+        mes+=sms.get_senID()+zs+sms.get_recID()+zs+sms.get_mes();
 
         int adress = ram.indexOfFreeFrame();
 
@@ -93,7 +97,7 @@ public class IPC
                 ram.writeCharToRam(sms.get_recID(),adr,c);
                 adr++;
             }
-            ram.writeCharToRam(sms.get_recID(),adress,'#');
+            ram.writeCharToRam(sms.get_recID(),adress,zk);
         } catch(Exception e)
         {
             System.out.println("Blad zapisu wiadomosci");
@@ -158,11 +162,11 @@ public class IPC
         String str="", parts[];
         char c;
         c=ram.getFromRam(adr);
-        while(c!='$')
+        while(c!=zk)
         {
             str+=c;
         }
-        parts=str.split(";");
+        parts=str.split(Character.toString(zs));
         //Sms sms = new Sms(parts[2]);
         //sms.set_senID(Integer.parseInt(parts[0]));
         //sms.set_recID(Integer.parseInt(parts[1]));
