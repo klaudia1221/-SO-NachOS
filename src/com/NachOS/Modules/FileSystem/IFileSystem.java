@@ -12,6 +12,7 @@ public interface IFileSystem {
     void appendFile(String fileName, String content) throws Exception;
     void deleteContent(String fileName) throws Exception;
     String readFile(String fileName) throws Exception;
+    String readFileShell(String fileName) throws Exception;
     void deleteFile(String fileName) throws Exception;
     void renameFile(String oldName, String newName) throws Exception;
     File getFile(String fileName) throws Exception;
