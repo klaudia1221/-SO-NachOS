@@ -339,13 +339,13 @@ public class ProcessManager implements IProcessManager {
 			if (temp == null) throw new Exception("Brak grupy proces�w o podanym PGID");
 			//System.out.println("PID"+'\t'+"PGID"+'\t'+"Nazwa");
 			//System.out.println("------------------------");
-			System.out.println("PID"+'\t'+"PGID"+'\t'+"A"+'\t'+"B"+'\t'+"C"+'\t'+"Licznik"+'\t'+"Timer"+'\t'+"Tau"+'\t'+"Stan"+'\t'+"Nazwa");
-			System.out.println("--------------------------------------------------------------------------------");
+			System.out.println("PID"+"\t\t"+"PGID"+"\t"+"A"+"\t\t"+"B"+"\t\t"+"C"+"\t\t"+"Licznik"+"\t"+"Timer"+"\t"+"Tau"+"\t\t"+"Stan"+"\t\t"+"Nazwa");
+			System.out.println("----------------------------------------------------------------------------------------");
 			for(PCB pcb : temp) {
 				//System.out.println(pcb.GetPID()+"\t"+pcb.GetPGID()+"\t"+pcb.GetName());
-				System.out.print(pcb.getPID()+"\t"+pcb.getPGID()+"\t");
-				System.out.print(pcb.getRegister(PCB.Register.A)+"\t"+pcb.getRegister(PCB.Register.B)+"\t"+pcb.getRegister(PCB.Register.C)+"\t");
-				System.out.println(pcb.getCounter()+"\t"+pcb.getTimer()+"\t"+pcb.getTau()+"\t"+pcb.getState()+"\t"+pcb.getName());
+				System.out.print(pcb.getPID()+"\t\t"+pcb.getPGID()+"\t\t");
+				System.out.print(pcb.getRegister(PCB.Register.A)+"\t\t"+pcb.getRegister(PCB.Register.B)+"\t\t"+pcb.getRegister(PCB.Register.C)+"\t\t");
+				System.out.println(pcb.getCounter()+"\t\t"+pcb.getTimer()+"\t\t"+pcb.getTau()+"\t\t"+pcb.getState()+"\t\t"+pcb.getName());
 			}
 		}catch (Exception e) {System.out.println(e);}
 	}
@@ -353,14 +353,14 @@ public class ProcessManager implements IProcessManager {
 	public void PrintProcesses() {
 		//System.out.println("PID"+'\t'+"PGID"+'\t'+"Nazwa");
 		//System.out.println("------------------------");
-		System.out.println("PID"+'\t'+"PGID"+'\t'+"A"+'\t'+"B"+'\t'+"C"+'\t'+"Licznik"+'\t'+"Timer"+'\t'+"Tau"+'\t'+"Stan"+'\t'+"Nazwa");
-		System.out.println("--------------------------------------------------------------------------------");
+		System.out.println("PID"+"\t\t"+"PGID"+"\t"+"A"+"\t\t"+"B"+"\t\t"+"C"+"\t\t"+"Licznik"+"\t"+"Timer"+"\t"+"Tau"+"\t\t"+"Stan"+"\t\t"+"Nazwa");
+		System.out.println("----------------------------------------------------------------------------------------");
 		for(ArrayList<PCB> processlist : this.ProcessGroups) {
 			for(PCB pcb : processlist) {
 				//System.out.println(pcb.GetPID()+"\t"+pcb.GetPGID()+"\t"+pcb.GetName());
-				System.out.print(pcb.getPID()+"\t"+pcb.getPGID()+"\t");
-				System.out.print(pcb.getRegister(PCB.Register.A)+"\t"+pcb.getRegister(PCB.Register.B)+"\t"+pcb.getRegister(PCB.Register.C)+"\t");
-				System.out.println(pcb.getCounter()+"\t"+pcb.getTimer()+"\t"+pcb.getTau()+"\t"+pcb.getState()+"\t"+pcb.getName());
+				System.out.print(pcb.getPID()+"\t\t"+pcb.getPGID()+"\t\t");
+				System.out.print(pcb.getRegister(PCB.Register.A)+"\t\t"+pcb.getRegister(PCB.Register.B)+"\t\t"+pcb.getRegister(PCB.Register.C)+"\t\t");
+				System.out.println(pcb.getCounter()+"\t\t"+pcb.getTimer()+"\t\t"+pcb.getTau()+"\t\t"+pcb.getState()+"\t\t"+pcb.getName());
 			}
 		}
 	}
