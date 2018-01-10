@@ -1,4 +1,4 @@
-RM 1;
+RM [1];
 SM 3 P2doP3;
 SM 2 P2doP2;
 EX;

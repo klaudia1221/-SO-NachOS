@@ -1,5 +1,5 @@
 SM 2 P1doP2;
 SM 3 P1doP3;
-RM 1;
+RM [1];
 SM 2 zadlugawiadomosc;
 EX;
