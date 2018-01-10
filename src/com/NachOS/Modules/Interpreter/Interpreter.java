@@ -145,7 +145,7 @@ public class Interpreter implements IInterpreter {
         PC++;
         RegisterStatus(A,B,C,PC);
         SaveRegister(A,B,C,PC);
-        SaveTimer();
+        //SaveTimer();
     }
 
     //AX reg num – dodaje liczbę do rejestru
@@ -169,7 +169,7 @@ public class Interpreter implements IInterpreter {
         PC++;
         RegisterStatus(A,B,C,PC);
         SaveRegister(A,B,C,PC);
-        SaveTimer();
+        //SaveTimer();
     }
 
     //SB reg1 reg2 - odejmuje od rejestru1 zawartość rejestru2
@@ -220,7 +220,7 @@ public class Interpreter implements IInterpreter {
         PC++;
         RegisterStatus(A,B,C,PC);
         SaveRegister(A,B,C,PC);
-        SaveTimer();
+        //SaveTimer();
     }
 
     //SX reg num – odejmuje liczbę od rejestru
@@ -244,11 +244,11 @@ public class Interpreter implements IInterpreter {
         PC++;
         RegisterStatus(A,B,C,PC);
         SaveRegister(A,B,C,PC);
-        SaveTimer();
+        //SaveTimer();
     }
 
     //DC reg - zmniejsza zawartość rejestru o 1
-    private void DC(String[] order, int A, int B, int C, int PC) throws Exception{
+    private void DC(String[] order, int A, int B, int C, int PC) throws Exception {
         String reg = order[1];
 
         switch (reg) {
@@ -267,7 +267,7 @@ public class Interpreter implements IInterpreter {
         PC++;
         RegisterStatus(A,B,C,PC);
         SaveRegister(A,B,C,PC);
-        SaveTimer();
+        //SaveTimer();
     }
 
     //IC reg - zwiększa zawartość rejestru o 1
@@ -290,7 +290,7 @@ public class Interpreter implements IInterpreter {
         PC++;
         RegisterStatus(A,B,C,PC);
         SaveRegister(A,B,C,PC);
-        SaveTimer();
+        //SaveTimer();
     }
 
     //MU reg1 reg2 – mnoży rejestr 1 przez rejestr 2
@@ -341,7 +341,7 @@ public class Interpreter implements IInterpreter {
         PC++;
         RegisterStatus(A,B,C,PC);
         SaveRegister(A,B,C,PC);
-        SaveTimer();
+        //SaveTimer();
     }
 
     //MX reg num – mnoży rejestr przez liczbę
@@ -365,7 +365,7 @@ public class Interpreter implements IInterpreter {
         PC++;
         RegisterStatus(A,B,C,PC);
         SaveRegister(A,B,C,PC);
-        SaveTimer();
+        //SaveTimer();
     }
 
     //DV reg1 reg2 - dzieli zawartość rejestru1 przez zawartość rejestru2
@@ -420,7 +420,7 @@ public class Interpreter implements IInterpreter {
         PC++;
         RegisterStatus(A,B,C,PC);
         SaveRegister(A,B,C,PC);
-        SaveTimer();
+        //SaveTimer();
     }
 
     //DX reg num – dzieli rejestr przez liczbę
@@ -448,7 +448,7 @@ public class Interpreter implements IInterpreter {
         PC++;
         RegisterStatus(A,B,C,PC);
         SaveRegister(A,B,C,PC);
-        SaveTimer();
+        //SaveTimer();
     }
 
     //DM reg1 val reg2 - reszta z dzielenia reg1 przez val zapisywany do reg2
@@ -514,7 +514,7 @@ public class Interpreter implements IInterpreter {
         PC++;
         RegisterStatus(A,B,C,PC);
         SaveRegister(A,B,C,PC);
-        SaveTimer();
+        //SaveTimer();
     }
 
     //MV reg1 reg2 – kopiuje zawartość rejestru 2 do rejestru 1
@@ -565,28 +565,32 @@ public class Interpreter implements IInterpreter {
         PC++;
         RegisterStatus(A,B,C,PC);
         SaveRegister(A,B,C,PC);
-        SaveTimer();
+        //SaveTimer();
     }
 
     //MZ address reg - zapisuje do pamięci zawartość rejestru pod wskazanym adresem,
     //TODO metoda do zapisywania do pamięci - Klaudia
-    private void MZ(String[] order, int A, int B, int C, int PC) throws Exception {
-        String raw_address = order[1];
+    private void MZ(String[] order, int A, int B, int C, int PC) {
+        String bAddress = order[1];
+
+        int lenbAddress = bAddress.length();
+
         String reg = order[2];
 
-        String[] split_address = raw_address.split("");
+        Character left = bAddress.charAt(0);
+        Character right = bAddress.charAt(lenbAddress-1);
 
-        int len = raw_address.length();
+        String logicalAddress ="";
 
-        String left = split_address[0];
-        String right = split_address[len-1];
+        for(int i=1;i<lenbAddress-1;i++){
+            logicalAddress += bAddress.charAt(i);
+        }
 
-        String stringA = Integer.toString(A);
-        int lenStringA = stringA.length();
+        int Address = Integer.parseInt(logicalAddress);
 
         int PID = processManager.getActivePCB().getPID();
-
-        if((left == "[") || (right == "]")){
+/*
+        if((!left.equals("["))||(!right.equals("]"))){
             throw new Exception("Nieprawidlowy adres");
         }
         else {
@@ -609,10 +613,11 @@ public class Interpreter implements IInterpreter {
                     throw new IncorrectRegisterException("Nieprawidlowy rejestr");
             }
         }
+        */
         PC++;
         RegisterStatus(A,B,C,PC);
         SaveRegister(A,B,C,PC);
-        SaveTimer();
+        //SaveTimer();
     }
 
     //MO reg n – umieszcza w rejestrze wartość n,
@@ -636,48 +641,36 @@ public class Interpreter implements IInterpreter {
         PC++;
         RegisterStatus(A,B,C,PC);
         SaveRegister(A,B,C,PC);
-        SaveTimer();
+        //SaveTimer();
     }
 
     //MY reg address - umieszcza w rejestrze zawartość pamiętaną pod wskazanym adresem,
-    //TODO metoda do czytania z pamięci - Klaudia
-    private void MY(String[] order, int A, int B, int C, int PC) {
+    private void MY(String[] order, int A, int B, int C, int PC) throws Exception {
         String reg = order[1];
-        String raw_address = order[2];
-        String[] split_address = raw_address.split("");
 
-        if ((!split_address[0].equals("[")) || (!split_address[raw_address.length() - 1].equals("]"))) {
-            System.out.println("Incorrect address.");
-        } else {
-            raw_address = raw_address.replaceAll("\\[", "").replaceAll("]", "");
-            int address = Integer.parseInt(raw_address);
-            /*
-            char pom = memory.readMemory(address);
+        String bAddress = order[2];
 
-            if (pom != '#') {
-                switch (reg) {
-                    case "A":
-                        A = memory.readMemory(address);
-                        break;
-                    case "B":
-                        B = memory.readMemory(address);
-                        break;
-                    case "C":
-                        C = memory.readMemory(address);
-                        break;
-                    default:
-                        System.out.println("Incorrect register.");
-                        break;
-                }
-            } else {
-                System.out.println("Address is empty.");
+        int logicalAddress = Integer.parseInt(bAddress);
+
+        int PID = processManager.getActivePCB().getPID();
+
+        switch (reg){
+            case "A":
+                    A = Integer.parseInt(processManager.getCommand(logicalAddress));
+                break;
+            case "B":
+                    B = Integer.parseInt(processManager.getCommand(logicalAddress));
+                    break;
+                case "C":
+                    C = Integer.parseInt(processManager.getCommand(logicalAddress));
+                    break;
+                default:
+                    throw new IncorrectRegisterException("Nieprawidlowy rejestr");
             }
-            */
-        }
         PC++;
         RegisterStatus(A,B,C,PC);
         SaveRegister(A,B,C,PC);
-        SaveTimer();
+        //SaveTimer();
     }
 
     //JP counter - skacze do innego rozkazu poprzez zmianę licznika
@@ -686,7 +679,7 @@ public class Interpreter implements IInterpreter {
         PC = counter;
         processManager.getActivePCB().setCounter(PC);
         RegisterStatus(A,B,C,PC);
-        SaveTimer();
+        //SaveTimer();
     }
 
     //JZ reg n - skok przy zerowej zawartości rejestru będącego argumentem,
@@ -721,7 +714,7 @@ public class Interpreter implements IInterpreter {
             }
         processManager.getActivePCB().setCounter(PC);
         RegisterStatus(A,B,C,PC);
-        SaveTimer();
+        //SaveTimer();
     }
 
     //PE reg - wyświetla wynik programu znajdujący się w podanym rejestrze,
@@ -742,7 +735,7 @@ public class Interpreter implements IInterpreter {
         }
         PC++;
         SaveRegister(A,B,C,PC);
-        SaveTimer();
+        //SaveTimer();
         }
 
     //---------------------------------PROCESY---------------------------------------
@@ -758,12 +751,10 @@ public class Interpreter implements IInterpreter {
         }
         PC++;
         processManager.getActivePCB().setCounter(PC);
-        SaveTimer();
+        //SaveTimer();
     }
 
-    //TODO ogarnąć
-    //KP file_name - usunięcie procesu po ID,
-    //wykorzystywane przy komunikatach
+    //KP file_name - usunięcie procesu po ID
     private void KP(String[] order, int PC) throws Exception{
         int PID = Integer.parseInt(order[2]);
         try {
@@ -773,7 +764,8 @@ public class Interpreter implements IInterpreter {
         }
         PC++;
         processManager.getActivePCB().setCounter(PC);
-        SaveTimer();
+
+        //SaveTimer();
     }
 
     //-----------------------------------PLIKI---------------------------------------
@@ -789,7 +781,7 @@ public class Interpreter implements IInterpreter {
         } finally {
             PC++;
             processManager.getActivePCB().setCounter(PC);
-            SaveTimer();
+            //SaveTimer();
         }
     }
 
@@ -805,7 +797,7 @@ public class Interpreter implements IInterpreter {
         } finally {
             PC++;
             processManager.getActivePCB().setCounter(PC);
-            SaveTimer();
+            //SaveTimer();
         }
     }
 
@@ -819,7 +811,7 @@ public class Interpreter implements IInterpreter {
         } finally {
             PC++;
             processManager.getActivePCB().setCounter(PC);
-            SaveTimer();
+            //SaveTimer();
         }
     }
 
@@ -843,7 +835,7 @@ public class Interpreter implements IInterpreter {
         } finally {
             PC++;
             processManager.getActivePCB().setCounter(PC);
-            SaveTimer();
+            //SaveTimer();
         }
     }
 
@@ -863,7 +855,7 @@ public class Interpreter implements IInterpreter {
         } finally {
             PC++;
             processManager.getActivePCB().setCounter(PC);
-            SaveTimer();
+            //SaveTimer();
         }
     }
 
@@ -877,7 +869,7 @@ public class Interpreter implements IInterpreter {
         } finally {
             PC++;
             processManager.getActivePCB().setCounter(PC);
-            SaveTimer();
+            //SaveTimer();
         }
     }
 
@@ -893,7 +885,7 @@ public class Interpreter implements IInterpreter {
         } finally {
             PC++;
             processManager.getActivePCB().setCounter(PC);
-            SaveTimer();
+            //SaveTimer();
         }
     }
 
@@ -908,14 +900,13 @@ public class Interpreter implements IInterpreter {
         } finally {
             PC++;
             processManager.getActivePCB().setCounter(PC);
-            SaveTimer();
+            //SaveTimer();
         }
     }
 
     //-----------------------------KOMUNIKATY---------------------------------------
 
     //RM  - zapisywanie otrzymanego komunikatu do RAM
-    //Kuba metoda receiveMessage
     private void RM(String[] order, int PC) throws Exception{
         String bAddress = order[1];
 
@@ -951,32 +942,35 @@ public class Interpreter implements IInterpreter {
         }
         PC++;
         processManager.getActivePCB().setCounter(PC);
-        SaveTimer();
+        //SaveTimer();
     }
 
     //SM  - wysłanie komunikatu
-    //Kuba metoda sendMessage
     private void SM(String[] order, int PC) {
         int PID = Integer.parseInt(order[1]);
         Sms sms = new Sms(order[2]);
         communication.sendMessage(PID, sms);
         PC++;
         processManager.getActivePCB().setCounter(PC);
-        SaveTimer();
+        //SaveTimer();
     }
 
     private void LM(String[] order, int PC) {
-        String s_PID = order[0];
-        String bAddress = order[1];
+        String s_PID = order[1];
+        String bAddress = order[2];
 
         int PID = Integer.parseInt(s_PID);
         int address = Integer.parseInt(bAddress);
 
-        communication.loadMessage(PID, address);
+        try {
+            communication.loadAndSend(PID, address);
+        } catch (Exception e){
+            throw e;
+        }
 
         PC++;
         processManager.getActivePCB().setCounter(PC);
-        SaveTimer();
+        //SaveTimer();
     }
 
 
@@ -987,7 +981,7 @@ public class Interpreter implements IInterpreter {
     private void EX(int PC){
         processManager.setStateOfActivePCB(PCB.State.FINISHED);
         PC++;
-        SaveTimer();
+        //SaveTimer();
     }
 
     //------------------------------------------------------------------------------
