@@ -138,7 +138,7 @@ public class IPC
         String str="", parts[];
         char c;
         c=ram.getFromRam(adr);
-        while(c!='^')
+        while(c!='%')
         {
             str+=c;
         }
@@ -155,7 +155,7 @@ public class IPC
         String str="", parts[];
         char c;
         c=ram.getFromRam(adr);
-        while(c!='^')
+        while(c!='%')
         {
             str+=c;
         }
