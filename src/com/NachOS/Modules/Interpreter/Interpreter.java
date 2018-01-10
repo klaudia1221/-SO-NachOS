@@ -567,7 +567,6 @@ public class Interpreter implements IInterpreter {
     }
 
     //MZ address reg - zapisuje do pamięci zawartość rejestru pod wskazanym adresem,
-    //TODO sprawdzic czy dziala
     private void MZ(String[] order, int A, int B, int C, int PC) throws Exception {
         String reg = order[2];
         String bAddress = order[1];
@@ -627,7 +626,6 @@ public class Interpreter implements IInterpreter {
         //SaveTimer();
     }
 
-    //TODO sprawdzic czy dziala
     //MY reg address - umieszcza w rejestrze zawartość pamiętaną pod wskazanym adresem,
     private void MY(String[] order, int A, int B, int C, int PC) throws Exception {
         String reg = order[1];
