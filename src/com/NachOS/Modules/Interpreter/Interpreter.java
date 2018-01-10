@@ -881,12 +881,12 @@ public class Interpreter implements IInterpreter {
     }
 
     //SM PID message - wysłanie komunikatu
-    private void SM(String[] order, int PC) {
+    private void SM(String[] order, int PC) throws Exception {
         try {
             int PID = Integer.parseInt(order[1]);
             Sms sms = new Sms(order[2]);
             communication.sendMessage(PID, sms);
-        } catch (Exception e){
+        } catch (IPCException e){
             throw e;
         }
         PC++;
@@ -911,14 +911,11 @@ public class Interpreter implements IInterpreter {
         String logicalAddress = bAddress.replaceAll("\\[", "").replaceAll("]", "");
         int Address = Integer.parseInt(logicalAddress);
 
-        int address = Integer.parseInt(bAddress);
-
         try {
-            communication.loadAndSend(PID, address);
-        } catch (Exception e){
+            communication.loadAndSend(PID, Address);
+        } catch (IPCException e){
             throw e;
         }
-
         PC++;
         processManager.getActivePCB().setCounter(PC);
         //SaveTimer();
