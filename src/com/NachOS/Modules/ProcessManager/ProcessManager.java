@@ -125,7 +125,7 @@ public class ProcessManager implements IProcessManager {
 		throw new Exception("Brak grupy o podanym PGID");
 	}
 
-	private String readCommandFile(String relativePathToFile){
+	private String readCommandFile(String relativePathToFile) throws Exception{
 //		TODO
 //		Jak zrobisz.
 //		process --groupCreate nazwa programKtórynieistnieje
@@ -133,14 +133,10 @@ public class ProcessManager implements IProcessManager {
 
 		StringBuilder contentBuilder = new StringBuilder();
 		Stream<String> stream;
-		try{
-			stream = stream = Files.lines(Paths.get(relativePathToFile), StandardCharsets.UTF_8);
-			stream.forEach(s -> contentBuilder.append(s));
-			stream.close();
-		}catch(IOException e){
-			e.printStackTrace();
-		}finally {
-		}
+		stream = stream = Files.lines(Paths.get(relativePathToFile), StandardCharsets.UTF_8);
+		stream.forEach(s -> contentBuilder.append(s));
+		stream.close();
+
 		return contentBuilder.toString();
 	}
 	public PCB runNew() throws Exception {
@@ -214,38 +210,43 @@ public class ProcessManager implements IProcessManager {
 	}
 
 	public PCB newProcessGroup(String ProcessName, String FileName) {
-		//PCB pcb = new PCB(this.ProcessCounter, ProcessName, this.GroupsCounter);
-		//PCB pcb = newProcess(ProcessName, this.GroupsCounter, FileName);
-		String textFileContent = readCommandFile("src/" + FileName + ".txt");
-		Map mapLine = new HashMap<Integer, Integer>();
-		System.out.println("Kod programu: "+ textFileContent);
-		mapLine.put(0,0);
-		for(int i = 0, j = 1; i != -1 && i+1 < textFileContent.length();j++){
-			i = textFileContent.indexOf(";", i+1);
-			if(i+1 < textFileContent.length()) {
-				mapLine.put(j, i + 1);
-				//System.out.println(j + " " + textFileContent.charAt(i + 1));
+		try {
+			//PCB pcb = new PCB(this.ProcessCounter, ProcessName, this.GroupsCounter);
+			//PCB pcb = newProcess(ProcessName, this.GroupsCounter, FileName);
+			String textFileContent = readCommandFile("src/" + FileName + ".txt");
+			Map mapLine = new HashMap<Integer, Integer>();
+			System.out.println("Kod programu: " + textFileContent);
+			mapLine.put(0, 0);
+			for (int i = 0, j = 1; i != -1 && i + 1 < textFileContent.length(); j++) {
+				i = textFileContent.indexOf(";", i + 1);
+				if (i + 1 < textFileContent.length()) {
+					mapLine.put(j, i + 1);
+					//System.out.println(j + " " + textFileContent.charAt(i + 1));
+				}
 			}
-		}
-		char[] code = textFileContent.toCharArray();
-		PageTable pt1 = new PageTable(this.ProcessCounter, code.length);
-		PCB pcb = new PCB(this.ProcessCounter, ProcessName, this.GroupsCounter, pt1, mapLine);
-		Map map = pcb.getMapLine();
-		System.out.println("Mapa konwersji");
+			char[] code = textFileContent.toCharArray();
+			PageTable pt1 = new PageTable(this.ProcessCounter, code.length);
+			PCB pcb = new PCB(this.ProcessCounter, ProcessName, this.GroupsCounter, pt1, mapLine);
+			Map map = pcb.getMapLine();
+			System.out.println("Mapa konwersji");
 //		for(Map.Entry<Integer, Integer> entry : map.){
 //			System.out.println(entry.getKey()+"\t"+entry.getValue());
 //		}
-		ram.pageTables.put(this.ProcessCounter, pt1);
-		ram.exchangeFile.writeToExchangeFile(this.ProcessCounter, code);
+			ram.pageTables.put(this.ProcessCounter, pt1);
+			ram.exchangeFile.writeToExchangeFile(this.ProcessCounter, code);
 
 
-		ArrayList<PCB> al = new ArrayList<PCB>();
-		al.add(pcb);
-		ProcessGroups.add(al);
-		ConditionVariables.add(new ConditionVariable(this, this.GroupsCounter));
-		this.ProcessCounter++;
-		this.GroupsCounter++;
-		return pcb;
+			ArrayList<PCB> al = new ArrayList<PCB>();
+			al.add(pcb);
+			ProcessGroups.add(al);
+			ConditionVariables.add(new ConditionVariable(this, this.GroupsCounter));
+			this.ProcessCounter++;
+			this.GroupsCounter++;
+			return pcb;
+		}catch (Exception e){
+			System.out.println(e.getMessage());
+		}
+		return null;
 	}
 
 	public PCB newProcessGroup(String ProcessName, String FileName, int memSize) throws Exception {
