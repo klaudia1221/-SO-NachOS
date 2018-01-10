@@ -3,6 +3,8 @@ package com.NachOS.Modules.Processor;
 
 import java.util.ArrayList;
 
+import com.NachOS.Modules.Exceptions.DivideZeroException;
+import com.NachOS.Modules.Exceptions.InterpreterException;
 import com.NachOS.Modules.Interpreter.Interpreter;
 import com.NachOS.Modules.ProcessManager.IProcessManager;
 import com.NachOS.Modules.ProcessManager.PCB;
@@ -42,7 +44,7 @@ public class Processor implements IProcessor {
     public void Scheduler() {
         ArrayList<PCB> processReadyList = processManager.getReadyProcesses();
         if(processManager.getActivePCB().getState() == PCB.State.WAITING || processManager.getActivePCB().getState() == PCB.State.FINISHED ||
-                (processReadyList.size() > 0 && processManager.getActivePCB().getPID() == 0)){
+                (processReadyList.size() > 0 && processManager.getActivePCB().getPGID() == 0)){
             if(processManager.getActivePCB().getState() == PCB.State.FINISHED){
                 time = processManager.getActivePCB().getTimer();
                 try{
@@ -70,7 +72,7 @@ public class Processor implements IProcessor {
             if (time == 0) {
                 pcb.setTau(10.0d);
             } else {
-                pcb.setTau(alpha * time + (1.0d - alpha) * processManager.getActivePCB().getTau());
+                pcb.setTau(alpha * processManager.getActivePCB().getTimer() + alpha * time);
             }
         }
     }
@@ -83,10 +85,12 @@ public class Processor implements IProcessor {
         });
     }
 
-    public void exe() {   //
+    public void exe() throws Exception {   //
         Scheduler();
         try{
             interpreter.Exe();
+        }catch(InterpreterException e){
+            processManager.killProcess(processManager.getActivePCB().getPID());
         }catch (Exception e){
             System.out.println(e.getMessage());
         }

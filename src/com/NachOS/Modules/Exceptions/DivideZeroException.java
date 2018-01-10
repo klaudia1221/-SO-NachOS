@@ -1,6 +1,6 @@
 package com.NachOS.Modules.Exceptions;
 
-public class DivideZeroException extends Exception {
+public class DivideZeroException extends InterpreterException {
     public DivideZeroException(String message){
         super(message);
     }
