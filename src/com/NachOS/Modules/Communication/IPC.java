@@ -6,15 +6,20 @@ import com.NachOS.Modules.MemoryManagment.RAM;
 
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class IPC
 {
     public static final char zs = '-'; //znak oddzielajacy fragmenty wiadomosci w ramie
     public static final char zk = '$'; //znak konca wiadomosci w ramie
 
+    private Map<Integer, Integer> firstFree = new HashMap<>(); //<PID,pierwsze wolne miejsce w RAMie>
 
     private ProcessManager pm;
     private RAM ram;
+
+    private static final int ramCap = 31; //miejsca w RAMie - 1
 
     private static final int maxSmsSize = 8;
 
@@ -26,7 +31,6 @@ public class IPC
         this.pm=pm;
         this.ram=ram;
     }
-
 
     public void sendMessage(int recID, Sms sms)
     {
@@ -82,30 +86,34 @@ public class IPC
         return str;
     }*/
 
-    public void saveMessage(Sms sms, int adr) //do wywołania w receiveMessage bo zapisuje recID
+    public void saveMessage(Sms sms) //do wywołania w receiveMessage bo zapisuje recID
     {
-        //mergeMessage(sms);
+        int temp;
+        int PID = sms.get_recID();
         String mes="";
         mes+=sms.get_senID()+zs+sms.get_recID()+zs+sms.get_mes();
-
-        int adress = ram.indexOfFreeFrame();
-
+        if(!firstFree.containsKey(sms.get_recID()))
+        {
+            firstFree.put(PID,0);
+        }
         try
         {
             for(char c : mes.toCharArray())
             {
-                ram.writeCharToRam(sms.get_recID(),adr,c);
-                adr++;
+                pm.setSafeMemory(firstFree.get(PID),c);
+                //ram.writeCharToRam(sms.get_recID(),adr,c);
+                temp=firstFree.get(PID);
+                temp++;
+                firstFree.put(PID,temp);
             }
-            ram.writeCharToRam(sms.get_recID(),adress,zk);
+            pm.setSafeMemory(firstFree.get(PID),zk);
         } catch(Exception e)
         {
             System.out.println("Blad zapisu wiadomosci");
         }
-
     }
 
-    public void receiveMessage(int adr) throws ChangedToWaitingException //int senID, Sms sms)
+    public void receiveMessage() throws ChangedToWaitingException //int senID, Sms sms)
     {
         ArrayList<Sms> temp_list = pm.getActivePCB().getSmsList();
         if(temp_list.size()==0)//kontener wiadomości z PCB jest pusty
@@ -136,7 +144,7 @@ public class IPC
             temp_list.remove(0);
             pm.getActivePCB().setSmsList(temp_list);
 
-            saveMessage(sms, adr);
+            saveMessage(sms);
         }
     }
 
@@ -161,10 +169,12 @@ public class IPC
     {
         String str="", parts[];
         char c;
-        c=ram.getFromRam(adr);
+        //c=ram.getFromRam(adr);
+        c=pm.getSafeMemory(adr);
         while(c!=zk)
         {
             str+=c;
+            c=pm.getSafeMemory(adr);
         }
         parts=str.split(Character.toString(zs));
         //Sms sms = new Sms(parts[2]);

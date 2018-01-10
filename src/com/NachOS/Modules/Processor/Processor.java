@@ -78,8 +78,12 @@ public class Processor implements IProcessor {
         try{
             interpreter.Exe();
         }catch(InterpreterException e){
+            System.out.println(e.getMessage());
+            System.out.println("Blad, zabijam proces " + processManager.getActivePCB().getPID() + " " + processManager.getActivePCB().getName());
             processManager.killProcess(processManager.getActivePCB().getPID());
         }catch(FileSystemException e){
+            System.out.println(e.getMessage());
+            System.out.println("Blad: " + processManager.getActivePCB().getPID() + " " + processManager.getActivePCB().getName());
             processManager.killProcess(processManager.getActivePCB().getPID());
         }catch(Exception e){
             System.out.println(e.getMessage());
