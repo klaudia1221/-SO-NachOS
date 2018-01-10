@@ -1087,9 +1087,16 @@ public class Interpreter implements IInterpreter {
         */
         System.out.println("Dzialania arytmetyczno-logiczne");
         System.out.println("AD reg1 reg2 - dodawanie zawartosci reg2 do reg1");
-        System.out.println("AD reg1 reg2 - dodawanie zawartosci reg2 do reg1");
-        System.out.println("AD reg1 reg2 - dodawanie zawartosci reg2 do reg1");
-        System.out.println("AD reg1 reg2 - dodawanie zawartosci reg2 do reg1");
+        System.out.println("AX reg num - dodawanie num do reg");
+        System.out.println("SB reg1 reg2 - odejmuje od reg1 zawartosc reg2");
+        System.out.println("SX reg num – odejmuje num od reg");
+        System.out.println("DC reg - zmniejszanie zawartosci reg o 1");
+        System.out.println("IC reg - zwiekszanie zawartosci reg o 1");
+        System.out.println("MU reg1 reg2 – mnozenie reg1 razy reg2");
+        System.out.println("MX reg num – mnozy reg razy num");
+        System.out.println("DV reg1 reg2 - dzieli zawartosc reg1 przez zawartosc reg2");
+        System.out.println("DX reg num – dzieli rejestr przez num");
+
     }
 
     public void PrintOrderFiles(){
