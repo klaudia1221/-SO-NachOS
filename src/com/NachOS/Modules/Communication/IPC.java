@@ -1,6 +1,6 @@
 package com.NachOS.Modules.Communication;
 
-import com.NachOS.Modules.Exceptions.ChangedToWaitingException;
+import com.NachOS.Modules.Exceptions.*;
 import com.NachOS.Modules.ProcessManager.ProcessManager;
 import com.NachOS.Modules.MemoryManagment.RAM;
 
@@ -32,27 +32,27 @@ public class IPC
         this.ram=ram;
     }
 
-    public void sendMessage(int recID, Sms sms)
+    public void sendMessage(int recID, Sms sms) throws WrongGroupException, WrongProcessIDException, SenderReceiverException, TooLongException
     {
         sms.set_recID(recID);
         sms.set_senID(pm.getActivePCB().getPID());
         if(pm.getActivePCB().getPID()==recID) //sprawdza czy nadawca nie jest odbiorca
         {
-            System.out.println("Nadawca nie moze byc jednoczesnie odbiorca");
-            return;
+            throw new SenderReceiverException("");
         }
         if(sms.get_mesSize()>maxSmsSize) //sprawdza czy wiadomosc nie przekracza max rozmiaru
         {
-            System.out.println("Wiadomosc jest zbyt dluga");
-            return;
+            throw new TooLongException("");
         }
 
-        if(pm.checkIfProcessExists(recID)!=null) //sprawdza czy istnieje proces o ID==recID
+        if(pm.checkIfProcessExists(recID)==null) //sprawdza czy istnieje proces o ID==recID
         {
+            throw new WrongProcessIDException("");
+        }
+
             if(pm.getActivePCB().getPGID()!=pm.checkIfProcessExists(recID).getPGID()) //sprawdza czy procesy sa w tej samej grupie
             {
-                System.out.println("Proces o ID "+recID+" znajduje sie w innej grupie");
-                return;
+                throw new WrongGroupException("");
             }
             //zapisz w odpowiednim polu PCB danego procesu wiadomość
             ArrayList<Sms> temp_list = pm.getPCB(recID).getSmsList();
@@ -73,11 +73,8 @@ public class IPC
             }
 
             System.out.println("Wyslano wiadomosc o tresci "+sms.get_mes()+" od procesu "+sms.get_senID()+" do procesu o ID "+recID);
-            return;
         }
 
-        System.out.println("Nie znaleziono procesu o ID "+recID);
-    }
 
     /*private String mergeMessage(Sms sms)
     {
@@ -184,11 +181,10 @@ public class IPC
         return parts[2];
     }
 
-    public void loadAndSend(int recID, int adr)
+    public void loadAndSend(int recID, int adr) throws TooLongException, WrongProcessIDException, SenderReceiverException, WrongGroupException
     {
         Sms sms = new Sms(loadMessage(adr));
         sendMessage(recID, sms);
-
     }
 
     public void display_sent()

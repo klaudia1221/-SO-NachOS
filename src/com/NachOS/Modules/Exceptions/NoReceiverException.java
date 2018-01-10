@@ -1,6 +1,6 @@
 package com.NachOS.Modules.Exceptions;
 
-public class NoReceiverException extends Exception {
+public class NoReceiverException extends IPCException {
     public NoReceiverException(String message){
         super(message);
     }
