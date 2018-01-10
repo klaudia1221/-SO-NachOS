@@ -118,7 +118,7 @@ public class ProcessManager implements IProcessManager {
 			PCB pcb = new PCB(this.ProcessCounter, ProcessName, PGID, pt1, mapLine);
 			temp.add(pcb);
 			ram.pageTables.put(this.ProcessCounter, pt1);
-			ram.exchangeFile.writeToExchangeFile(this.ProcessCounter, code);
+			ram.exchangeFile.writeToExchangeFile(this.ProcessCounter, code, memSize);
 			this.ProcessCounter++;
 			return pcb;
 		}
@@ -261,7 +261,7 @@ public class ProcessManager implements IProcessManager {
 		if (code.length >= memSize){
 			throw new Exception("Przydzielona pamięć jest za mała dla tego programu");
 		}
-		PageTable pt1 = new PageTable(this.ProcessCounter, memSize);
+		PageTable pt1 = new PageTable(this.ProcessCounter, code.length);
 		PCB pcb = new PCB(this.ProcessCounter, ProcessName, this.GroupsCounter, pt1, mapLine);
 		Map map = pcb.getMapLine();
 		System.out.println("Mapa konwersji");
@@ -269,7 +269,7 @@ public class ProcessManager implements IProcessManager {
 //			System.out.println(entry.getKey()+"\t"+entry.getValue());
 //		}
 		ram.pageTables.put(this.ProcessCounter, pt1);
-		ram.exchangeFile.writeToExchangeFile(this.ProcessCounter, code);
+		ram.exchangeFile.writeToExchangeFile(this.ProcessCounter, code, memSize);
 
 
 		ArrayList<PCB> al = new ArrayList<PCB>();
