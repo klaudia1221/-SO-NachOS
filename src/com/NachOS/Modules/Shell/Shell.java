@@ -40,7 +40,6 @@ public class Shell {
     private IACLController ACLController;
     private IPC ipc;
     private Interpreter interpreter;
-    private ExchangeFile exchangeFile;
     private Map<String, String> allCommands; //Mapa z wszystkimi komednami w shellu
 
     public Shell(IUserController userController,
@@ -48,7 +47,7 @@ public class Shell {
                  IProcessor processor,
                  IACLController ACLController,
                  ProcessManager processManager,
-                 ILoginService loginService, IPC ipc, Interpreter interpreter, ExchangeFile exchangeFile) {
+                 ILoginService loginService, IPC ipc, Interpreter interpreter) {
         this.userController = userController;
         this.fileSystem = fileSystem;
         this.memory = memory;
@@ -58,7 +57,7 @@ public class Shell {
         this.loginService = loginService;
         this.ipc=ipc;
         this.interpreter=interpreter;
-        this.exchangeFile=exchangeFile;
+
 
         allCommands = new HashMap<>();
     }
@@ -1114,7 +1113,7 @@ public class Shell {
     private void exfile(String[] command) {
         //exfile
         if (command.length == 1) {
-            exchangeFile.showContent();
+            memory.exchangeFile.showContent();
         }else {
             System.out.println("Bledna komenda");
             readCommend();
