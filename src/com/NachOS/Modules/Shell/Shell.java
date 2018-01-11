@@ -15,6 +15,7 @@ import com.NachOS.Modules.FileSystem.FileBase;
 import com.NachOS.Modules.FileSystem.IFileSystem;
 import com.NachOS.Modules.Interpreter.IInterpreter;
 import com.NachOS.Modules.Interpreter.Interpreter;
+import com.NachOS.Modules.MemoryManagment.ExchangeFile;
 import com.NachOS.Modules.MemoryManagment.RAM;
 import com.NachOS.Modules.ProcessManager.PCB;
 import com.NachOS.Modules.ProcessManager.ProcessManager;
@@ -39,6 +40,7 @@ public class Shell {
     private IACLController ACLController;
     private IPC ipc;
     private Interpreter interpreter;
+    private ExchangeFile exchangeFile;
     private Map<String, String> allCommands; //Mapa z wszystkimi komednami w shellu
 
     public Shell(IUserController userController,
@@ -46,7 +48,7 @@ public class Shell {
                  IProcessor processor,
                  IACLController ACLController,
                  ProcessManager processManager,
-                 ILoginService loginService, IPC ipc, Interpreter interpreter) {
+                 ILoginService loginService, IPC ipc, Interpreter interpreter, ExchangeFile exchangeFile) {
         this.userController = userController;
         this.fileSystem = fileSystem;
         this.memory = memory;
@@ -56,6 +58,7 @@ public class Shell {
         this.loginService = loginService;
         this.ipc=ipc;
         this.interpreter=interpreter;
+        this.exchangeFile=exchangeFile;
 
         allCommands = new HashMap<>();
     }
@@ -98,6 +101,7 @@ public class Shell {
         allCommands.put("i", "DEBUG Blok kontrolny");
         allCommands.put("m", "DEBUG Wyswietlenie RAM");
         allCommands.put("inter", "Komendy interpretera");
+        allCommands.put("exfile", "Plik wymiany");
     }
     private void logo() {
 
@@ -223,6 +227,10 @@ public class Shell {
                                 break;
                             case "inter":
                                 inter(separateCommand);
+                                break;
+                            case "exfile":
+                                exfile(separateCommand);
+                                break;
                         }
                     } else if (!isCommandGood(separateCommand[0])) {
                         System.out.println("Bledna komenda");
@@ -237,6 +245,7 @@ public class Shell {
             readCommend();
         }
     }
+
 
 
     /**
@@ -306,7 +315,7 @@ public class Shell {
         System.out.println("Kamila Urbaniak          Interpreter/Programy ");
         System.out.println("Agnieszka Rusin          Shell");
         System.out.println("Marcin Hilt              Zarzadzanie procesorem ");
-        System.out.println("Jakub Smierzchalski      Komunikacja miedzyprocesorowa");
+        System.out.println("Jakub Smierzchalski      Komunikacja miedzyprocesowa");
         System.out.println("Michał Sciborski         Konta/Grupy");
         System.out.println("Bartosz Wieckowski       Zarzadzanie procesami");
         System.out.println("Michal Wlodarczyk        Zarzadrzanie pliaki/katalogami");
@@ -1093,6 +1102,20 @@ public class Shell {
                 readCommend();
             }
         } else {
+            System.out.println("Bledna komenda");
+            readCommend();
+        }
+    }
+
+    /**
+     * Metoda ktora wywoluje sie gdy uzytkownik poda komende "exfile'
+     * @param command
+     */
+    private void exfile(String[] command) {
+        //exfile
+        if (command.length == 1) {
+            exchangeFile.showContent();
+        }else {
             System.out.println("Bledna komenda");
             readCommend();
         }
