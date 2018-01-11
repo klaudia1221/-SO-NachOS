@@ -916,11 +916,11 @@ public class Interpreter implements IInterpreter {
         char left = bAddress.charAt(0);
         char right = bAddress.charAt(lenbAddress-1);
 
-        if((left != '[')||((right != ']'))){
+        /*if((left != '[')||((right != ']'))){
             throw new Exception("Nieprawidlowy adres");
-        }
-
-        String logicalAddress = bAddress.replaceAll("\\[", "").replaceAll("]", "");
+        }*/
+        String logicalAddress = bAddress;
+        //String logicalAddress = bAddress.replaceAll("\\[", "").replaceAll("]", "");
         int Address = Integer.parseInt(logicalAddress);
 
         try {
