@@ -68,7 +68,7 @@ public class IPC
 
             //powiadom procesy czekajace na wiadomosc o nowej wiadomości metodą signalAll()
             try {
-                pm.getConditionVariable(recID).signal();
+                pm.getConditionVariable(recID).signalAll();
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -236,7 +236,6 @@ public class IPC
         //c=pm.getSafeMemory(adr);
         while(c!=zk.charAt(0))
         {
-            System.out.println(c);
             str+=c;
             //c=pm.getSafeMemory(adr);
             c=pm.getSafeMemory(beg);
