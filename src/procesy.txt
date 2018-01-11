@@ -1,1 +1,0 @@
-CP p1 pliki_cv_1;CP p2 pliki_cv_2;KP 2;KP 1;EX;

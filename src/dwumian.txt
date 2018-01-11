@@ -1,0 +1,9 @@
+MO A 5;
+MO B 1;
+MO C 1;
+MU B A;
+DC A;
+JZ A 6;
+JP 2;
+MZ [33] B;
+M

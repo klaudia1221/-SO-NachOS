@@ -1,1 +1,0 @@
-MO A 2;MO B 5;SB B A;PE B;EX;

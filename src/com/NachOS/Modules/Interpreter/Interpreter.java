@@ -787,7 +787,7 @@ public class Interpreter implements IInterpreter {
         }
     }
 
-    //CL file_name - zamyka plik o podanej nazwie
+    //CF file_name - zamyka plik o podanej nazwie
     private void CF(String[] order, int PC) throws FileSystemException {
         try {
             String filename = order[1];
@@ -838,7 +838,6 @@ public class Interpreter implements IInterpreter {
     }
 
     //RF file_name - czyta plik o podanej nazwie
-    //TODO sprawdzić dlaczego dodaje znak na poczatku
     private void RF(String[] order, int PC) throws FileSystemException {
         try {
             String filename = order[1];
