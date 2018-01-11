@@ -1,4 +1,0 @@
-MO A 6
-MO B 8
-DV B 4
-MV D B
