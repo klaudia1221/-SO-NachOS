@@ -18,10 +18,10 @@ public class IPC
 
     private Map<Integer, Integer> firstFree = new HashMap<>(); //<PID,pierwsze wolne miejsce w RAMie>
 
+    private Map<Integer, Integer> smsBeg = new HashMap<>(); //<PID,początek wiadomosci w ramie>
+
     private ProcessManager pm;
     private RAM ram;
-
-    private static final int ramCap = 31; //miejsca w RAMie - 1
 
     private static final int maxSmsSize = 8;
 
@@ -84,7 +84,7 @@ public class IPC
         return str;
     }*/
 
-    public void saveMessage(Sms sms) //do wywołania w receiveMessage bo zapisuje recID
+    /*public void saveMessage(Sms sms) //do wywołania w receiveMessage bo zapisuje recID
     {
         int temp;
         int PID = sms.get_recID();
@@ -109,6 +109,41 @@ public class IPC
             temp=firstFree.get(PID);
             temp++;
             firstFree.put(PID,temp);
+        } catch(Exception e)
+        {
+            System.out.println("Blad zapisu wiadomosci");
+        }
+    }*/
+
+    public void saveMessage(Sms sms) //do wywołania w receiveMessage bo zapisuje recID
+    {
+        int temp;
+        int PID = sms.get_recID();
+        String mes="";
+        mes+=sms.get_senID()+zs+sms.get_recID()+zs+sms.get_mes();
+        if(!firstFree.containsKey(sms.get_recID()))
+        {
+            firstFree.put(PID,0);
+        }
+        int adr=firstFree.get(PID);
+
+        try
+        {
+            System.out.println("MESSAGE: "+mes);
+            for(char c : mes.toCharArray())
+            {
+                pm.setSafeMemory(firstFree.get(PID),c);
+                //ram.writeCharToRam(sms.get_recID(),adr,c);
+                temp=firstFree.get(PID);
+                temp++;
+                firstFree.put(PID,temp);
+            }
+            pm.setSafeMemory(firstFree.get(PID),zk.charAt(0));
+            temp=firstFree.get(PID);
+            temp++;
+            firstFree.put(PID,temp);
+            int s=smsBeg.size();
+            smsBeg.put(s+1,adr);
         } catch(Exception e)
         {
             System.out.println("Blad zapisu wiadomosci");
@@ -167,7 +202,7 @@ public class IPC
         return sms;
     }*/
 
-    public String loadMessage(int adr) //odczytuje tresc wiadomosci z podanego adresu w RAMie
+    /*public String loadMessage(int adr) //odczytuje tresc wiadomosci z podanego adresu w RAMie
     {
         String str="", parts[];
         char c;
@@ -180,6 +215,32 @@ public class IPC
             //c=pm.getSafeMemory(adr);
             c=ram.getFromRam(adr);
             adr++;
+        }
+
+        //parts=str.split(Character.toString(zs));
+        parts=str.split(zs);
+
+        //Sms sms = new Sms(parts[2]);
+        //sms.set_senID(Integer.parseInt(parts[0]));
+        //sms.set_recID(Integer.parseInt(parts[1]));
+
+        return parts[2];
+    }*/
+
+    public String loadMessage(int adr) //odczytuje tresc wiadomosci z podanego adresu w RAMie
+    {
+        int beg = smsBeg.get(adr);
+        String str="", parts[];
+        char c;
+        c=pm.getSafeMemory(beg);
+        //c=pm.getSafeMemory(adr);
+        while(c!=zk.charAt(0))
+        {
+            System.out.println(c);
+            str+=c;
+            //c=pm.getSafeMemory(adr);
+            c=pm.getSafeMemory(beg);
+            beg++;
         }
 
         //parts=str.split(Character.toString(zs));
