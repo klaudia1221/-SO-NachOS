@@ -16,7 +16,8 @@ public class IPC
     public static final String zk = "$";//znak konca wiadomosci w ramie
 
 
-    private Map<Integer, Integer> firstFree = new HashMap<>(); //<PID,pierwsze wolne miejsce w RAMie>
+    //private Map<Integer, Integer> firstFree = new HashMap<>(); //<PID,pierwsze wolne miejsce w RAMie>
+    private int firstFree;
 
     private Map<Integer, Integer> smsBeg = new HashMap<>(); //<PID,początek wiadomosci w ramie>
 
@@ -115,7 +116,7 @@ public class IPC
         }
     }*/
 
-    public void saveMessage(Sms sms) //do wywołania w receiveMessage bo zapisuje recID
+    /*public void saveMessage(Sms sms) //do wywołania w receiveMessage bo zapisuje recID
     {
         int temp;
         int PID = sms.get_recID();
@@ -148,7 +149,45 @@ public class IPC
         {
             System.out.println("Blad zapisu wiadomosci");
         }
+    }*/
+
+    private void updateFirstFree()
+    {
+        int temp=0;
+        while(pm.getSafeMemory(temp)!='#'&&pm.getSafeMemory(temp)!='^')
+        {
+            temp++;
+        }
+        firstFree=temp;
     }
+
+    public void saveMessage(Sms sms) //do wywołania w receiveMessage bo zapisuje recID
+    {
+        String mes="";
+        mes+=sms.get_senID()+zs+sms.get_recID()+zs+sms.get_mes();
+
+        updateFirstFree();
+        int adr=firstFree;
+
+        try
+        {
+            for(char c : mes.toCharArray())
+            {
+                pm.setSafeMemory(firstFree,c);
+                //ram.writeCharToRam(sms.get_recID(),adr,c);
+                firstFree++;
+            }
+            pm.setSafeMemory(firstFree,zk.charAt(0));
+            firstFree++;
+
+            int s=smsBeg.size();
+            smsBeg.put(s+1,adr);
+        } catch(Exception e)
+        {
+            System.out.println("Blad zapisu wiadomosci");
+        }
+    }
+
 
     public void receiveMessage() throws ChangedToWaitingException
     {
