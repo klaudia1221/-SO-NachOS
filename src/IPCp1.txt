@@ -1,3 +1,3 @@
-SM 2 P1doP2;
-SM 3 P1doP3;
+SM 2 1do2;
+RM;
 EX;

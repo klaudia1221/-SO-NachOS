@@ -468,15 +468,16 @@ public class Shell {
                 System.out.println(e.getMessage());
                 readCommend();
             }
+            try{
             if (ACLController.hasUserPremissionToOperation(fileBase, loginService.getLoggedUser(), OperationType.READ)) {  //sprawdzenie uprawnien
                 try {
                     System.out.println(fileSystem.readFileShell(command[1]));
                 } catch (FileNameException e) {
                     System.out.println(e.getMessage());
                     readCommend();
-                }
-            } else {
-                System.out.println("Brak uprawnien do pliku");
+                }}
+            }catch (Exception e){
+                System.out.println(e.getMessage());
                 readCommend();
             }
         } else {

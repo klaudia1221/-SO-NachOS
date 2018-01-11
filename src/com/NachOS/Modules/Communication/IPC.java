@@ -11,11 +11,10 @@ import java.util.Map;
 
 public class IPC
 {
-    //public static final char zs = '-'; //znak oddzielajacy fragmenty wiadomosci w ramie
-    //public static final char zk = '$'; //znak konca wiadomosci w ramie
 
-    public static final String zs = "-";
-    public static final String zk = "$";
+    public static final String zs = "-";//znak oddzielajacy fragmenty wiadomosci w ramie
+    public static final String zk = "$";//znak konca wiadomosci w ramie
+
 
     private Map<Integer, Integer> firstFree = new HashMap<>(); //<PID,pierwsze wolne miejsce w RAMie>
 
@@ -107,6 +106,9 @@ public class IPC
                 firstFree.put(PID,temp);
             }
             pm.setSafeMemory(firstFree.get(PID),zk.charAt(0));
+            temp=firstFree.get(PID);
+            temp++;
+            firstFree.put(PID,temp);
         } catch(Exception e)
         {
             System.out.println("Blad zapisu wiadomosci");
@@ -169,12 +171,15 @@ public class IPC
     {
         String str="", parts[];
         char c;
-        //c=ram.getFromRam(adr);
-        c=pm.getSafeMemory(adr);
+        c=ram.getFromRam(adr);
+        //c=pm.getSafeMemory(adr);
         while(c!=zk.charAt(0))
         {
+            System.out.println(c);
             str+=c;
-            c=pm.getSafeMemory(adr);
+            //c=pm.getSafeMemory(adr);
+            c=ram.getFromRam(adr);
+            adr++;
         }
 
         //parts=str.split(Character.toString(zs));

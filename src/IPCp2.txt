@@ -1,3 +1,3 @@
 RM;
-SM 3 P2doP3;
+LM 1 [32];
 EX;
