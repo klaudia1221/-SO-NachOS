@@ -1,1 +1,1 @@
-MO A 1;SM 2 3do2;SM 1 3do1;EX;
+MO A 1;SM 2 3do2;RM;SM 1 3do1;EX;
