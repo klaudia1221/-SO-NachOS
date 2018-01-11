@@ -1,1 +1,0 @@
-CE plik1;RN plik1 plik2;OF plik2;AF plik2 nachos os;RF plik2;CF plik2;EX;
