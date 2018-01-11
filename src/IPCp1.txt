@@ -1,3 +1,4 @@
-SM 2 1do2;
+RM;
+SM 3 1do3;
 RM;
 EX;
