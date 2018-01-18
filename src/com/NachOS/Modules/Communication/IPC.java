@@ -12,14 +12,14 @@ import java.util.Map;
 public class IPC
 {
 
-    public static final String zs = "-";//znak oddzielajacy fragmenty wiadomosci w ramie
-    public static final String zk = "$";//znak konca wiadomosci w ramie
+    private static final String zs = "-";//znak oddzielajacy fragmenty wiadomosci w ramie
+    private static final String zk = "$";//znak konca wiadomosci w ramie
 
 
     //private Map<Integer, Integer> firstFree = new HashMap<>(); //<PID,pierwsze wolne miejsce w RAMie>
     private int firstFree;
 
-    private Map<Integer, Integer> smsBeg = new HashMap<>(); //<PID,początek wiadomosci w ramie>
+    private Map<Integer, Integer> smsBeg = new HashMap<>(); //<ID wiadomosci,początek wiadomosci w ramie>
 
     private ProcessManager pm;
     private RAM ram;
@@ -266,9 +266,9 @@ public class IPC
         return parts[2];
     }*/
 
-    public String loadMessage(int adr) //odczytuje tresc wiadomosci z podanego adresu w RAMie
+    public String loadMessage(int mID) //odczytuje tresc wiadomosci z podanego adresu w RAMie
     {
-        int beg = smsBeg.get(adr);
+        int beg = smsBeg.get(mID);
         String str="", parts[];
         char c;
         c=pm.getSafeMemory(beg);
@@ -291,8 +291,8 @@ public class IPC
         return parts[2];
     }
 
-    public void loadAndSend(int recID, int adr) throws TooLongException, WrongProcessIDException, SenderReceiverException, WrongGroupException, NoReceiverException {
-        Sms sms = new Sms(loadMessage(adr));
+    public void loadAndSend(int recID, int mID) throws TooLongException, WrongProcessIDException, SenderReceiverException, WrongGroupException, NoReceiverException {
+        Sms sms = new Sms(loadMessage(mID));
         sendMessage(recID, sms);
     }
 
